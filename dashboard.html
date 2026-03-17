@@ -15,11 +15,10 @@
   --green: #22c55e; --green-dim: rgba(34,197,94,0.1);
   --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
   --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
+  --purple: #a855f7; --purple-dim: rgba(168,85,247,0.1);
   --font: 'Geist', -apple-system, sans-serif; --r: 8px;
 }
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
-
-/* Sidebar */
 .sidebar { width: 216px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
 .logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin-bottom: 24px; }
 .logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; flex-shrink: 0; }
@@ -36,72 +35,74 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 .user-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sign-out { width: 100%; padding: 6px 8px; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 13px; text-align: left; border-radius: 6px; cursor: pointer; transition: all 0.1s; }
 .sign-out:hover { background: var(--surface2); color: var(--red); }
-
-/* Main */
 .main { margin-left: 216px; flex: 1; padding: 32px 40px; }
 .page { display: none; } .page.active { display: block; }
 .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .page-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-
-/* Stats */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
 .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; }
 .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
 .stat-val { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
-
-/* Table */
 .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
 table { width: 100%; border-collapse: collapse; }
 thead tr { border-bottom: 1px solid var(--border); }
 th { font-size: 12px; color: var(--muted); font-weight: 400; padding: 10px 16px; text-align: left; }
-td { padding: 11px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--surface2); }
 .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
-
-/* Badges */
 .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
 .badge-green { background: var(--green-dim); color: var(--green); }
 .badge-red { background: var(--red-dim); color: var(--red); }
 .badge-blue { background: var(--blue-dim); color: var(--blue); }
 .badge-amber { background: var(--amber-dim); color: var(--amber); }
-
-/* Buttons */
+.badge-purple { background: var(--purple-dim); color: var(--purple); }
 .btn { padding: 6px 14px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.1s; border: 1px solid transparent; }
 .btn-primary { background: var(--text); color: #000; border-color: var(--text); }
 .btn-primary:hover { opacity: 0.85; }
 .btn-ghost { background: none; color: var(--muted); border-color: var(--border2); }
-.btn-ghost:hover { color: var(--text); border-color: var(--border2); background: var(--surface2); }
+.btn-ghost:hover { color: var(--text); background: var(--surface2); }
 .btn-danger { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.2); }
 .btn-danger:hover { opacity: 0.8; }
-.btn-sm { padding: 4px 10px; font-size: 12px; }
-
-/* Mono */
-.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--muted); }
+.btn-warning { background: var(--amber-dim); color: var(--amber); border-color: rgba(245,158,11,0.2); }
+.btn-warning:hover { opacity: 0.8; }
+.btn-sm { padding: 3px 9px; font-size: 11px; }
+.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--muted); }
 .copy-btn { background: none; border: none; color: var(--muted2); cursor: pointer; padding: 2px 4px; border-radius: 4px; font-size: 12px; }
 .copy-btn:hover { color: var(--text); background: var(--surface2); }
-
-/* Modal */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
 .overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 24px; width: 100%; max-width: 380px; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
 .modal-title { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
 .field { margin-bottom: 12px; }
 .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
 .field input, .field select { width: 100%; padding: 7px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; color-scheme: dark; }
 .field input:focus, .field select:focus { border-color: var(--border2); }
 .field input::placeholder { color: #444; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 13px; color: var(--text); }
+.toggle-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.toggle { position: relative; width: 36px; height: 20px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; cursor: pointer; transition: 0.2s; }
+.toggle-slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 2px; top: 2px; background: var(--muted); border-radius: 50%; transition: 0.2s; }
+.toggle input:checked + .toggle-slider { background: var(--blue); border-color: var(--blue); }
+.toggle input:checked + .toggle-slider:before { transform: translateX(16px); background: #fff; }
+.section-divider { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 10px; }
 .modal-footer { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
 .alert { display: none; padding: 8px 12px; border-radius: var(--r); font-size: 12px; margin-top: 10px; }
 .alert.err { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
 .alert.ok { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
-.divider { height: 1px; background: var(--border); margin: 20px 0; }
-.app-selector { margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.app-selector { margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
 .app-selector select { padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; }
+.actions-cell { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: wrap; }
+.hwid-list { margin-top: 8px; }
+.hwid-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 4px; font-family: monospace; font-size: 11px; color: var(--muted); }
 </style>
 </head>
 <body>
-
 <nav class="sidebar">
   <div class="logo"><div class="logo-dot"></div><span class="logo-text">AuthForge</span></div>
   <div class="nav-group">
@@ -133,7 +134,6 @@ tbody tr:hover td { background: var(--surface2); }
 </nav>
 
 <main class="main">
-
   <!-- Overview -->
   <div class="page active" id="p-overview">
     <div class="page-head"><div class="page-title">Overview</div></div>
@@ -168,8 +168,8 @@ tbody tr:hover td { background: var(--surface2); }
       <button class="btn btn-primary" onclick="openCreateLicense()">Generate license</button>
     </div>
     <div class="app-selector">
-      <span style="color:var(--muted);font-size:13px">Filter by app:</span>
-      <select id="lic-filter" onchange="loadLicenses()"><option value="">All apps</option></select>
+      <span style="color:var(--muted);font-size:13px">App:</span>
+      <select id="lic-filter" onchange="loadLicenses()"><option value="">All</option></select>
     </div>
     <div class="table-wrap">
       <table><thead><tr><th>License Key</th><th>App</th><th>Users</th><th>Status</th><th>Expires</th><th></th></tr></thead>
@@ -184,15 +184,14 @@ tbody tr:hover td { background: var(--surface2); }
       <button class="btn btn-primary" onclick="openCreateUser()">Create user</button>
     </div>
     <div class="app-selector">
-      <span style="color:var(--muted);font-size:13px">Filter by app:</span>
-      <select id="usr-filter" onchange="loadUsers()"><option value="">All apps</option></select>
+      <span style="color:var(--muted);font-size:13px">App:</span>
+      <select id="usr-filter" onchange="loadUsers()"><option value="">All</option></select>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Username</th><th>Email</th><th>App</th><th>License</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+      <table><thead><tr><th>Username</th><th>App</th><th>Expiry</th><th>HWID Lock</th><th>Status</th><th></th></tr></thead>
       <tbody id="usr-tbody"></tbody></table>
     </div>
   </div>
-
 </main>
 
 <!-- New App Modal -->
@@ -212,14 +211,10 @@ tbody tr:hover td { background: var(--surface2); }
 <div class="overlay" id="m-lic">
   <div class="modal">
     <div class="modal-title">Generate license key</div>
-    <div class="field"><label>Application</label>
-      <select id="lic-app"></select>
-    </div>
-    <div class="field"><label>Max users (how many users can register with this key)</label>
-      <input type="number" id="lic-max" value="1" min="1" max="1000">
-    </div>
-    <div class="field"><label>Expiry date (optional)</label>
-      <input type="date" id="lic-exp">
+    <div class="field"><label>Application</label><select id="lic-app"></select></div>
+    <div class="field-row">
+      <div class="field"><label>Max users</label><input type="number" id="lic-max" value="1" min="1"></div>
+      <div class="field"><label>Expires (optional)</label><input type="date" id="lic-exp"></div>
     </div>
     <div class="alert" id="lic-msg"></div>
     <div class="modal-footer">
@@ -233,19 +228,65 @@ tbody tr:hover td { background: var(--surface2); }
 <div class="overlay" id="m-usr">
   <div class="modal">
     <div class="modal-title">Create user</div>
-    <div class="field"><label>Application</label>
-      <select id="usr-app"></select>
+    <div class="field"><label>Application</label><select id="usr-app" onchange="onAppChange()"></select></div>
+    <div class="field"><label>Assign license (optional)</label><select id="usr-lic"><option value="">No license</option></select></div>
+    <div class="field-row">
+      <div class="field"><label>Username</label><input type="text" id="usr-name" placeholder="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="usr-pass" placeholder="••••••••"></div>
     </div>
-    <div class="field"><label>License key (assign to user)</label>
-      <select id="usr-lic"><option value="">No license</option></select>
+    <div class="field-row">
+      <div class="field"><label>Email (optional)</label><input type="email" id="usr-email" placeholder="user@email.com"></div>
+      <div class="field"><label>Expires (optional)</label><input type="date" id="usr-exp"></div>
     </div>
-    <div class="field"><label>Username</label><input type="text" id="usr-name" placeholder="client_username"></div>
-    <div class="field"><label>Password</label><input type="password" id="usr-pass" placeholder="••••••••"></div>
-    <div class="field"><label>Email (optional)</label><input type="email" id="usr-email" placeholder="client@example.com"></div>
+    <div class="section-divider">HWID Locking</div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Enable HWID lock</div>
+        <div class="toggle-sub">User must login from registered device(s)</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="usr-hwid-lock" onchange="toggleMaxHwid()"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="field" id="max-hwid-field" style="display:none;margin-top:10px">
+      <label>Max devices allowed</label>
+      <input type="number" id="usr-max-hwids" value="1" min="1" max="10">
+    </div>
     <div class="alert" id="usr-msg"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('m-usr')">Cancel</button>
       <button class="btn btn-primary" onclick="createUser()">Create user</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage User Modal -->
+<div class="overlay" id="m-manage">
+  <div class="modal">
+    <div class="modal-title" id="manage-title">Manage User</div>
+    <input type="hidden" id="manage-id">
+    <div class="section-divider">Account Settings</div>
+    <div class="toggle-row">
+      <div><div class="toggle-label">Banned</div><div class="toggle-sub">Block this user from logging in</div></div>
+      <label class="toggle"><input type="checkbox" id="m-banned"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-label">HWID Lock</div><div class="toggle-sub">Restrict to registered devices</div></div>
+      <label class="toggle"><input type="checkbox" id="m-hwid-lock" onchange="toggleManageHwid()"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="field" id="m-max-hwid-field" style="margin-top:10px">
+      <label>Max devices</label>
+      <input type="number" id="m-max-hwids" value="1" min="1" max="10">
+    </div>
+    <div class="field" style="margin-top:10px">
+      <label>Expiry date (leave blank = no expiry)</label>
+      <input type="date" id="m-expiry">
+    </div>
+    <div class="section-divider">Registered HWIDs</div>
+    <div id="hwid-list-wrap"><div style="color:var(--muted);font-size:13px">Loading...</div></div>
+    <button class="btn btn-warning btn-sm" onclick="resetHwids()" style="margin-top:8px">Reset all HWIDs</button>
+    <div class="alert" id="manage-msg"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m-manage')">Close</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save changes</button>
     </div>
   </div>
 </div>
@@ -257,7 +298,6 @@ let user = JSON.parse(localStorage.getItem('af_user') || '{}');
 let allApps = [];
 
 if (!token) location.href = 'index.html';
-
 document.getElementById('un').textContent = user.username || '';
 document.getElementById('av').textContent = (user.username || '?')[0].toUpperCase();
 
@@ -267,23 +307,27 @@ function nav(p) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('p-' + p).classList.add('active');
-  const idx = ['overview','apps','licenses','users'].indexOf(p);
-  document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  ['overview','apps','licenses','users'].forEach((n,i) => {
+    if (n === p) document.querySelectorAll('.nav-item')[i].classList.add('active');
+  });
   if (p === 'overview') loadOverview();
   if (p === 'apps') loadApps();
   if (p === 'licenses') loadLicenses();
   if (p === 'users') loadUsers();
 }
 
-function H() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }; }
+function H() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-GB') : '—'; }
+function isExpired(d) { return d && new Date(d) < new Date(); }
 function copy(t) { navigator.clipboard.writeText(t); }
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function setMsg(id, text, type) { const el = document.getElementById(id); el.textContent = text; el.className = `alert ${type}`; el.style.display = 'block'; }
+function setMsg(id, text, type) { const el = document.getElementById(id); el.textContent = text; el.className = 'alert ' + type; el.style.display = 'block'; }
+function toggleMaxHwid() { document.getElementById('max-hwid-field').style.display = document.getElementById('usr-hwid-lock').checked ? 'block' : 'none'; }
+function toggleManageHwid() { document.getElementById('m-max-hwid-field').style.display = document.getElementById('m-hwid-lock').checked ? 'block' : 'none'; }
 
 async function fetchApps() {
-  const r = await fetch(`${API}/api/apps`, { headers: H() });
+  const r = await fetch(API + '/api/apps', { headers: H() });
   const d = await r.json();
   allApps = d.apps || [];
   return allApps;
@@ -294,143 +338,67 @@ function populateSelects() {
     const el = document.getElementById(id);
     const cur = el.value;
     const isFilter = id.includes('filter');
-    el.innerHTML = isFilter ? '<option value="">All apps</option>' : '';
+    el.innerHTML = isFilter ? '<option value="">All</option>' : '';
     allApps.forEach(a => {
       const o = document.createElement('option');
-      o.value = a.id; o.textContent = a.name;
-      el.appendChild(o);
+      o.value = a.id; o.textContent = a.name; el.appendChild(o);
     });
     if (cur) el.value = cur;
   });
 }
 
-async function openCreateUser() {
-  if (!allApps.length) await fetchApps();
-  if (!allApps.length) return alert('Create an application first!');
-  populateSelects();
-  document.getElementById('usr-msg').style.display = 'none';
-  document.getElementById('usr-name').value = '';
-  document.getElementById('usr-pass').value = '';
-  document.getElementById('usr-email').value = '';
-  // Load licenses for first app
-  await loadLicenseOptions(allApps[0].id);
-  document.getElementById('usr-app').onchange = async function() {
-    await loadLicenseOptions(this.value);
-  };
-  openModal('m-usr');
-}
-
-async function loadLicenseOptions(appId) {
-  const r = await fetch(`${API}/api/licenses/${appId}`, { headers: H() });
-  const d = await r.json();
-  const sel = document.getElementById('usr-lic');
-  sel.innerHTML = '<option value="">No license</option>';
-  (d.licenses || []).filter(l => l.is_active).forEach(l => {
-    const o = document.createElement('option');
-    o.value = l.id;
-    o.textContent = `${l.license_key.substring(0,20)}... (${l.used_slots}/${l.max_users} slots used)`;
-    sel.appendChild(o);
-  });
-}
-
-async function createUser() {
-  const app_id = document.getElementById('usr-app').value;
-  const license_id = document.getElementById('usr-lic').value || null;
-  const username = document.getElementById('usr-name').value.trim();
-  const password = document.getElementById('usr-pass').value;
-  const email = document.getElementById('usr-email').value.trim();
-  if (!app_id || !username || !password) return setMsg('usr-msg','App, username and password required','err');
-  const r = await fetch(`${API}/api/users/${app_id}/create`, {
-    method: 'POST', headers: H(),
-    body: JSON.stringify({ username, password, email, license_id })
-  });
-  const d = await r.json();
-  if (!r.ok) return setMsg('usr-msg', d.error || d.message, 'err');
-  closeModal('m-usr');
-  loadUsers();
-}
-
 async function loadOverview() {
-  await fetchApps();
-  populateSelects();
+  await fetchApps(); populateSelects();
   document.getElementById('s-apps').textContent = allApps.length;
-  let totalLic = 0, totalUsr = 0, activeLic = 0;
+  let tl = 0, tu = 0, al = 0;
   for (const app of allApps) {
-    const lr = await fetch(`${API}/api/licenses/${app.id}`, { headers: H() });
+    const lr = await fetch(API + '/api/licenses/' + app.id, { headers: H() });
     const ld = await lr.json();
     const lics = ld.licenses || [];
-    totalLic += lics.length;
-    activeLic += lics.filter(l => l.is_active).length;
-    const ur = await fetch(`${API}/api/users/${app.id}`, { headers: H() });
+    tl += lics.length; al += lics.filter(l => l.is_active).length;
+    const ur = await fetch(API + '/api/users/' + app.id, { headers: H() });
     const ud = await ur.json();
-    totalUsr += (ud.users || []).length;
+    tu += (ud.users || []).length;
   }
-  document.getElementById('s-lic').textContent = totalLic;
-  document.getElementById('s-usr').textContent = totalUsr;
-  document.getElementById('s-act').textContent = activeLic;
+  document.getElementById('s-lic').textContent = tl;
+  document.getElementById('s-usr').textContent = tu;
+  document.getElementById('s-act').textContent = al;
   const tbody = document.getElementById('ov-apps');
-  tbody.innerHTML = allApps.length ? allApps.map(a => `
-    <tr>
-      <td><span style="font-weight:500">${a.name}</span></td>
-      <td><span class="mono">${a.secret_key.substring(0,28)}...</span> <button class="copy-btn" onclick="copy('${a.secret_key}')">⎘</button></td>
-      <td class="mono">${fmtDate(a.created_at)}</td>
-    </tr>`).join('') : `<tr><td colspan="3" class="empty">No applications yet</td></tr>`;
+  tbody.innerHTML = allApps.length ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,28) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>').join('') : '<tr><td colspan="3" class="empty">No applications yet</td></tr>';
 }
 
 async function loadApps() {
-  await fetchApps();
-  populateSelects();
+  await fetchApps(); populateSelects();
   const tbody = document.getElementById('apps-tbody');
-  tbody.innerHTML = allApps.length ? allApps.map(a => `
-    <tr>
-      <td><span style="font-weight:500">${a.name}</span></td>
-      <td><span class="mono">${a.secret_key.substring(0,28)}...</span> <button class="copy-btn" onclick="copy('${a.secret_key}')">⎘</button></td>
-      <td class="mono">${fmtDate(a.created_at)}</td>
-      <td style="text-align:right"><button class="btn btn-danger btn-sm" onclick="deleteApp('${a.id}')">Delete</button></td>
-    </tr>`).join('') : `<tr><td colspan="4" class="empty">No applications yet</td></tr>`;
+  tbody.innerHTML = allApps.length ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,28) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td class="mono">' + fmtDate(a.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-danger btn-sm" onclick="deleteApp(\'' + a.id + '\')">Delete</button></div></td></tr>').join('') : '<tr><td colspan="4" class="empty">No applications yet</td></tr>';
 }
 
 async function createApp() {
   const name = document.getElementById('app-name').value.trim();
-  if (!name) return setMsg('app-msg','App name required','err');
-  const r = await fetch(`${API}/api/apps`, { method:'POST', headers: H(), body: JSON.stringify({name}) });
+  if (!name) return setMsg('app-msg','Name required','err');
+  const r = await fetch(API + '/api/apps', { method:'POST', headers: H(), body: JSON.stringify({name}) });
   const d = await r.json();
   if (!r.ok) return setMsg('app-msg', d.error, 'err');
-  closeModal('m-app');
-  document.getElementById('app-name').value = '';
-  loadApps();
+  closeModal('m-app'); document.getElementById('app-name').value = ''; loadApps();
 }
 
 async function deleteApp(id) {
-  if (!confirm('Delete this app? All licenses and users will be deleted too.')) return;
-  await fetch(`${API}/api/apps/${id}`, { method:'DELETE', headers: H() });
-  loadApps();
+  if (!confirm('Delete this app and all its data?')) return;
+  await fetch(API + '/api/apps/' + id, { method:'DELETE', headers: H() }); loadApps();
 }
 
 async function loadLicenses() {
-  if (!allApps.length) await fetchApps();
-  populateSelects();
+  if (!allApps.length) await fetchApps(); populateSelects();
   const filterApp = document.getElementById('lic-filter').value;
-  const appsToCheck = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
+  const apps = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
   let all = [];
-  for (const app of appsToCheck) {
-    const r = await fetch(`${API}/api/licenses/${app.id}`, { headers: H() });
+  for (const app of apps) {
+    const r = await fetch(API + '/api/licenses/' + app.id, { headers: H() });
     const d = await r.json();
-    (d.licenses || []).forEach(l => all.push({...l, appName: app.name}));
+    (d.licenses || []).forEach(l => all.push(Object.assign({}, l, {appName: app.name})));
   }
   const tbody = document.getElementById('lic-tbody');
-  tbody.innerHTML = all.length ? all.map(l => `
-    <tr>
-      <td><span class="mono">${l.license_key}</span> <button class="copy-btn" onclick="copy('${l.license_key}')">⎘</button></td>
-      <td><span class="badge badge-blue">${l.appName}</span></td>
-      <td><span style="font-size:13px">${l.used_slots}/${l.max_users}</span></td>
-      <td><span class="badge ${l.is_active ? 'badge-green' : 'badge-red'}">${l.is_active ? 'Active' : 'Disabled'}</span></td>
-      <td class="mono">${fmtDate(l.expires_at)}</td>
-      <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
-        <button class="btn btn-ghost btn-sm" onclick="toggleLic('${l.id}',${!l.is_active})">${l.is_active ? 'Disable' : 'Enable'}</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteLic('${l.id}')">Delete</button>
-      </td>
-    </tr>`).join('') : `<tr><td colspan="6" class="empty">No licenses yet</td></tr>`;
+  tbody.innerHTML = all.length ? all.map(l => '<tr><td><span class="mono">' + l.license_key + '</span> <button class="copy-btn" onclick="copy(\'' + l.license_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + l.appName + '</span></td><td>' + l.used_slots + '/' + l.max_users + '</td><td><span class="badge ' + (l.is_active ? 'badge-green' : 'badge-red') + '">' + (l.is_active ? 'Active' : 'Disabled') + '</span></td><td class="mono ' + (isExpired(l.expires_at) ? 'style="color:var(--red)"' : '') + '">' + fmtDate(l.expires_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="toggleLic(\'' + l.id + '\',' + (!l.is_active) + ')">' + (l.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteLic(\'' + l.id + '\')">Delete</button></div></td></tr>').join('') : '<tr><td colspan="6" class="empty">No licenses yet</td></tr>';
 }
 
 function openCreateLicense() {
@@ -446,60 +414,145 @@ async function createLicense() {
   const max_users = parseInt(document.getElementById('lic-max').value) || 1;
   const expires_at = document.getElementById('lic-exp').value || null;
   if (!app_id) return setMsg('lic-msg','Select an app','err');
-  const r = await fetch(`${API}/api/licenses/${app_id}`, { method:'POST', headers: H(), body: JSON.stringify({max_users, expires_at}) });
+  const r = await fetch(API + '/api/licenses/' + app_id, { method:'POST', headers: H(), body: JSON.stringify({max_users, expires_at}) });
   const d = await r.json();
   if (!r.ok) return setMsg('lic-msg', d.error, 'err');
-  closeModal('m-lic');
-  loadLicenses();
+  closeModal('m-lic'); loadLicenses();
 }
 
 async function toggleLic(id, is_active) {
-  await fetch(`${API}/api/licenses/${id}/toggle`, { method:'PATCH', headers: H(), body: JSON.stringify({is_active}) });
+  await fetch(API + '/api/licenses/' + id + '/toggle', { method:'PATCH', headers: H(), body: JSON.stringify({is_active}) });
   loadLicenses();
 }
 
 async function deleteLic(id) {
   if (!confirm('Delete this license key?')) return;
-  await fetch(`${API}/api/licenses/${id}`, { method:'DELETE', headers: H() });
-  loadLicenses();
+  await fetch(API + '/api/licenses/' + id, { method:'DELETE', headers: H() }); loadLicenses();
 }
 
 async function loadUsers() {
-  if (!allApps.length) await fetchApps();
-  populateSelects();
+  if (!allApps.length) await fetchApps(); populateSelects();
   const filterApp = document.getElementById('usr-filter').value;
-  const appsToCheck = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
+  const apps = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
   let all = [];
-  for (const app of appsToCheck) {
-    const r = await fetch(`${API}/api/users/${app.id}`, { headers: H() });
+  for (const app of apps) {
+    const r = await fetch(API + '/api/users/' + app.id, { headers: H() });
     const d = await r.json();
-    (d.users || []).forEach(u => all.push({...u, appName: app.name}));
+    (d.users || []).forEach(u => all.push(Object.assign({}, u, {appName: app.name})));
   }
   const tbody = document.getElementById('usr-tbody');
-  tbody.innerHTML = all.length ? all.map(u => `
-    <tr>
-      <td><span style="font-weight:500">${u.username}</span></td>
-      <td class="mono">${u.email || '—'}</td>
-      <td><span class="badge badge-blue">${u.appName}</span></td>
-      <td><span class="mono">${u.license_id ? u.license_id.substring(0,8)+'...' : '—'}</span></td>
-      <td><span class="badge ${u.is_banned ? 'badge-red' : 'badge-green'}">${u.is_banned ? 'Banned' : 'Active'}</span></td>
-      <td class="mono">${fmtDate(u.created_at)}</td>
-      <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
-        <button class="btn btn-ghost btn-sm" onclick="toggleBan('${u.id}',${!u.is_banned})">${u.is_banned ? 'Unban' : 'Ban'}</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">Delete</button>
-      </td>
-    </tr>`).join('') : `<tr><td colspan="7" class="empty">No users yet</td></tr>`;
+  tbody.innerHTML = all.length ? all.map(u => {
+    const expired = isExpired(u.expires_at);
+    const status = u.is_banned ? '<span class="badge badge-red">Banned</span>' : expired ? '<span class="badge badge-amber">Expired</span>' : '<span class="badge badge-green">Active</span>';
+    const hwid = u.hwid_lock_enabled ? '<span class="badge badge-purple">On · ' + u.max_hwids + ' dev</span>' : '<span style="color:var(--muted2);font-size:12px">Off</span>';
+    return '<tr><td><strong>' + u.username + '</strong></td><td><span class="badge badge-blue">' + u.appName + '</span></td><td class="mono">' + fmtDate(u.expires_at) + '</td><td>' + hwid + '</td><td>' + status + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openManage(\'' + u.id + '\',\'' + u.username + '\',' + u.is_banned + ',' + u.hwid_lock_enabled + ',' + u.max_hwids + ',\'' + (u.expires_at || '') + '\')">Manage</button><button class="btn btn-danger btn-sm" onclick="deleteUser(\'' + u.id + '\')">Delete</button></div></td></tr>';
+  }).join('') : '<tr><td colspan="6" class="empty">No users yet</td></tr>';
 }
 
-async function toggleBan(id, is_banned) {
-  await fetch(`${API}/api/users/${id}/ban`, { method:'PATCH', headers: H(), body: JSON.stringify({is_banned}) });
+async function openCreateUser() {
+  if (!allApps.length) await fetchApps();
+  if (!allApps.length) return alert('Create an application first!');
+  populateSelects();
+  document.getElementById('usr-msg').style.display = 'none';
+  document.getElementById('usr-name').value = '';
+  document.getElementById('usr-pass').value = '';
+  document.getElementById('usr-email').value = '';
+  document.getElementById('usr-exp').value = '';
+  document.getElementById('usr-hwid-lock').checked = false;
+  document.getElementById('usr-max-hwids').value = 1;
+  document.getElementById('max-hwid-field').style.display = 'none';
+  await loadLicenseOptions(allApps[0].id);
+  openModal('m-usr');
+}
+
+async function onAppChange() {
+  await loadLicenseOptions(document.getElementById('usr-app').value);
+}
+
+async function loadLicenseOptions(appId) {
+  const r = await fetch(API + '/api/licenses/' + appId, { headers: H() });
+  const d = await r.json();
+  const sel = document.getElementById('usr-lic');
+  sel.innerHTML = '<option value="">No license</option>';
+  (d.licenses || []).filter(l => l.is_active).forEach(l => {
+    const o = document.createElement('option');
+    o.value = l.id;
+    o.textContent = l.license_key.substring(0,20) + '... (' + l.used_slots + '/' + l.max_users + ' slots)';
+    sel.appendChild(o);
+  });
+}
+
+async function createUser() {
+  const app_id = document.getElementById('usr-app').value;
+  const license_id = document.getElementById('usr-lic').value || null;
+  const username = document.getElementById('usr-name').value.trim();
+  const password = document.getElementById('usr-pass').value;
+  const email = document.getElementById('usr-email').value.trim();
+  const expires_at = document.getElementById('usr-exp').value || null;
+  const hwid_lock_enabled = document.getElementById('usr-hwid-lock').checked;
+  const max_hwids = parseInt(document.getElementById('usr-max-hwids').value) || 1;
+  if (!app_id || !username || !password) return setMsg('usr-msg','App, username and password required','err');
+  const r = await fetch(API + '/api/users/' + app_id + '/create', {
+    method: 'POST', headers: H(),
+    body: JSON.stringify({ username, password, email, license_id, expires_at, hwid_lock_enabled, max_hwids })
+  });
+  const d = await r.json();
+  if (!r.ok) return setMsg('usr-msg', d.error || d.message, 'err');
+  closeModal('m-usr'); loadUsers();
+}
+
+async function openManage(id, username, is_banned, hwid_lock, max_hwids, expires_at) {
+  document.getElementById('manage-id').value = id;
+  document.getElementById('manage-title').textContent = 'Manage: ' + username;
+  document.getElementById('m-banned').checked = is_banned;
+  document.getElementById('m-hwid-lock').checked = hwid_lock;
+  document.getElementById('m-max-hwids').value = max_hwids || 1;
+  document.getElementById('m-max-hwid-field').style.display = hwid_lock ? 'block' : 'none';
+  document.getElementById('m-expiry').value = expires_at ? expires_at.substring(0,10) : '';
+  document.getElementById('manage-msg').style.display = 'none';
+  // Load HWIDs
+  const r = await fetch(API + '/api/users/' + id + '/hwids', { headers: H() });
+  const d = await r.json();
+  const hwids = d.hwids || [];
+  const wrap = document.getElementById('hwid-list-wrap');
+  wrap.innerHTML = hwids.length ? hwids.map(h => '<div class="hwid-item"><span>' + h.hwid + '</span><button class="btn btn-danger btn-sm" onclick="deleteHwid(\'' + id + '\',\'' + h.id + '\')">Remove</button></div>').join('') : '<div style="color:var(--muted);font-size:13px">No HWIDs registered yet</div>';
+  openModal('m-manage');
+}
+
+async function saveUser() {
+  const id = document.getElementById('manage-id').value;
+  const is_banned = document.getElementById('m-banned').checked;
+  const hwid_lock_enabled = document.getElementById('m-hwid-lock').checked;
+  const max_hwids = parseInt(document.getElementById('m-max-hwids').value) || 1;
+  const expires_at = document.getElementById('m-expiry').value || null;
+  const r = await fetch(API + '/api/users/' + id, {
+    method: 'PATCH', headers: H(),
+    body: JSON.stringify({ is_banned, hwid_lock_enabled, max_hwids, expires_at })
+  });
+  const d = await r.json();
+  if (!r.ok) return setMsg('manage-msg', d.error, 'err');
+  setMsg('manage-msg','Changes saved','ok');
   loadUsers();
+}
+
+async function resetHwids() {
+  const id = document.getElementById('manage-id').value;
+  if (!confirm('Reset all HWIDs for this user?')) return;
+  await fetch(API + '/api/users/' + id + '/hwids', { method:'DELETE', headers: H() });
+  document.getElementById('hwid-list-wrap').innerHTML = '<div style="color:var(--muted);font-size:13px">No HWIDs registered yet</div>';
+  setMsg('manage-msg','HWIDs reset','ok');
+}
+
+async function deleteHwid(userId, hwidId) {
+  await fetch(API + '/api/users/' + userId + '/hwids/' + hwidId, { method:'DELETE', headers: H() });
+  openManage(userId, document.getElementById('manage-title').textContent.replace('Manage: ',''),
+    document.getElementById('m-banned').checked, document.getElementById('m-hwid-lock').checked,
+    document.getElementById('m-max-hwids').value, document.getElementById('m-expiry').value);
 }
 
 async function deleteUser(id) {
   if (!confirm('Delete this user?')) return;
-  await fetch(`${API}/api/users/${id}`, { method:'DELETE', headers: H() });
-  loadUsers();
+  await fetch(API + '/api/users/' + id, { method:'DELETE', headers: H() }); loadUsers();
 }
 
 loadOverview();
