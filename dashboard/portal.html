@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuthForge — User Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #0a0a0a; --surface: #111; --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.12); --text: #ededed; --muted: #888; --blue: #3b82f6; --green: #22c55e; --red: #ef4444; --font: 'Geist', sans-serif; --r: 8px; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.wrap { width: 100%; max-width: 480px; }
+.logo { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 28px; }
+.logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; }
+.logo-text { font-size: 15px; font-weight: 600; }
+.logo-sub { font-size: 11px; color: var(--muted); text-align: center; margin-top: 2px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 14px; }
+.card-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+.field { margin-bottom: 10px; }
+.field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.field input { width: 100%; padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; }
+.field input:focus { border-color: var(--border2); }
+.field input::placeholder { color: #444; }
+.field input[readonly] { opacity: 0.6; }
+.btn { width: 100%; padding: 8px; border-radius: var(--r); font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: opacity 0.15s; margin-top: 4px; }
+.btn-primary { background: var(--text); color: #000; }
+.btn-primary:hover { opacity: 0.85; }
+.btn-ghost { background: none; border: 1px solid var(--border2); color: var(--text); margin-top: 8px; }
+.alert { display: none; padding: 8px 11px; border-radius: var(--r); font-size: 12px; margin-top: 8px; }
+.alert.err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+.alert.ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+.badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badge-green { background: rgba(34,197,94,0.1); color: var(--green); }
+.badge-red { background: rgba(239,68,68,0.1); color: var(--red); }
+.badge-blue { background: rgba(59,130,246,0.12); color: var(--blue); }
+.info-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--muted); }
+.hwid-item { font-family: monospace; font-size: 11px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 5px 9px; margin-bottom: 4px; }
+#login-section { display: block; }
+#portal-section { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><div class="logo-dot"></div><span class="logo-text">AuthForge</span></div>
+  <div class="logo-sub">User Portal</div>
+
+  <!-- Login -->
+  <div id="login-section">
+    <div class="card">
+      <div class="card-title">Sign in to your account</div>
+      <div class="field"><label>App Secret Key</label><input type="text" id="p-secret" placeholder="Your app's secret key"></div>
+      <div class="field"><label>Username</label><input type="text" id="p-username" placeholder="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="p-password" placeholder="••••••••"></div>
+      <button class="btn btn-primary" onclick="portalLogin()">Sign in</button>
+      <div class="alert" id="login-msg"></div>
+    </div>
+  </div>
+
+  <!-- Portal -->
+  <div id="portal-section">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="card-title" style="margin:0">My Account</div>
+        <button class="btn btn-ghost" style="width:auto;padding:4px 12px;margin:0" onclick="portalLogout()">Sign out</button>
+      </div>
+      <div class="info-row"><span class="info-label">Username</span><span id="p-info-username">—</span></div>
+      <div class="info-row"><span class="info-label">Email</span><span id="p-info-email">—</span></div>
+      <div class="info-row"><span class="info-label">Account status</span><span id="p-info-status">—</span></div>
+      <div class="info-row"><span class="info-label">Expires</span><span id="p-info-expires">—</span></div>
+      <div class="info-row"><span class="info-label">Tier</span><span id="p-info-tier">—</span></div>
+      <div class="info-row"><span class="info-label">Member since</span><span id="p-info-created">—</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">License</div>
+      <div id="p-license-info"><div style="color:var(--muted);font-size:13px">No license assigned</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Registered Devices (HWIDs)</div>
+      <div id="p-hwids"><div style="color:var(--muted);font-size:13px">No devices registered</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Change Password</div>
+      <div class="field"><label>Current password</label><input type="password" id="p-cur-pass" placeholder="••••••••"></div>
+      <div class="field"><label>New password</label><input type="password" id="p-new-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary" onclick="changePassword()">Update password</button>
+      <div class="alert" id="pass-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://authforge-backend-production.up.railway.app';
+let portalToken = localStorage.getItem('portal_token');
+
+function setMsg(id, text, type) { const el = document.getElementById(id); el.textContent = text; el.className = 'alert ' + type; el.style.display = 'block'; }
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-GB') : '—'; }
+
+if (portalToken) loadPortal();
+
+async function portalLogin() {
+  const secret_key = document.getElementById('p-secret').value;
+  const username = document.getElementById('p-username').value;
+  const password = document.getElementById('p-password').value;
+  if (!secret_key || !username || !password) return setMsg('login-msg','All fields required','err');
+  const r = await fetch(API + '/api/portal/login', { method:'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({secret_key,username,password}) });
+  const d = await r.json();
+  if (!r.ok || !d.success) return setMsg('login-msg', d.message || 'Login failed', 'err');
+  localStorage.setItem('portal_token', d.token);
+  portalToken = d.token;
+  loadPortal();
+}
+
+async function loadPortal() {
+  const r = await fetch(API + '/api/portal/me', { headers: {'Authorization':'Bearer '+portalToken} });
+  const d = await r.json();
+  if (!r.ok) { localStorage.removeItem('portal_token'); return; }
+  document.getElementById('login-section').style.display = 'none';
+  document.getElementById('portal-section').style.display = 'block';
+  const u = d.user;
+  document.getElementById('p-info-username').textContent = u.username;
+  document.getElementById('p-info-email').textContent = u.email || '—';
+  document.getElementById('p-info-status').innerHTML = '<span class="badge badge-green">Active</span>';
+  document.getElementById('p-info-expires').textContent = fmtDate(u.expires_at);
+  document.getElementById('p-info-tier').innerHTML = u.license_tiers?.name ? '<span class="badge badge-blue">' + u.license_tiers.name + '</span>' : '—';
+  document.getElementById('p-info-created').textContent = fmtDate(u.created_at);
+  // License
+  if (d.license) {
+    document.getElementById('p-license-info').innerHTML =
+      '<div class="info-row"><span class="info-label">Key</span><span style="font-family:monospace;font-size:11px">' + d.license.license_key + '</span></div>' +
+      '<div class="info-row"><span class="info-label">Status</span><span class="badge ' + (d.license.is_active ? 'badge-green' : 'badge-red') + '">' + (d.license.is_active ? 'Active' : 'Disabled') + '</span></div>' +
+      '<div class="info-row"><span class="info-label">Expires</span><span>' + fmtDate(d.license.expires_at) + '</span></div>';
+  }
+  // HWIDs
+  const hwids = d.hwids || [];
+  document.getElementById('p-hwids').innerHTML = hwids.length
+    ? hwids.map(h => '<div class="hwid-item">' + h.hwid + ' <span style="color:var(--muted2);font-size:10px">· added ' + fmtDate(h.created_at) + '</span></div>').join('')
+    : '<div style="color:var(--muted);font-size:13px">No devices registered</div>';
+}
+
+async function changePassword() {
+  const current_password = document.getElementById('p-cur-pass').value;
+  const new_password = document.getElementById('p-new-pass').value;
+  if (!current_password || !new_password) return setMsg('pass-msg','Both fields required','err');
+  const r = await fetch(API + '/api/portal/change-password', { method:'POST', headers: {'Content-Type':'application/json','Authorization':'Bearer '+portalToken}, body: JSON.stringify({current_password,new_password}) });
+  const d = await r.json();
+  if (!r.ok) return setMsg('pass-msg', d.message, 'err');
+  setMsg('pass-msg','Password updated!','ok');
+  document.getElementById('p-cur-pass').value = '';
+  document.getElementById('p-new-pass').value = '';
+}
+
+function portalLogout() {
+  localStorage.removeItem('portal_token');
+  document.getElementById('login-section').style.display = 'block';
+  document.getElementById('portal-section').style.display = 'none';
+}
+</script>
+</body>
+</html>

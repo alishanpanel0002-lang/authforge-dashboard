@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AuthForge — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -19,98 +20,125 @@
   --font: 'Geist', -apple-system, sans-serif; --r: 8px;
 }
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
-.sidebar { width: 216px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; }
+.sidebar { width: 220px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; }
 .logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin-bottom: 24px; }
 .logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; flex-shrink: 0; }
 .logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
-.nav-group { margin-bottom: 20px; }
+.nav-group { margin-bottom: 16px; }
 .nav-label { font-size: 11px; color: var(--muted2); padding: 0 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
 .nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.1s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
 .nav-item:hover { background: var(--surface2); color: var(--text); }
 .nav-item.active { background: var(--surface2); color: var(--text); }
 .nav-item.admin-item { color: var(--amber); }
-.nav-item.admin-item:hover { background: var(--amber-dim); }
-.nav-item.admin-item.active { background: var(--amber-dim); color: var(--amber); }
-.nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+.nav-item.admin-item:hover, .nav-item.admin-item.active { background: var(--amber-dim); color: var(--amber); }
+.nav-icon { width: 15px; height: 15px; opacity: 0.6; flex-shrink: 0; }
+.plan-badge { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: var(--blue-dim); color: var(--blue); font-weight: 600; margin-left: auto; }
+.plan-badge.pro { background: var(--purple-dim); color: var(--purple); }
+.plan-badge.business { background: var(--amber-dim); color: var(--amber); }
 .sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px; }
 .user-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 4px; }
-.avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
-.user-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-info { flex: 1; overflow: hidden; }
+.user-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-plan { font-size: 11px; color: var(--muted); }
 .sign-out { width: 100%; padding: 6px 8px; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 13px; text-align: left; border-radius: 6px; cursor: pointer; }
 .sign-out:hover { background: var(--surface2); color: var(--red); }
-.main { margin-left: 216px; flex: 1; padding: 32px 40px; }
+.main { margin-left: 220px; flex: 1; padding: 28px 36px; max-width: calc(100vw - 220px); }
 .page { display: none; } .page.active { display: block; }
-.page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.page-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
-.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; }
-.stat-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-.stat-val { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+.page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.page-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; }
+.stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.stat-val { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
 .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
 table { width: 100%; border-collapse: collapse; }
 thead tr { border-bottom: 1px solid var(--border); }
-th { font-size: 12px; color: var(--muted); font-weight: 400; padding: 10px 16px; text-align: left; }
-td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+th { font-size: 11px; color: var(--muted); font-weight: 400; padding: 9px 14px; text-align: left; }
+td { padding: 9px 14px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--surface2); }
-.empty { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
-.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.empty { text-align: center; padding: 32px; color: var(--muted); font-size: 13px; }
+.badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 500; }
 .badge-green { background: var(--green-dim); color: var(--green); }
 .badge-red { background: var(--red-dim); color: var(--red); }
 .badge-blue { background: var(--blue-dim); color: var(--blue); }
 .badge-amber { background: var(--amber-dim); color: var(--amber); }
 .badge-purple { background: var(--purple-dim); color: var(--purple); }
-.btn { padding: 6px 14px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.1s; border: 1px solid transparent; }
-.btn-primary { background: var(--text); color: #000; border-color: var(--text); }
+.btn { padding: 6px 13px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.1s; border: 1px solid transparent; }
+.btn-primary { background: var(--text); color: #000; }
 .btn-primary:hover { opacity: 0.85; }
 .btn-ghost { background: none; color: var(--muted); border-color: var(--border2); }
 .btn-ghost:hover { color: var(--text); background: var(--surface2); }
 .btn-danger { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.2); }
-.btn-danger:hover { opacity: 0.8; }
 .btn-warning { background: var(--amber-dim); color: var(--amber); border-color: rgba(245,158,11,0.2); }
-.btn-sm { padding: 3px 9px; font-size: 11px; }
-.mono { font-family: 'SF Mono','Fira Code',monospace; font-size: 11px; color: var(--muted); }
-.copy-btn { background: none; border: none; color: var(--muted2); cursor: pointer; padding: 2px 4px; border-radius: 4px; font-size: 12px; }
+.btn-success { background: var(--green-dim); color: var(--green); border-color: rgba(34,197,94,0.2); }
+.btn-sm { padding: 3px 8px; font-size: 11px; }
+.mono { font-family: monospace; font-size: 11px; color: var(--muted); }
+.copy-btn { background: none; border: none; color: var(--muted2); cursor: pointer; padding: 2px 4px; border-radius: 4px; font-size: 11px; }
 .copy-btn:hover { color: var(--text); background: var(--surface2); }
 .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
 .overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
-.modal-title { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
-.field { margin-bottom: 12px; }
-.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 22px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+.field { margin-bottom: 10px; }
+.field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
 .field input, .field select, .field textarea { width: 100%; padding: 7px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; color-scheme: dark; resize: vertical; }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--border2); }
 .field input::placeholder, .field textarea::placeholder { color: #444; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); }
 .toggle-row:last-child { border-bottom: none; }
 .toggle-label { font-size: 13px; }
-.toggle-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-.toggle { position: relative; width: 36px; height: 20px; }
+.toggle-sub { font-size: 11px; color: var(--muted); }
+.toggle { position: relative; width: 34px; height: 19px; flex-shrink: 0; }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .toggle-slider { position: absolute; inset: 0; background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; cursor: pointer; transition: 0.2s; }
-.toggle-slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 2px; top: 2px; background: var(--muted); border-radius: 50%; transition: 0.2s; }
+.toggle-slider:before { content: ''; position: absolute; width: 13px; height: 13px; left: 2px; top: 2px; background: var(--muted); border-radius: 50%; transition: 0.2s; }
 .toggle input:checked + .toggle-slider { background: var(--blue); border-color: var(--blue); }
-.toggle input:checked + .toggle-slider:before { transform: translateX(16px); background: #fff; }
-.section-divider { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 10px; }
-.modal-footer { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
-.alert { display: none; padding: 8px 12px; border-radius: var(--r); font-size: 12px; margin-top: 10px; }
+.toggle input:checked + .toggle-slider:before { transform: translateX(15px); background: #fff; }
+.sec-div { font-size: 11px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 8px; }
+.modal-footer { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+.alert { display: none; padding: 7px 11px; border-radius: var(--r); font-size: 12px; margin-top: 8px; }
 .alert.err { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
 .alert.ok { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
-.app-selector { margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.app-selector select { padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; }
-.actions-cell { display: flex; gap: 4px; justify-content: flex-end; flex-wrap: wrap; }
-.hwid-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 4px; font-family: monospace; font-size: 11px; color: var(--muted); }
-/* Settings page */
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.settings-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-.settings-card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.settings-card-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
-.error-messages-grid { display: grid; gap: 10px; }
-.error-field label { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-.error-field label span { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: monospace; font-size: 10px; color: var(--blue); }
-/* Admin */
-.admin-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.filter-row { margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-row select, .filter-row input { padding: 5px 9px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 12px; outline: none; }
+.actions-cell { display: flex; gap: 3px; justify-content: flex-end; flex-wrap: wrap; }
+.hwid-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 4px; font-family: monospace; font-size: 11px; color: var(--muted); }
+/* Settings */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.settings-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+.settings-card-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.settings-card-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.error-key { font-size: 10px; font-family: monospace; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--blue); }
+/* Analytics */
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; margin-bottom: 16px; }
+.chart-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+.analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+.log-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.log-item:last-child { border-bottom: none; }
+.log-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+/* Security */
+.security-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.session-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; }
+.suspicious-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 6px; margin-bottom: 4px; }
+/* Billing */
+.plan-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 14px; }
+.plan-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.plan-option { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px; cursor: pointer; transition: border-color 0.15s; }
+.plan-option:hover { border-color: var(--border2); }
+.plan-option.current { border-color: var(--blue); }
+.plan-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.plan-price { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px; }
+.plan-price span { font-size: 12px; font-weight: 400; color: var(--muted); }
+.plan-features { list-style: none; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 5px; }
+.plan-features li::before { content: '✓ '; color: var(--green); }
+/* 2FA */
+.qr-wrap { text-align: center; padding: 16px; background: white; border-radius: 8px; display: inline-block; margin: 12px auto; }
+.qr-wrap img { width: 180px; height: 180px; }
 </style>
 </head>
 <body>
@@ -118,42 +146,31 @@ tbody tr:hover td { background: var(--surface2); }
   <div class="logo"><div class="logo-dot"></div><span class="logo-text">AuthForge</span></div>
   <div class="nav-group">
     <div class="nav-label">Platform</div>
-    <button class="nav-item active" onclick="nav('overview')">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
-      Overview
-    </button>
-    <button class="nav-item" onclick="nav('apps')">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M8 5v6"/></svg>
-      Applications
-    </button>
-    <button class="nav-item" onclick="nav('licenses')">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="8" rx="1.5"/><path d="M5 5V4a3 3 0 016 0v1"/></svg>
-      Licenses
-    </button>
-    <button class="nav-item" onclick="nav('users')">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
-      Users
-    </button>
-    <button class="nav-item" onclick="nav('settings')">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>
-      App Settings
-    </button>
-    <a class="nav-item" href="sdk.html">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l-3 2 3 2M12 6l3 2-3 2M9 3l-2 10"/></svg>
-      SDK & Docs
-    </a>
+    <button class="nav-item active" onclick="nav('overview')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Overview</button>
+    <button class="nav-item" onclick="nav('apps')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M8 5v6"/></svg>Applications</button>
+    <button class="nav-item" onclick="nav('licenses')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="8" rx="1.5"/><path d="M5 5V4a3 3 0 016 0v1"/></svg>Licenses</button>
+    <button class="nav-item" onclick="nav('users')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>Users</button>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Insights</div>
+    <button class="nav-item" onclick="nav('analytics')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l3-4 3 2 3-5 3 3"/></svg>Analytics</button>
+    <button class="nav-item" onclick="nav('security')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l5 2v4c0 3-2 5-5 6C6 13 3 11 3 8V4l5-2z"/></svg>Security</button>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Configure</div>
+    <button class="nav-item" onclick="nav('settings')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>App Settings</button>
+    <button class="nav-item" onclick="nav('account')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/></svg>My Account</button>
+    <button class="nav-item" onclick="nav('billing')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M1 7h14"/></svg>Billing <span class="plan-badge" id="nav-plan">Free</span></button>
+    <a class="nav-item" href="sdk.html"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l-3 2 3 2M12 6l3 2-3 2M9 3l-2 10"/></svg>SDK & Docs</a>
   </div>
   <div class="nav-group" id="admin-nav" style="display:none">
     <div class="nav-label">Admin</div>
-    <button class="nav-item admin-item" onclick="nav('admin')">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>
-      Admin Panel
-    </button>
+    <button class="nav-item admin-item" onclick="nav('admin')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>Admin Panel</button>
   </div>
   <div class="sidebar-bottom">
     <div class="user-row">
-      <div class="avatar" id="av">?</div>
-      <span class="user-name" id="un">...</span>
+      <div class="avatar" id="av"><span id="av-text">?</span></div>
+      <div class="user-info"><div class="user-name" id="un">...</div><div class="user-plan" id="up">Starter</div></div>
     </div>
     <button class="sign-out" onclick="logout()">Sign out</button>
   </div>
@@ -167,9 +184,9 @@ tbody tr:hover td { background: var(--surface2); }
       <div class="stat"><div class="stat-label">Applications</div><div class="stat-val" id="s-apps">—</div></div>
       <div class="stat"><div class="stat-label">License Keys</div><div class="stat-val" id="s-lic">—</div></div>
       <div class="stat"><div class="stat-label">Total Users</div><div class="stat-val" id="s-usr">—</div></div>
-      <div class="stat"><div class="stat-label">Active Keys</div><div class="stat-val" id="s-act">—</div></div>
+      <div class="stat"><div class="stat-label">Total Logins</div><div class="stat-val" id="s-logins">—</div></div>
     </div>
-    <div class="table-wrap"><table><thead><tr><th>Application</th><th>Secret Key</th><th>Created</th></tr></thead><tbody id="ov-apps"></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>Application</th><th>Secret Key</th><th>Plan</th><th>Created</th></tr></thead><tbody id="ov-apps"></tbody></table></div>
   </div>
 
   <!-- Apps -->
@@ -180,186 +197,311 @@ tbody tr:hover td { background: var(--surface2); }
 
   <!-- Licenses -->
   <div class="page" id="p-licenses">
-    <div class="page-head"><div class="page-title">Licenses</div><button class="btn btn-primary" onclick="openCreateLicense()">Generate license</button></div>
-    <div class="app-selector"><span style="color:var(--muted);font-size:13px">App:</span><select id="lic-filter" onchange="loadLicenses()"><option value="">All</option></select></div>
-    <div class="table-wrap"><table><thead><tr><th>License Key</th><th>App</th><th>Users</th><th>Status</th><th>Expires</th><th></th></tr></thead><tbody id="lic-tbody"></tbody></table></div>
+    <div class="page-head">
+      <div class="page-title">Licenses</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="openModal('m-bulk')">Bulk generate</button>
+        <button class="btn btn-primary" onclick="openCreateLicense()">Generate license</button>
+      </div>
+    </div>
+    <div class="filter-row"><span style="color:var(--muted);font-size:12px">App:</span><select id="lic-filter" onchange="loadLicenses()"><option value="">All</option></select><span style="color:var(--muted);font-size:12px">Tier:</span><select id="lic-tier-filter" onchange="loadLicenses()"><option value="">All tiers</option></select></div>
+    <div class="table-wrap"><table><thead><tr><th>License Key</th><th>App</th><th>Tier</th><th>Users</th><th>Status</th><th>Expires</th><th></th></tr></thead><tbody id="lic-tbody"></tbody></table></div>
   </div>
 
   <!-- Users -->
   <div class="page" id="p-users">
     <div class="page-head"><div class="page-title">Users</div><button class="btn btn-primary" onclick="openCreateUser()">Create user</button></div>
-    <div class="app-selector"><span style="color:var(--muted);font-size:13px">App:</span><select id="usr-filter" onchange="loadUsers()"><option value="">All</option></select></div>
-    <div class="table-wrap"><table><thead><tr><th>Username</th><th>App</th><th>Expiry</th><th>HWID Lock</th><th>Status</th><th></th></tr></thead><tbody id="usr-tbody"></tbody></table></div>
+    <div class="filter-row"><span style="color:var(--muted);font-size:12px">App:</span><select id="usr-filter" onchange="loadUsers()"><option value="">All</option></select></div>
+    <div class="table-wrap"><table><thead><tr><th>Username</th><th>App</th><th>Tier</th><th>Expiry</th><th>HWID</th><th>Status</th><th></th></tr></thead><tbody id="usr-tbody"></tbody></table></div>
+  </div>
+
+  <!-- Analytics -->
+  <div class="page" id="p-analytics">
+    <div class="page-head"><div class="page-title">Analytics</div></div>
+    <div class="filter-row"><span style="color:var(--muted);font-size:12px">App:</span><select id="ana-filter" onchange="loadAnalytics()"><option value="">Select app</option></select></div>
+    <div class="stats" id="ana-stats" style="display:none">
+      <div class="stat"><div class="stat-label">Total Logins (30d)</div><div class="stat-val" id="ana-total">—</div></div>
+      <div class="stat"><div class="stat-label">Successful</div><div class="stat-val" style="color:var(--green)" id="ana-success">—</div></div>
+      <div class="stat"><div class="stat-label">Failed</div><div class="stat-val" style="color:var(--red)" id="ana-failed">—</div></div>
+      <div class="stat"><div class="stat-label">Unique IPs</div><div class="stat-val" id="ana-ips">—</div></div>
+    </div>
+    <div id="ana-content" style="display:none">
+      <div class="chart-card">
+        <div class="chart-title">Logins per day (last 30 days)</div>
+        <div style="position:relative;height:200px"><canvas id="loginChart"></canvas></div>
+      </div>
+      <div class="analytics-grid">
+        <div class="chart-card">
+          <div class="chart-title">Top IPs</div>
+          <div id="top-ips"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Fail reasons</div>
+          <div id="fail-reasons"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Recent login activity</div>
+        <div id="recent-logs"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Webhook logs</div>
+        <div id="webhook-logs"></div>
+      </div>
+    </div>
+    <div id="ana-empty" style="color:var(--muted);font-size:13px;padding:32px 0">Select an app to view analytics.</div>
+  </div>
+
+  <!-- Security -->
+  <div class="page" id="p-security">
+    <div class="page-head"><div class="page-title">Security</div></div>
+    <div class="filter-row"><span style="color:var(--muted);font-size:12px">App for suspicious activity:</span><select id="sec-app-filter" onchange="loadSuspicious()"><option value="">Select app</option></select></div>
+    <div class="security-grid">
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px">Active Sessions</div>
+        <div id="sessions-list"><div style="color:var(--muted);font-size:13px">Loading...</div></div>
+        <button class="btn btn-danger btn-sm" onclick="revokeAllSessions()" style="margin-top:8px">Revoke all sessions</button>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px">Suspicious Activity (last 24h)</div>
+        <div id="suspicious-list"><div style="color:var(--muted);font-size:13px">Select an app above.</div></div>
+      </div>
+    </div>
   </div>
 
   <!-- Settings -->
   <div class="page" id="p-settings">
     <div class="page-head"><div class="page-title">App Settings</div></div>
-    <div class="app-selector"><span style="color:var(--muted);font-size:13px">Select app:</span><select id="settings-app-select" onchange="loadSettings()"><option value="">— choose app —</option></select></div>
+    <div class="filter-row"><span style="color:var(--muted);font-size:12px">Select app:</span><select id="settings-app-select" onchange="loadSettings()"><option value="">— choose —</option></select></div>
     <div id="settings-content" style="display:none">
-      <div class="settings-grid">
-        <!-- Discord Webhook -->
+      <div class="settings-grid" style="margin-bottom:16px">
         <div class="settings-card">
           <div class="settings-card-title">Discord Webhook</div>
-          <div class="settings-card-sub">Get notified in Discord for every event on this app.</div>
-          <div class="field">
-            <label>Webhook URL</label>
-            <input type="text" id="webhook-url" placeholder="https://discord.com/api/webhooks/...">
-          </div>
-          <div style="margin-bottom:12px">
-            <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Notifies on:</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px">
-              <span class="badge badge-green">Login</span>
-              <span class="badge badge-blue">Register</span>
-              <span class="badge badge-red">Ban</span>
-              <span class="badge badge-amber">License full</span>
-              <span class="badge badge-purple">HWID block</span>
-              <span class="badge" style="background:var(--surface2);color:var(--muted)">Login failed</span>
-            </div>
-          </div>
+          <div class="settings-card-sub">Notifies on every event — login, ban, HWID block, and more.</div>
+          <div class="field"><label>Webhook URL</label><input type="text" id="webhook-url" placeholder="https://discord.com/api/webhooks/..."></div>
           <button class="btn btn-primary" onclick="saveWebhook()" style="width:100%">Save webhook</button>
           <div class="alert" id="webhook-msg"></div>
         </div>
-
-        <!-- Custom Error Messages -->
         <div class="settings-card">
-          <div class="settings-card-title">Custom Error Messages</div>
-          <div class="settings-card-sub">Customize what your users see when something goes wrong.</div>
-          <div class="error-messages-grid">
-            <div class="error-field field"><label><span>err_invalid_credentials</span></label><input type="text" id="em-invalid_credentials" placeholder="Invalid username or password"></div>
-            <div class="error-field field"><label><span>err_banned</span></label><input type="text" id="em-banned" placeholder="Your account has been banned"></div>
-            <div class="error-field field"><label><span>err_expired</span></label><input type="text" id="em-expired" placeholder="Your account has expired"></div>
-            <div class="error-field field"><label><span>err_hwid_required</span></label><input type="text" id="em-hwid_required" placeholder="HWID required for this account"></div>
-            <div class="error-field field"><label><span>err_hwid_max_reached</span></label><input type="text" id="em-hwid_max_reached" placeholder="Max devices reached. Contact support."></div>
-            <div class="error-field field"><label><span>err_license_invalid</span></label><input type="text" id="em-license_invalid" placeholder="License key not found"></div>
-            <div class="error-field field"><label><span>err_license_disabled</span></label><input type="text" id="em-license_disabled" placeholder="License key is disabled"></div>
-            <div class="error-field field"><label><span>err_license_expired</span></label><input type="text" id="em-license_expired" placeholder="License key has expired"></div>
-            <div class="error-field field"><label><span>err_license_full</span></label><input type="text" id="em-license_full" placeholder="License key is full"></div>
+          <div class="settings-card-title">IP Whitelist</div>
+          <div class="settings-card-sub">Only allow logins from specific IP addresses.</div>
+          <div class="toggle-row" style="margin-bottom:10px"><div><div class="toggle-label">Enable IP whitelist</div></div><label class="toggle"><input type="checkbox" id="ip-whitelist-toggle" onchange="toggleIPWhitelist()"><span class="toggle-slider"></span></label></div>
+          <div class="field-row">
+            <div class="field"><label>IP Address</label><input type="text" id="new-ip" placeholder="1.2.3.4"></div>
+            <div class="field"><label>Label (optional)</label><input type="text" id="new-ip-label" placeholder="Office"></div>
           </div>
-          <button class="btn btn-primary" onclick="saveErrorMessages()" style="width:100%;margin-top:12px">Save messages</button>
-          <div class="alert" id="em-msg"></div>
+          <button class="btn btn-ghost btn-sm" onclick="addIP()">Add IP</button>
+          <div id="ip-list" style="margin-top:10px"></div>
+          <div class="alert" id="ip-msg"></div>
         </div>
+      </div>
+      <div class="settings-card" style="margin-bottom:16px">
+        <div class="settings-card-title">License Tiers</div>
+        <div class="settings-card-sub">Create tiers (e.g. Basic, Pro, Enterprise) to segment your users and licenses.</div>
+        <div class="field-row">
+          <div class="field"><label>Tier name</label><input type="text" id="tier-name" placeholder="Pro"></div>
+          <div class="field"><label>Description</label><input type="text" id="tier-desc" placeholder="Full access"></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="createTier()">Create tier</button>
+        <div id="tiers-list" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">Custom Error Messages</div>
+        <div class="settings-card-sub">Customize what your users see when something goes wrong.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field"><label><span class="error-key">err_invalid_credentials</span></label><input type="text" id="em-invalid_credentials" placeholder="Invalid username or password"></div>
+          <div class="field"><label><span class="error-key">err_banned</span></label><input type="text" id="em-banned" placeholder="Your account has been banned"></div>
+          <div class="field"><label><span class="error-key">err_expired</span></label><input type="text" id="em-expired" placeholder="Your account has expired"></div>
+          <div class="field"><label><span class="error-key">err_hwid_required</span></label><input type="text" id="em-hwid_required" placeholder="HWID required"></div>
+          <div class="field"><label><span class="error-key">err_hwid_max_reached</span></label><input type="text" id="em-hwid_max_reached" placeholder="Max devices reached"></div>
+          <div class="field"><label><span class="error-key">err_license_invalid</span></label><input type="text" id="em-license_invalid" placeholder="License key not found"></div>
+          <div class="field"><label><span class="error-key">err_license_disabled</span></label><input type="text" id="em-license_disabled" placeholder="License disabled"></div>
+          <div class="field"><label><span class="error-key">err_license_expired</span></label><input type="text" id="em-license_expired" placeholder="License expired"></div>
+          <div class="field"><label><span class="error-key">err_license_full</span></label><input type="text" id="em-license_full" placeholder="License is full"></div>
+          <div class="field"><label><span class="error-key">err_ip_blocked</span></label><input type="text" id="em-ip_blocked" placeholder="Access denied from your IP"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveErrorMessages()" style="margin-top:12px">Save messages</button>
+        <div class="alert" id="em-msg"></div>
       </div>
     </div>
   </div>
 
-  <!-- Admin Panel -->
+  <!-- Account -->
+  <div class="page" id="p-account">
+    <div class="page-head"><div class="page-title">My Account</div></div>
+    <div class="settings-grid">
+      <div class="settings-card">
+        <div class="settings-card-title">Profile</div>
+        <div class="settings-card-sub">Your developer account details.</div>
+        <div class="field"><label>Username</label><input type="text" id="acc-username" readonly style="opacity:0.6"></div>
+        <div class="field"><label>Email</label><input type="text" id="acc-email" readonly style="opacity:0.6"></div>
+        <div class="field"><label>Member since</label><input type="text" id="acc-created" readonly style="opacity:0.6"></div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">Two-Factor Authentication</div>
+        <div class="settings-card-sub">Add an extra layer of security to your account.</div>
+        <div id="twofa-status" style="margin-bottom:12px;font-size:13px;color:var(--muted)">Loading...</div>
+        <div id="twofa-setup" style="display:none">
+          <div style="text-align:center;margin-bottom:12px"><img id="twofa-qr" style="width:160px;height:160px;background:white;padding:8px;border-radius:8px"></div>
+          <div class="field"><label>Enter code from authenticator app</label><input type="text" id="twofa-code" placeholder="000000" maxlength="6"></div>
+          <button class="btn btn-success" onclick="enable2FA()" style="width:100%">Enable 2FA</button>
+        </div>
+        <div id="twofa-actions"></div>
+        <div class="alert" id="twofa-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing -->
+  <div class="page" id="p-billing">
+    <div class="page-head"><div class="page-title">Billing & Plans</div></div>
+    <div class="plan-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:600">Current Plan</div>
+        <span class="badge badge-blue" id="current-plan-badge">Starter</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted)" id="plan-details">Free forever with limits.</div>
+      <div style="margin-top:12px;display:flex;gap:8px" id="billing-actions"></div>
+    </div>
+    <div class="plan-grid">
+      <div class="plan-option" id="plan-starter">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$0 <span>/ month</span></div>
+        <ul class="plan-features"><li>1 application</li><li>50 users</li><li>20 license keys</li><li>All SDKs</li></ul>
+      </div>
+      <div class="plan-option" id="plan-pro">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$9 <span>/ month</span></div>
+        <ul class="plan-features"><li>10 applications</li><li>10,000 users</li><li>Unlimited licenses</li><li>Priority support</li></ul>
+        <button class="btn btn-primary" onclick="upgradePlan('pro')" style="width:100%;margin-top:12px">Upgrade to Pro</button>
+      </div>
+      <div class="plan-option" id="plan-business">
+        <div class="plan-name">Business</div>
+        <div class="plan-price">$29 <span>/ month</span></div>
+        <ul class="plan-features"><li>Unlimited apps</li><li>Unlimited users</li><li>Unlimited licenses</li><li>Custom domain</li></ul>
+        <button class="btn btn-primary" onclick="upgradePlan('business')" style="width:100%;margin-top:12px">Upgrade to Business</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin -->
   <div class="page" id="p-admin">
     <div class="page-head"><div class="page-title">Admin Panel</div></div>
-    <div class="admin-stats">
-      <div class="stat"><div class="stat-label">Total Developers</div><div class="stat-val" id="a-devs">—</div></div>
-      <div class="stat"><div class="stat-label">Total Apps</div><div class="stat-val" id="a-apps">—</div></div>
-      <div class="stat"><div class="stat-label">Total Users</div><div class="stat-val" id="a-users">—</div></div>
-      <div class="stat"><div class="stat-label">Total Licenses</div><div class="stat-val" id="a-lics">—</div></div>
+    <div class="stats" style="margin-bottom:20px">
+      <div class="stat"><div class="stat-label">Developers</div><div class="stat-val" id="a-devs">—</div></div>
+      <div class="stat"><div class="stat-label">Apps</div><div class="stat-val" id="a-apps">—</div></div>
+      <div class="stat"><div class="stat-label">Users</div><div class="stat-val" id="a-users">—</div></div>
+      <div class="stat"><div class="stat-label">Licenses</div><div class="stat-val" id="a-lics">—</div></div>
     </div>
-    <div style="font-size:15px;font-weight:600;margin-bottom:12px">All Developers</div>
-    <div class="table-wrap"><table><thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Joined</th><th></th></tr></thead><tbody id="admin-devs-tbody"></tbody></table></div>
-    <div style="font-size:15px;font-weight:600;margin:24px 0 12px">All Applications</div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">All Developers</div>
+    <div class="table-wrap" style="margin-bottom:16px"><table><thead><tr><th>Username</th><th>Email</th><th>Plan</th><th>Role</th><th>Joined</th><th></th></tr></thead><tbody id="admin-devs-tbody"></tbody></table></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">All Applications</div>
     <div class="table-wrap"><table><thead><tr><th>App Name</th><th>Owner</th><th>Created</th></tr></thead><tbody id="admin-apps-tbody"></tbody></table></div>
   </div>
 </main>
 
 <!-- Modals -->
-<div class="overlay" id="m-app">
-  <div class="modal">
-    <div class="modal-title">New application</div>
-    <div class="field"><label>Application name</label><input type="text" id="app-name" placeholder="My App"></div>
-    <div class="alert" id="app-msg"></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-app')">Cancel</button><button class="btn btn-primary" onclick="createApp()">Create</button></div>
-  </div>
-</div>
+<div class="overlay" id="m-app"><div class="modal">
+  <div class="modal-title">New application</div>
+  <div class="field"><label>Name</label><input type="text" id="app-name" placeholder="My App"></div>
+  <div class="alert" id="app-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-app')">Cancel</button><button class="btn btn-primary" onclick="createApp()">Create</button></div>
+</div></div>
 
-<div class="overlay" id="m-lic">
-  <div class="modal">
-    <div class="modal-title">Generate license key</div>
-    <div class="field"><label>Application</label><select id="lic-app"></select></div>
-    <div class="field-row">
-      <div class="field"><label>Max users</label><input type="number" id="lic-max" value="1" min="1"></div>
-      <div class="field"><label>Expires (optional)</label><input type="date" id="lic-exp"></div>
-    </div>
-    <div class="alert" id="lic-msg"></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-lic')">Cancel</button><button class="btn btn-primary" onclick="createLicense()">Generate</button></div>
+<div class="overlay" id="m-lic"><div class="modal">
+  <div class="modal-title">Generate license key</div>
+  <div class="field"><label>Application</label><select id="lic-app"></select></div>
+  <div class="field"><label>Tier (optional)</label><select id="lic-tier"><option value="">No tier</option></select></div>
+  <div class="field"><label>Key prefix (optional)</label><input type="text" id="lic-prefix" placeholder="MYAPP → MYAPP-XXXX-XXXX-XXXX"></div>
+  <div class="field-row">
+    <div class="field"><label>Max users</label><input type="number" id="lic-max" value="1" min="1"></div>
+    <div class="field"><label>Expires (optional)</label><input type="date" id="lic-exp"></div>
   </div>
-</div>
+  <div class="alert" id="lic-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-lic')">Cancel</button><button class="btn btn-primary" onclick="createLicense()">Generate</button></div>
+</div></div>
 
-<div class="overlay" id="m-usr">
-  <div class="modal">
-    <div class="modal-title">Create user</div>
-    <div class="field"><label>Application</label><select id="usr-app" onchange="onAppChange()"></select></div>
-    <div class="field"><label>Assign license (optional)</label><select id="usr-lic"><option value="">No license</option></select></div>
-    <div class="field-row">
-      <div class="field"><label>Username</label><input type="text" id="usr-name" placeholder="username"></div>
-      <div class="field"><label>Password</label><input type="password" id="usr-pass" placeholder="••••••••"></div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Email (optional)</label><input type="email" id="usr-email"></div>
-      <div class="field"><label>Expires (optional)</label><input type="date" id="usr-exp"></div>
-    </div>
-    <div class="section-divider">HWID Locking</div>
-    <div class="toggle-row">
-      <div><div class="toggle-label">Enable HWID lock</div><div class="toggle-sub">User must login from registered device(s)</div></div>
-      <label class="toggle"><input type="checkbox" id="usr-hwid-lock" onchange="toggleMaxHwid()"><span class="toggle-slider"></span></label>
-    </div>
-    <div class="field" id="max-hwid-field" style="display:none;margin-top:10px"><label>Max devices</label><input type="number" id="usr-max-hwids" value="1" min="1" max="10"></div>
-    <div class="alert" id="usr-msg"></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-usr')">Cancel</button><button class="btn btn-primary" onclick="createUser()">Create user</button></div>
+<div class="overlay" id="m-bulk"><div class="modal">
+  <div class="modal-title">Bulk generate licenses</div>
+  <div class="field"><label>Application</label><select id="bulk-app"></select></div>
+  <div class="field"><label>Tier (optional)</label><select id="bulk-tier"><option value="">No tier</option></select></div>
+  <div class="field"><label>Key prefix (optional)</label><input type="text" id="bulk-prefix" placeholder="MYAPP"></div>
+  <div class="field-row3">
+    <div class="field"><label>Count (max 500)</label><input type="number" id="bulk-count" value="10" min="1" max="500"></div>
+    <div class="field"><label>Max users each</label><input type="number" id="bulk-max" value="1" min="1"></div>
+    <div class="field"><label>Expires</label><input type="date" id="bulk-exp"></div>
   </div>
-</div>
+  <div class="alert" id="bulk-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-bulk')">Cancel</button><button class="btn btn-primary" onclick="bulkGenerate()">Generate</button></div>
+</div></div>
 
-<div class="overlay" id="m-manage">
-  <div class="modal">
-    <div class="modal-title" id="manage-title">Manage User</div>
-    <input type="hidden" id="manage-id">
-    <div class="section-divider">Account Settings</div>
-    <div class="toggle-row"><div><div class="toggle-label">Banned</div></div><label class="toggle"><input type="checkbox" id="m-banned"><span class="toggle-slider"></span></label></div>
-    <div class="toggle-row"><div><div class="toggle-label">HWID Lock</div></div><label class="toggle"><input type="checkbox" id="m-hwid-lock" onchange="toggleManageHwid()"><span class="toggle-slider"></span></label></div>
-    <div class="field" id="m-max-hwid-field" style="margin-top:10px"><label>Max devices</label><input type="number" id="m-max-hwids" value="1" min="1" max="10"></div>
-    <div class="field" style="margin-top:10px"><label>Expiry date</label><input type="date" id="m-expiry"></div>
-    <div class="section-divider">Registered HWIDs</div>
-    <div id="hwid-list-wrap"><div style="color:var(--muted);font-size:13px">Loading...</div></div>
-    <button class="btn btn-warning btn-sm" onclick="resetHwids()" style="margin-top:8px">Reset all HWIDs</button>
-    <div class="alert" id="manage-msg"></div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-manage')">Close</button><button class="btn btn-primary" onclick="saveUser()">Save changes</button></div>
-  </div>
-</div>
+<div class="overlay" id="m-usr"><div class="modal">
+  <div class="modal-title">Create user</div>
+  <div class="field"><label>Application</label><select id="usr-app" onchange="onUsrAppChange()"></select></div>
+  <div class="field"><label>Assign license (optional)</label><select id="usr-lic"><option value="">No license</option></select></div>
+  <div class="field"><label>Tier (optional)</label><select id="usr-tier"><option value="">No tier</option></select></div>
+  <div class="field-row"><div class="field"><label>Username</label><input type="text" id="usr-name" placeholder="username"></div><div class="field"><label>Password</label><input type="password" id="usr-pass" placeholder="••••••••"></div></div>
+  <div class="field-row"><div class="field"><label>Email (optional)</label><input type="email" id="usr-email"></div><div class="field"><label>Expires (optional)</label><input type="date" id="usr-exp"></div></div>
+  <div class="sec-div">HWID Locking</div>
+  <div class="toggle-row"><div><div class="toggle-label">Enable HWID lock</div></div><label class="toggle"><input type="checkbox" id="usr-hwid-lock" onchange="toggleMaxHwid()"><span class="toggle-slider"></span></label></div>
+  <div class="field" id="max-hwid-field" style="display:none;margin-top:8px"><label>Max devices</label><input type="number" id="usr-max-hwids" value="1" min="1" max="10"></div>
+  <div class="alert" id="usr-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-usr')">Cancel</button><button class="btn btn-primary" onclick="createUser()">Create user</button></div>
+</div></div>
+
+<div class="overlay" id="m-manage"><div class="modal">
+  <div class="modal-title" id="manage-title">Manage User</div>
+  <input type="hidden" id="manage-id">
+  <div class="sec-div">Account</div>
+  <div class="toggle-row"><div><div class="toggle-label">Banned</div></div><label class="toggle"><input type="checkbox" id="m-banned"><span class="toggle-slider"></span></label></div>
+  <div class="toggle-row"><div><div class="toggle-label">HWID Lock</div></div><label class="toggle"><input type="checkbox" id="m-hwid-lock" onchange="toggleManageHwid()"><span class="toggle-slider"></span></label></div>
+  <div class="field" id="m-max-hwid-field" style="margin-top:8px"><label>Max devices</label><input type="number" id="m-max-hwids" value="1" min="1" max="10"></div>
+  <div class="field" style="margin-top:8px"><label>Expiry date</label><input type="date" id="m-expiry"></div>
+  <div class="sec-div">Registered HWIDs</div>
+  <div id="hwid-list-wrap"></div>
+  <button class="btn btn-warning btn-sm" onclick="resetHwids()" style="margin-top:6px">Reset all HWIDs</button>
+  <div class="alert" id="manage-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-manage')">Close</button><button class="btn btn-primary" onclick="saveUser()">Save</button></div>
+</div></div>
 
 <script>
 const API = 'https://authforge-backend-production.up.railway.app';
 let token = localStorage.getItem('af_token');
-let user = JSON.parse(localStorage.getItem('af_user') || '{}');
-let allApps = [];
+let devUser = JSON.parse(localStorage.getItem('af_user') || '{}');
+let allApps = [], loginChartInst = null;
 
 if (!token) location.href = 'index.html';
-document.getElementById('un').textContent = user.username || '';
-document.getElementById('av').textContent = (user.username || '?')[0].toUpperCase();
 
-// Check if admin
-async function checkAdmin() {
-  const r = await fetch(API + '/api/admin/stats', { headers: H() });
-  if (r.ok) document.getElementById('admin-nav').style.display = 'block';
+// Init UI
+function initUI() {
+  document.getElementById('un').textContent = devUser.username || '';
+  document.getElementById('av-text').textContent = (devUser.username || '?')[0].toUpperCase();
+  if (devUser.avatar_url) {
+    const av = document.getElementById('av');
+    av.innerHTML = '<img src="' + devUser.avatar_url + '" onerror="this.style.display=\'none\'">';
+  }
+  const plan = devUser.plan || 'starter';
+  document.getElementById('up').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+  const pb = document.getElementById('nav-plan');
+  pb.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+  pb.className = 'plan-badge' + (plan === 'pro' ? ' pro' : plan === 'business' ? ' business' : '');
 }
-checkAdmin();
+initUI();
+
+// Refresh profile
+fetch(API + '/api/auth/me', { headers: H() }).then(r => r.json()).then(d => {
+  if (d.developer) {
+    devUser = { ...devUser, ...d.developer };
+    localStorage.setItem('af_user', JSON.stringify(devUser));
+    initUI();
+    if (d.developer.is_admin) document.getElementById('admin-nav').style.display = 'block';
+  }
+});
 
 function logout() { localStorage.clear(); location.href = 'index.html'; }
-
-function nav(p) {
-  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('p-' + p).classList.add('active');
-  const navMap = ['overview','apps','licenses','users','settings','sdk','admin'];
-  document.querySelectorAll('.nav-item').forEach((el, i) => {
-    if (el.getAttribute('onclick') === "nav('" + p + "')") el.classList.add('active');
-  });
-  if (p === 'overview') loadOverview();
-  if (p === 'apps') loadApps();
-  if (p === 'licenses') loadLicenses();
-  if (p === 'users') loadUsers();
-  if (p === 'settings') loadSettingsPage();
-  if (p === 'admin') loadAdmin();
-}
-
 function H() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-GB') : '—'; }
+function fmtTime(d) { return d ? new Date(d).toLocaleString('en-GB', {dateStyle:'short',timeStyle:'short'}) : '—'; }
 function isExpired(d) { return d && new Date(d) < new Date(); }
 function copy(t) { navigator.clipboard.writeText(t); }
 function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -368,6 +510,15 @@ function setMsg(id, text, type) { const el = document.getElementById(id); el.tex
 function toggleMaxHwid() { document.getElementById('max-hwid-field').style.display = document.getElementById('usr-hwid-lock').checked ? 'block' : 'none'; }
 function toggleManageHwid() { document.getElementById('m-max-hwid-field').style.display = document.getElementById('m-hwid-lock').checked ? 'block' : 'none'; }
 
+function nav(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('p-' + p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => { if (el.getAttribute('onclick') === "nav('" + p + "')") el.classList.add('active'); });
+  const loaders = { overview: loadOverview, apps: loadApps, licenses: loadLicenses, users: loadUsers, analytics: loadAnalyticsPage, security: loadSecurity, settings: loadSettingsPage, account: loadAccount, billing: loadBilling, admin: loadAdmin };
+  if (loaders[p]) loaders[p]();
+}
+
 async function fetchApps() {
   const r = await fetch(API + '/api/apps', { headers: H() });
   const d = await r.json();
@@ -375,16 +526,13 @@ async function fetchApps() {
   return allApps;
 }
 
-function populateSelects() {
-  ['lic-filter','usr-filter','lic-app','usr-app','settings-app-select'].forEach(id => {
-    const el = document.getElementById(id);
+function populateSelects(ids) {
+  (ids || ['lic-filter','usr-filter','lic-app','usr-app','bulk-app','settings-app-select','ana-filter','sec-app-filter']).forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
     const cur = el.value;
-    const isFilter = id.includes('filter') || id === 'settings-app-select';
-    el.innerHTML = isFilter ? (id === 'settings-app-select' ? '<option value="">— choose app —</option>' : '<option value="">All</option>') : '';
-    allApps.forEach(a => {
-      const o = document.createElement('option');
-      o.value = a.id; o.textContent = a.name; el.appendChild(o);
-    });
+    const isFilter = id.includes('filter') || id.includes('select');
+    el.innerHTML = isFilter ? '<option value="">— All —</option>' : '';
+    allApps.forEach(a => { const o = document.createElement('option'); o.value = a.id; o.textContent = a.name; el.appendChild(o); });
     if (cur) el.value = cur;
   });
 }
@@ -392,34 +540,28 @@ function populateSelects() {
 async function loadOverview() {
   await fetchApps(); populateSelects();
   document.getElementById('s-apps').textContent = allApps.length;
-  let tl = 0, tu = 0, al = 0;
+  let tl = 0, tu = 0, logins = 0;
   for (const app of allApps) {
     const lr = await fetch(API + '/api/licenses/' + app.id, { headers: H() });
-    const ld = await lr.json();
-    const lics = ld.licenses || [];
-    tl += lics.length; al += lics.filter(l => l.is_active).length;
+    const ld = await lr.json(); tl += (ld.licenses || []).length;
     const ur = await fetch(API + '/api/users/' + app.id, { headers: H() });
-    const ud = await ur.json();
-    tu += (ud.users || []).length;
+    const ud = await ur.json(); tu += (ud.users || []).length;
   }
+  const ovr = await fetch(API + '/api/analytics/overview/' + devUser.id, { headers: H() });
+  const ovd = await ovr.json();
   document.getElementById('s-lic').textContent = tl;
   document.getElementById('s-usr').textContent = tu;
-  document.getElementById('s-act').textContent = al;
+  document.getElementById('s-logins').textContent = ovd.total_logins || 0;
   document.getElementById('ov-apps').innerHTML = allApps.length
-    ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,28) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>').join('')
-    : '<tr><td colspan="3" class="empty">No applications yet</td></tr>';
+    ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,24) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + (devUser.plan || 'starter') + '</span></td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>').join('')
+    : '<tr><td colspan="4" class="empty">No applications yet</td></tr>';
 }
 
 async function loadApps() {
   await fetchApps(); populateSelects();
   document.getElementById('apps-tbody').innerHTML = allApps.length
-    ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,28) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td class="mono">' + fmtDate(a.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="goSettings(\'' + a.id + '\')">Settings</button><button class="btn btn-danger btn-sm" onclick="deleteApp(\'' + a.id + '\')">Delete</button></div></td></tr>').join('')
+    ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,24) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td class="mono">' + fmtDate(a.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="goSettings(\'' + a.id + '\')">Settings</button><button class="btn btn-danger btn-sm" onclick="deleteApp(\'' + a.id + '\')">Delete</button></div></td></tr>').join('')
     : '<tr><td colspan="4" class="empty">No applications yet</td></tr>';
-}
-
-function goSettings(appId) {
-  nav('settings');
-  setTimeout(() => { document.getElementById('settings-app-select').value = appId; loadSettings(); }, 100);
 }
 
 async function createApp() {
@@ -446,26 +588,56 @@ async function loadLicenses() {
     const d = await r.json();
     (d.licenses || []).forEach(l => all.push(Object.assign({}, l, {appName: app.name})));
   }
-  document.getElementById('lic-tbody').innerHTML = all.length
-    ? all.map(l => '<tr><td><span class="mono">' + l.license_key + '</span> <button class="copy-btn" onclick="copy(\'' + l.license_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + l.appName + '</span></td><td>' + l.used_slots + '/' + l.max_users + '</td><td><span class="badge ' + (l.is_active ? 'badge-green' : 'badge-red') + '">' + (l.is_active ? 'Active' : 'Disabled') + '</span></td><td class="mono">' + fmtDate(l.expires_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="toggleLic(\'' + l.id + '\',' + (!l.is_active) + ')">' + (l.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteLic(\'' + l.id + '\')">Delete</button></div></td></tr>').join('')
-    : '<tr><td colspan="6" class="empty">No licenses yet</td></tr>';
+  document.getElementById('lic-tbody').innerHTML = all.length ? all.map(l => {
+    const tier = l.license_tiers?.name ? '<span class="badge badge-purple">' + l.license_tiers.name + '</span>' : '<span style="color:var(--muted2);font-size:12px">—</span>';
+    return '<tr><td><span class="mono">' + l.license_key + '</span> <button class="copy-btn" onclick="copy(\'' + l.license_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + l.appName + '</span></td><td>' + tier + '</td><td>' + l.used_slots + '/' + l.max_users + '</td><td><span class="badge ' + (l.is_active ? 'badge-green' : 'badge-red') + '">' + (l.is_active ? 'Active' : 'Off') + '</span></td><td class="mono">' + fmtDate(l.expires_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="toggleLic(\'' + l.id + '\',' + (!l.is_active) + ')">' + (l.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteLic(\'' + l.id + '\')">Del</button></div></td></tr>';
+  }).join('') : '<tr><td colspan="7" class="empty">No licenses yet</td></tr>';
 }
 
 function openCreateLicense() {
   if (!allApps.length) return alert('Create an application first!');
+  populateSelects(['lic-app']); loadTierSelect('lic-tier', allApps[0]?.id);
   document.getElementById('lic-msg').style.display = 'none';
   openModal('m-lic');
+}
+
+async function loadTierSelect(selectId, appId) {
+  if (!appId) return;
+  const r = await fetch(API + '/api/tiers/' + appId, { headers: H() });
+  const d = await r.json();
+  const sel = document.getElementById(selectId); if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">No tier</option>';
+  (d.tiers || []).forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; sel.appendChild(o); });
+  if (cur) sel.value = cur;
 }
 
 async function createLicense() {
   const app_id = document.getElementById('lic-app').value;
   const max_users = parseInt(document.getElementById('lic-max').value) || 1;
   const expires_at = document.getElementById('lic-exp').value || null;
+  const tier_id = document.getElementById('lic-tier').value || null;
+  const prefix = document.getElementById('lic-prefix').value.trim() || null;
   if (!app_id) return setMsg('lic-msg','Select an app','err');
-  const r = await fetch(API + '/api/licenses/' + app_id, { method:'POST', headers: H(), body: JSON.stringify({max_users, expires_at}) });
+  const r = await fetch(API + '/api/licenses/' + app_id, { method:'POST', headers: H(), body: JSON.stringify({max_users, expires_at, tier_id, prefix}) });
   const d = await r.json();
   if (!r.ok) return setMsg('lic-msg', d.error, 'err');
   closeModal('m-lic'); loadLicenses();
+}
+
+async function bulkGenerate() {
+  const app_id = document.getElementById('bulk-app').value;
+  const count = parseInt(document.getElementById('bulk-count').value) || 10;
+  const max_users = parseInt(document.getElementById('bulk-max').value) || 1;
+  const expires_at = document.getElementById('bulk-exp').value || null;
+  const tier_id = document.getElementById('bulk-tier').value || null;
+  const prefix = document.getElementById('bulk-prefix').value.trim() || null;
+  if (!app_id) return setMsg('bulk-msg','Select an app','err');
+  const r = await fetch(API + '/api/licenses/' + app_id + '/bulk', { method:'POST', headers: H(), body: JSON.stringify({count, max_users, expires_at, tier_id, prefix}) });
+  const d = await r.json();
+  if (!r.ok) return setMsg('bulk-msg', d.error, 'err');
+  setMsg('bulk-msg', d.message, 'ok');
+  setTimeout(() => { closeModal('m-bulk'); loadLicenses(); }, 1500);
 }
 
 async function toggleLic(id, is_active) {
@@ -474,7 +646,7 @@ async function toggleLic(id, is_active) {
 }
 
 async function deleteLic(id) {
-  if (!confirm('Delete this license key?')) return;
+  if (!confirm('Delete this license?')) return;
   await fetch(API + '/api/licenses/' + id, { method:'DELETE', headers: H() }); loadLicenses();
 }
 
@@ -491,42 +663,39 @@ async function loadUsers() {
   document.getElementById('usr-tbody').innerHTML = all.length ? all.map(u => {
     const expired = isExpired(u.expires_at);
     const status = u.is_banned ? '<span class="badge badge-red">Banned</span>' : expired ? '<span class="badge badge-amber">Expired</span>' : '<span class="badge badge-green">Active</span>';
-    const hwid = u.hwid_lock_enabled ? '<span class="badge badge-purple">On · ' + u.max_hwids + ' dev</span>' : '<span style="color:var(--muted2);font-size:12px">Off</span>';
-    return '<tr><td><strong>' + u.username + '</strong></td><td><span class="badge badge-blue">' + u.appName + '</span></td><td class="mono">' + fmtDate(u.expires_at) + '</td><td>' + hwid + '</td><td>' + status + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openManage(\'' + u.id + '\',\'' + u.username + '\',' + u.is_banned + ',' + u.hwid_lock_enabled + ',' + u.max_hwids + ',\'' + (u.expires_at||'') + '\')">Manage</button><button class="btn btn-danger btn-sm" onclick="deleteUser(\'' + u.id + '\')">Delete</button></div></td></tr>';
-  }).join('') : '<tr><td colspan="6" class="empty">No users yet</td></tr>';
+    const hwid = u.hwid_lock_enabled ? '<span class="badge badge-purple">' + u.max_hwids + ' dev</span>' : '<span style="color:var(--muted2);font-size:11px">Off</span>';
+    const tier = u.license_tiers?.name ? '<span class="badge badge-purple">' + u.license_tiers.name + '</span>' : '—';
+    return '<tr><td><strong>' + u.username + '</strong></td><td><span class="badge badge-blue">' + u.appName + '</span></td><td>' + tier + '</td><td class="mono">' + fmtDate(u.expires_at) + '</td><td>' + hwid + '</td><td>' + status + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openManage(\'' + u.id + '\',\'' + u.username + '\',' + u.is_banned + ',' + u.hwid_lock_enabled + ',' + u.max_hwids + ',\'' + (u.expires_at||'') + '\')">Manage</button><button class="btn btn-danger btn-sm" onclick="deleteUser(\'' + u.id + '\')">Del</button></div></td></tr>';
+  }).join('') : '<tr><td colspan="7" class="empty">No users yet</td></tr>';
 }
 
 async function openCreateUser() {
   if (!allApps.length) await fetchApps();
   if (!allApps.length) return alert('Create an application first!');
-  populateSelects();
+  populateSelects(['usr-app']);
+  await onUsrAppChange();
   document.getElementById('usr-msg').style.display = 'none';
   ['usr-name','usr-pass','usr-email','usr-exp'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('usr-hwid-lock').checked = false;
-  document.getElementById('usr-max-hwids').value = 1;
   document.getElementById('max-hwid-field').style.display = 'none';
-  await loadLicenseOptions(allApps[0].id);
   openModal('m-usr');
 }
 
-async function onAppChange() { await loadLicenseOptions(document.getElementById('usr-app').value); }
-
-async function loadLicenseOptions(appId) {
+async function onUsrAppChange() {
+  const appId = document.getElementById('usr-app').value || allApps[0]?.id;
+  if (!appId) return;
   const r = await fetch(API + '/api/licenses/' + appId, { headers: H() });
   const d = await r.json();
   const sel = document.getElementById('usr-lic');
   sel.innerHTML = '<option value="">No license</option>';
-  (d.licenses || []).filter(l => l.is_active).forEach(l => {
-    const o = document.createElement('option');
-    o.value = l.id;
-    o.textContent = l.license_key.substring(0,20) + '... (' + l.used_slots + '/' + l.max_users + ' slots)';
-    sel.appendChild(o);
-  });
+  (d.licenses || []).filter(l => l.is_active).forEach(l => { const o = document.createElement('option'); o.value = l.id; o.textContent = l.license_key.substring(0,20) + '... (' + l.used_slots + '/' + l.max_users + ')'; sel.appendChild(o); });
+  loadTierSelect('usr-tier', appId);
 }
 
 async function createUser() {
   const app_id = document.getElementById('usr-app').value;
   const license_id = document.getElementById('usr-lic').value || null;
+  const tier_id = document.getElementById('usr-tier').value || null;
   const username = document.getElementById('usr-name').value.trim();
   const password = document.getElementById('usr-pass').value;
   const email = document.getElementById('usr-email').value.trim();
@@ -534,7 +703,7 @@ async function createUser() {
   const hwid_lock_enabled = document.getElementById('usr-hwid-lock').checked;
   const max_hwids = parseInt(document.getElementById('usr-max-hwids').value) || 1;
   if (!app_id || !username || !password) return setMsg('usr-msg','App, username and password required','err');
-  const r = await fetch(API + '/api/users/' + app_id + '/create', { method:'POST', headers: H(), body: JSON.stringify({username,password,email,license_id,expires_at,hwid_lock_enabled,max_hwids}) });
+  const r = await fetch(API + '/api/users/' + app_id + '/create', { method:'POST', headers: H(), body: JSON.stringify({username,password,email,license_id,tier_id,expires_at,hwid_lock_enabled,max_hwids}) });
   const d = await r.json();
   if (!r.ok) return setMsg('usr-msg', d.error||d.message, 'err');
   closeModal('m-usr'); loadUsers();
@@ -554,7 +723,7 @@ async function openManage(id, username, is_banned, hwid_lock, max_hwids, expires
   const hwids = d.hwids || [];
   document.getElementById('hwid-list-wrap').innerHTML = hwids.length
     ? hwids.map(h => '<div class="hwid-item"><span>' + h.hwid + '</span><button class="btn btn-danger btn-sm" onclick="deleteHwid(\'' + id + '\',\'' + h.id + '\')">Remove</button></div>').join('')
-    : '<div style="color:var(--muted);font-size:13px">No HWIDs registered yet</div>';
+    : '<div style="color:var(--muted);font-size:12px">No HWIDs yet</div>';
   openModal('m-manage');
 }
 
@@ -568,14 +737,14 @@ async function saveUser() {
   })});
   const d = await r.json();
   if (!r.ok) return setMsg('manage-msg', d.error, 'err');
-  setMsg('manage-msg','Changes saved','ok'); loadUsers();
+  setMsg('manage-msg','Saved','ok'); loadUsers();
 }
 
 async function resetHwids() {
   const id = document.getElementById('manage-id').value;
   if (!confirm('Reset all HWIDs?')) return;
   await fetch(API + '/api/users/' + id + '/hwids', { method:'DELETE', headers: H() });
-  document.getElementById('hwid-list-wrap').innerHTML = '<div style="color:var(--muted);font-size:13px">No HWIDs registered yet</div>';
+  document.getElementById('hwid-list-wrap').innerHTML = '<div style="color:var(--muted);font-size:12px">No HWIDs yet</div>';
   setMsg('manage-msg','HWIDs reset','ok');
 }
 
@@ -591,25 +760,127 @@ async function deleteUser(id) {
   await fetch(API + '/api/users/' + id, { method:'DELETE', headers: H() }); loadUsers();
 }
 
-// Settings
+// ── Analytics ───────────────────────────────────────────────────────────────
+async function loadAnalyticsPage() {
+  if (!allApps.length) await fetchApps(); populateSelects(['ana-filter']);
+}
+
+async function loadAnalytics() {
+  const appId = document.getElementById('ana-filter').value;
+  if (!appId) { document.getElementById('ana-content').style.display='none'; document.getElementById('ana-stats').style.display='none'; document.getElementById('ana-empty').style.display='block'; return; }
+  document.getElementById('ana-empty').style.display='none';
+  const r = await fetch(API + '/api/analytics/' + appId + '/logins', { headers: H() });
+  const d = await r.json();
+  document.getElementById('ana-stats').style.display='grid';
+  document.getElementById('ana-content').style.display='block';
+  document.getElementById('ana-total').textContent = d.total || 0;
+  document.getElementById('ana-success').textContent = d.success || 0;
+  document.getElementById('ana-failed').textContent = d.failed || 0;
+  document.getElementById('ana-ips').textContent = (d.top_ips || []).length;
+
+  // Chart
+  const labels = (d.by_day || []).map(x => x.date);
+  const successData = (d.by_day || []).map(x => x.success);
+  const failedData = (d.by_day || []).map(x => x.failed);
+  if (loginChartInst) loginChartInst.destroy();
+  loginChartInst = new Chart(document.getElementById('loginChart'), {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Success', data: successData, backgroundColor: 'rgba(34,197,94,0.5)', borderColor: '#22c55e', borderWidth: 1 },
+      { label: 'Failed', data: failedData, backgroundColor: 'rgba(239,68,68,0.5)', borderColor: '#ef4444', borderWidth: 1 }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } }, scales: { x: { ticks: { color: '#888', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#888', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+  });
+
+  // Top IPs
+  document.getElementById('top-ips').innerHTML = (d.top_ips || []).slice(0,8).map(ip =>
+    '<div class="log-item"><span style="font-family:monospace;flex:1">' + ip.ip + '</span><span class="badge badge-blue">' + ip.count + ' logins</span></div>'
+  ).join('') || '<div style="color:var(--muted);font-size:12px">No data</div>';
+
+  // Fail reasons
+  document.getElementById('fail-reasons').innerHTML = Object.entries(d.fail_reasons || {}).map(([r,c]) =>
+    '<div class="log-item"><span style="flex:1">' + r + '</span><span class="badge badge-red">' + c + '</span></div>'
+  ).join('') || '<div style="color:var(--muted);font-size:12px">No failures</div>';
+
+  // Recent logs
+  document.getElementById('recent-logs').innerHTML = (d.recent || []).slice(0,20).map(l =>
+    '<div class="log-item"><div class="log-dot" style="background:' + (l.success ? '#22c55e' : '#ef4444') + '"></div><span style="flex:1;font-weight:500">' + (l.username || '—') + '</span><span class="mono">' + (l.ip_address || '—') + '</span><span style="color:var(--muted);font-size:11px;margin-left:8px">' + fmtTime(l.created_at) + '</span>' + (!l.success ? '<span class="badge badge-red" style="margin-left:6px">' + (l.fail_reason||'—') + '</span>' : '') + '</div>'
+  ).join('') || '<div style="color:var(--muted);font-size:12px">No logs</div>';
+
+  // Webhook logs
+  const wr = await fetch(API + '/api/analytics/' + appId + '/webhooks', { headers: H() });
+  const wd = await wr.json();
+  document.getElementById('webhook-logs').innerHTML = (wd.logs || []).slice(0,15).map(l =>
+    '<div class="log-item"><div class="log-dot" style="background:' + (l.success ? '#22c55e' : '#ef4444') + '"></div><span style="flex:1">' + l.event + '</span><span style="color:var(--muted);font-size:11px">' + fmtTime(l.created_at) + '</span></div>'
+  ).join('') || '<div style="color:var(--muted);font-size:12px">No webhook logs</div>';
+}
+
+// ── Security ─────────────────────────────────────────────────────────────────
+async function loadSecurity() {
+  if (!allApps.length) await fetchApps(); populateSelects(['sec-app-filter']);
+  const r = await fetch(API + '/api/security/sessions', { headers: H() });
+  const d = await r.json();
+  const sessions = d.sessions || [];
+  document.getElementById('sessions-list').innerHTML = sessions.length
+    ? sessions.map(s => '<div class="session-item"><div><div style="font-size:12px;font-weight:500">' + (s.ip_address||'Unknown IP') + '</div><div style="font-size:11px;color:var(--muted)">' + fmtTime(s.last_seen) + '</div></div><button class="btn btn-danger btn-sm" onclick="revokeSession(\'' + s.id + '\')">Revoke</button></div>').join('')
+    : '<div style="color:var(--muted);font-size:12px">No active sessions</div>';
+}
+
+async function loadSuspicious() {
+  const appId = document.getElementById('sec-app-filter').value;
+  if (!appId) return;
+  const r = await fetch(API + '/api/security/suspicious/' + appId, { headers: H() });
+  const d = await r.json();
+  const list = d.suspicious || [];
+  document.getElementById('suspicious-list').innerHTML = list.length
+    ? '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">' + d.total_failed + ' total failed logins in last 24h</div>' + list.map(s =>
+      '<div class="suspicious-item" style="background:' + (s.flagged ? 'var(--red-dim)' : 'var(--amber-dim)') + '"><span style="font-family:monospace;font-size:12px">' + s.ip + '</span><span class="badge ' + (s.flagged ? 'badge-red' : 'badge-amber') + '">' + s.count + ' attempts</span></div>'
+    ).join('')
+    : '<div style="color:var(--muted);font-size:12px">No suspicious activity detected.</div>';
+}
+
+async function revokeSession(id) {
+  await fetch(API + '/api/security/sessions/' + id, { method:'DELETE', headers: H() });
+  loadSecurity();
+}
+
+async function revokeAllSessions() {
+  if (!confirm('Revoke all sessions? You will be logged out.')) return;
+  await fetch(API + '/api/security/sessions', { method:'DELETE', headers: H() });
+  logout();
+}
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+function goSettings(appId) { nav('settings'); setTimeout(() => { document.getElementById('settings-app-select').value = appId; loadSettings(); }, 100); }
+
 async function loadSettingsPage() {
-  if (!allApps.length) await fetchApps(); populateSelects();
+  if (!allApps.length) await fetchApps(); populateSelects(['settings-app-select']);
 }
 
 async function loadSettings() {
   const appId = document.getElementById('settings-app-select').value;
   if (!appId) { document.getElementById('settings-content').style.display = 'none'; return; }
-  const r = await fetch(API + '/api/apps/' + appId + '/settings', { headers: H() });
-  const d = await r.json();
-  const s = d.settings || {};
   document.getElementById('settings-content').style.display = 'block';
+  const r = await fetch(API + '/api/apps/' + appId + '/settings', { headers: H() });
+  const d = await r.json(); const s = d.settings || {};
   document.getElementById('webhook-url').value = s.discord_webhook || '';
+  document.getElementById('ip-whitelist-toggle').checked = s.ip_whitelist_enabled || false;
   const msgs = s.error_messages || {};
-  const keys = ['invalid_credentials','banned','expired','hwid_required','hwid_max_reached','license_invalid','license_disabled','license_expired','license_full'];
-  keys.forEach(k => {
-    const el = document.getElementById('em-' + k);
-    if (el) el.value = msgs['err_' + k] || '';
+  ['invalid_credentials','banned','expired','hwid_required','hwid_max_reached','license_invalid','license_disabled','license_expired','license_full','ip_blocked'].forEach(k => {
+    const el = document.getElementById('em-' + k); if (el) el.value = msgs['err_' + k] || '';
   });
+  // Load IP list
+  const ir = await fetch(API + '/api/apps/' + appId + '/ip-whitelist', { headers: H() });
+  const id2 = await ir.json();
+  document.getElementById('ip-list').innerHTML = (id2.ips || []).map(ip =>
+    '<div class="hwid-item"><span style="flex:1">' + ip.ip_address + (ip.label ? ' — ' + ip.label : '') + '</span><button class="btn btn-danger btn-sm" onclick="removeIP(\'' + appId + '\',\'' + ip.id + '\')">Remove</button></div>'
+  ).join('') || '<div style="color:var(--muted);font-size:12px">No IPs added</div>';
+  // Load tiers
+  const tr = await fetch(API + '/api/tiers/' + appId, { headers: H() });
+  const td = await tr.json();
+  document.getElementById('tiers-list').innerHTML = (td.tiers || []).map(t =>
+    '<span class="badge badge-purple" style="cursor:pointer" onclick="deleteTier(\'' + t.id + '\')">' + t.name + ' ✕</span>'
+  ).join('') || '<span style="color:var(--muted);font-size:12px">No tiers yet</span>';
 }
 
 async function saveWebhook() {
@@ -618,24 +889,130 @@ async function saveWebhook() {
   const r = await fetch(API + '/api/apps/' + appId + '/settings', { method:'PATCH', headers: H(), body: JSON.stringify({discord_webhook}) });
   const d = await r.json();
   if (!r.ok) return setMsg('webhook-msg', d.error, 'err');
-  setMsg('webhook-msg','Webhook saved! Test it by logging in.','ok');
+  setMsg('webhook-msg','Webhook saved!','ok');
+}
+
+async function toggleIPWhitelist() {
+  const appId = document.getElementById('settings-app-select').value;
+  const ip_whitelist_enabled = document.getElementById('ip-whitelist-toggle').checked;
+  await fetch(API + '/api/apps/' + appId + '/settings', { method:'PATCH', headers: H(), body: JSON.stringify({ip_whitelist_enabled}) });
+}
+
+async function addIP() {
+  const appId = document.getElementById('settings-app-select').value;
+  const ip_address = document.getElementById('new-ip').value.trim();
+  const label = document.getElementById('new-ip-label').value.trim();
+  if (!ip_address) return setMsg('ip-msg','IP required','err');
+  const r = await fetch(API + '/api/apps/' + appId + '/ip-whitelist', { method:'POST', headers: H(), body: JSON.stringify({ip_address, label}) });
+  const d = await r.json();
+  if (!r.ok) return setMsg('ip-msg', d.error, 'err');
+  document.getElementById('new-ip').value = ''; document.getElementById('new-ip-label').value = '';
+  loadSettings();
+}
+
+async function removeIP(appId, ipId) {
+  await fetch(API + '/api/apps/' + appId + '/ip-whitelist/' + ipId, { method:'DELETE', headers: H() });
+  loadSettings();
+}
+
+async function createTier() {
+  const appId = document.getElementById('settings-app-select').value;
+  const name = document.getElementById('tier-name').value.trim();
+  const description = document.getElementById('tier-desc').value.trim();
+  if (!name) return;
+  await fetch(API + '/api/tiers/' + appId, { method:'POST', headers: H(), body: JSON.stringify({name, description}) });
+  document.getElementById('tier-name').value = ''; document.getElementById('tier-desc').value = '';
+  loadSettings();
+}
+
+async function deleteTier(id) {
+  if (!confirm('Delete this tier?')) return;
+  await fetch(API + '/api/tiers/' + id, { method:'DELETE', headers: H() }); loadSettings();
 }
 
 async function saveErrorMessages() {
   const appId = document.getElementById('settings-app-select').value;
-  const keys = ['invalid_credentials','banned','expired','hwid_required','hwid_max_reached','license_invalid','license_disabled','license_expired','license_full'];
+  const keys = ['invalid_credentials','banned','expired','hwid_required','hwid_max_reached','license_invalid','license_disabled','license_expired','license_full','ip_blocked'];
   const error_messages = {};
-  keys.forEach(k => {
-    const val = document.getElementById('em-' + k)?.value.trim();
-    if (val) error_messages['err_' + k] = val;
-  });
+  keys.forEach(k => { const val = document.getElementById('em-'+k)?.value.trim(); if (val) error_messages['err_'+k] = val; });
   const r = await fetch(API + '/api/apps/' + appId + '/settings', { method:'PATCH', headers: H(), body: JSON.stringify({error_messages}) });
   const d = await r.json();
   if (!r.ok) return setMsg('em-msg', d.error, 'err');
-  setMsg('em-msg','Error messages saved!','ok');
+  setMsg('em-msg','Saved!','ok');
 }
 
-// Admin
+// ── Account ──────────────────────────────────────────────────────────────────
+async function loadAccount() {
+  const r = await fetch(API + '/api/auth/me', { headers: H() });
+  const d = await r.json(); const dev = d.developer || {};
+  document.getElementById('acc-username').value = dev.username || '';
+  document.getElementById('acc-email').value = dev.email || '';
+  document.getElementById('acc-created').value = fmtDate(dev.created_at);
+  const tfaStatus = document.getElementById('twofa-status');
+  const tfaActions = document.getElementById('twofa-actions');
+  if (dev.two_factor_enabled) {
+    tfaStatus.innerHTML = '<span class="badge badge-green">2FA Enabled</span>';
+    tfaActions.innerHTML = '<button class="btn btn-danger" onclick="disable2FA()">Disable 2FA</button>';
+    document.getElementById('twofa-setup').style.display = 'none';
+  } else {
+    tfaStatus.innerHTML = '<span class="badge badge-red">2FA Disabled</span>';
+    tfaActions.innerHTML = '<button class="btn btn-primary" onclick="setup2FA()">Setup 2FA</button>';
+  }
+}
+
+async function setup2FA() {
+  const r = await fetch(API + '/api/auth/2fa/setup', { method:'POST', headers: H() });
+  const d = await r.json();
+  document.getElementById('twofa-qr').src = d.qr_code;
+  document.getElementById('twofa-setup').style.display = 'block';
+  document.getElementById('twofa-actions').innerHTML = '';
+}
+
+async function enable2FA() {
+  const totp_code = document.getElementById('twofa-code').value;
+  const r = await fetch(API + '/api/auth/2fa/enable', { method:'POST', headers: H(), body: JSON.stringify({totp_code}) });
+  const d = await r.json();
+  if (!r.ok) return setMsg('twofa-msg', d.error, 'err');
+  setMsg('twofa-msg','2FA enabled!','ok');
+  setTimeout(loadAccount, 1000);
+}
+
+async function disable2FA() {
+  if (!confirm('Disable 2FA?')) return;
+  await fetch(API + '/api/auth/2fa/disable', { method:'POST', headers: H() });
+  loadAccount();
+}
+
+// ── Billing ───────────────────────────────────────────────────────────────────
+async function loadBilling() {
+  const r = await fetch(API + '/api/stripe/billing', { headers: H() });
+  const d = await r.json(); const b = d.billing || {};
+  const plan = b.plan || 'starter';
+  document.getElementById('current-plan-badge').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+  document.getElementById('plan-details').textContent = b.plan_expires_at ? 'Renews ' + fmtDate(b.plan_expires_at) : (plan === 'starter' ? 'Free forever with limits.' : '');
+  const actions = document.getElementById('billing-actions');
+  if (b.stripe_customer_id && plan !== 'starter') {
+    actions.innerHTML = '<button class="btn btn-ghost" onclick="manageSubscription()">Manage subscription</button>';
+  }
+  document.querySelectorAll('.plan-option').forEach(el => el.classList.remove('current'));
+  const planEl = document.getElementById('plan-' + plan);
+  if (planEl) planEl.classList.add('current');
+}
+
+async function upgradePlan(plan) {
+  const r = await fetch(API + '/api/stripe/checkout', { method:'POST', headers: H(), body: JSON.stringify({plan}) });
+  const d = await r.json();
+  if (d.url) window.location.href = d.url;
+  else alert('Stripe not configured yet.');
+}
+
+async function manageSubscription() {
+  const r = await fetch(API + '/api/stripe/portal', { method:'POST', headers: H() });
+  const d = await r.json();
+  if (d.url) window.location.href = d.url;
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
 async function loadAdmin() {
   const r = await fetch(API + '/api/admin/stats', { headers: H() });
   const d = await r.json();
@@ -643,22 +1020,15 @@ async function loadAdmin() {
   document.getElementById('a-apps').textContent = d.apps;
   document.getElementById('a-users').textContent = d.users;
   document.getElementById('a-lics').textContent = d.licenses;
-
   const dr = await fetch(API + '/api/admin/developers', { headers: H() });
   const dd = await dr.json();
   document.getElementById('admin-devs-tbody').innerHTML = (dd.developers || []).map(d =>
-    '<tr><td><strong>' + d.username + '</strong></td><td class="mono">' + d.email + '</td><td>' +
-    (d.is_admin ? '<span class="badge badge-amber">Admin</span>' : '<span class="badge" style="background:var(--surface2);color:var(--muted)">Developer</span>') +
-    '</td><td class="mono">' + fmtDate(d.created_at) + '</td><td><div class="actions-cell">' +
-    '<button class="btn btn-ghost btn-sm" onclick="toggleAdmin(\'' + d.id + '\',' + !d.is_admin + ')">' + (d.is_admin ? 'Remove admin' : 'Make admin') + '</button>' +
-    '<button class="btn btn-danger btn-sm" onclick="deletedev(\'' + d.id + '\')">Delete</button>' +
-    '</div></td></tr>'
+    '<tr><td><strong>' + d.username + '</strong></td><td class="mono">' + d.email + '</td><td><span class="badge badge-blue">' + (d.plan||'starter') + '</span></td><td>' + (d.is_admin ? '<span class="badge badge-amber">Admin</span>' : '<span style="color:var(--muted2);font-size:12px">Dev</span>') + '</td><td class="mono">' + fmtDate(d.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="toggleAdmin(\'' + d.id + '\',' + !d.is_admin + ')">' + (d.is_admin ? 'Demote' : 'Promote') + '</button><button class="btn btn-danger btn-sm" onclick="adminDeleteDev(\'' + d.id + '\')">Delete</button></div></td></tr>'
   ).join('');
-
   const ar = await fetch(API + '/api/admin/apps', { headers: H() });
   const ad = await ar.json();
   document.getElementById('admin-apps-tbody').innerHTML = (ad.apps || []).map(a =>
-    '<tr><td><strong>' + a.name + '</strong></td><td class="mono">' + (a.developers?.username || '—') + '</td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>'
+    '<tr><td><strong>' + a.name + '</strong></td><td class="mono">' + (a.developers?.username||'—') + '</td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>'
   ).join('');
 }
 
@@ -667,10 +1037,16 @@ async function toggleAdmin(id, is_admin) {
   loadAdmin();
 }
 
-async function deletedev(id) {
+async function adminDeleteDev(id) {
   if (!confirm('Delete this developer and all their data?')) return;
   await fetch(API + '/api/admin/developers/' + id, { method:'DELETE', headers: H() });
   loadAdmin();
+}
+
+// Handle upgrade success
+if (new URLSearchParams(location.search).get('upgraded') === '1') {
+  history.replaceState({}, '', location.pathname);
+  setTimeout(() => { nav('billing'); }, 500);
 }
 
 loadOverview();
