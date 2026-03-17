@@ -211,9 +211,9 @@ async function handleGoogleResponse(response) {
 
 // Auto-init Google if client ID set
 window.addEventListener('load', () => {
-  if (typeof google !== 'undefined' && 'YOUR_GOOGLE_CLIENT_ID' !== 'YOUR_GOOGLE_CLIENT_ID') {
+  if (typeof google !== 'undefined' && '623169749958-vc8l8hd9upjpp62fr9js8u68i7u6je5p.apps.googleusercontent.com' !== '623169749958-vc8l8hd9upjpp62fr9js8u68i7u6je5p.apps.googleusercontent.com') {
     google.accounts.id.initialize({
-      client_id: 'YOUR_GOOGLE_CLIENT_ID',
+      client_id: '623169749958-vc8l8hd9upjpp62fr9js8u68i7u6je5p.apps.googleusercontent.com',
       callback: handleGoogleResponse
     });
   }
