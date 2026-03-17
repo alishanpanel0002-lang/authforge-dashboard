@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuthForge — SDK Downloads</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0a; --surface: #111; --surface2: #1a1a1a;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.12);
+  --text: #ededed; --muted: #888; --muted2: #555;
+  --blue: #3b82f6; --blue-dim: rgba(59,130,246,0.12);
+  --green: #22c55e; --green-dim: rgba(34,197,94,0.1);
+  --purple: #a855f7; --purple-dim: rgba(168,85,247,0.1);
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
+  --font: 'Geist', -apple-system, sans-serif; --r: 8px;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
+.sidebar { width: 216px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
+.logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin-bottom: 24px; }
+.logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; }
+.logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
+.nav-label { font-size: 11px; color: var(--muted2); padding: 0 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.1s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--surface2); color: var(--text); }
+.nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+.sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px; }
+.user-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 4px; }
+.avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.user-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sign-out { width: 100%; padding: 6px 8px; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 13px; text-align: left; border-radius: 6px; cursor: pointer; }
+.sign-out:hover { background: var(--surface2); color: #ef4444; }
+.main { margin-left: 216px; flex: 1; padding: 40px; max-width: 900px; }
+.page-head { margin-bottom: 8px; }
+.page-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+.page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; margin-bottom: 32px; }
+
+/* SDK Cards */
+.sdk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+.sdk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px; transition: border-color 0.15s; }
+.sdk-card:hover { border-color: var(--border2); }
+.sdk-header { display: flex; align-items: flex-start; gap: 12px; }
+.sdk-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.sdk-icon.csharp { background: rgba(168,85,247,0.15); }
+.sdk-icon.cpp { background: rgba(59,130,246,0.15); }
+.sdk-icon.python { background: rgba(245,158,11,0.15); }
+.sdk-name { font-size: 14px; font-weight: 600; }
+.sdk-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+.sdk-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); }
+.btn-download { width: 100%; padding: 8px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-download:hover { background: var(--text); color: #000; border-color: var(--text); }
+
+/* Docs section */
+.docs-section { margin-bottom: 32px; }
+.docs-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.lang-tabs { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; margin-bottom: 0; width: fit-content; }
+.lang-tab { padding: 5px 14px; border: none; background: none; color: var(--muted); font-family: var(--font); font-size: 12px; font-weight: 500; border-radius: 5px; cursor: pointer; transition: all 0.1s; }
+.lang-tab.active { background: var(--surface2); color: var(--text); }
+.code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 8px; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.code-label { font-size: 11px; color: var(--muted); font-family: monospace; }
+.copy-code-btn { font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: var(--font); }
+.copy-code-btn:hover { background: var(--surface2); color: var(--text); }
+pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.7; color: #c9d1d9; }
+.kw { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.cm { color: #8b949e; font-style: italic; }
+.fn { color: #d2a8ff; }
+.var { color: #ffa657; }
+.cls { color: #ffa657; }
+
+/* Endpoint reference */
+.endpoint-table { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; width: 100%; border-collapse: collapse; }
+.endpoint-table th { font-size: 11px; color: var(--muted); font-weight: 400; padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+.endpoint-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.endpoint-table tr:last-child td { border-bottom: none; }
+.method { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; font-family: monospace; background: var(--green-dim); color: var(--green); }
+.endpoint-path { font-family: monospace; font-size: 12px; color: var(--blue); }
+.param-list { font-size: 11px; color: var(--muted); font-family: monospace; line-height: 1.8; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="logo"><div class="logo-dot"></div><span class="logo-text">AuthForge</span></div>
+  <div style="margin-bottom:20px">
+    <div class="nav-label">Platform</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item active" href="sdk.html">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l-3 2 3 2M12 6l3 2-3 2M9 3l-2 10"/></svg>
+      SDK & Docs
+    </a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="user-row">
+      <div class="avatar" id="av">?</div>
+      <span class="user-name" id="un">...</span>
+    </div>
+    <button class="sign-out" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="page-head">
+    <div class="page-title">SDK & Documentation</div>
+    <div class="page-sub">Download the SDK for your language and integrate AuthForge into your application in minutes.</div>
+  </div>
+
+  <!-- SDK Download Cards -->
+  <div class="sdk-grid">
+    <div class="sdk-card">
+      <div class="sdk-header">
+        <div class="sdk-icon csharp">⬡</div>
+        <div>
+          <div class="sdk-name">C# SDK</div>
+          <div class="sdk-desc">For .NET, WinForms, WPF, and console applications</div>
+        </div>
+      </div>
+      <div class="sdk-meta">
+        <span class="pill">.NET 4.7+</span>
+        <span class="pill">Newtonsoft.Json</span>
+        <span class="pill">v1.0</span>
+      </div>
+      <button class="btn-download" onclick="downloadCSharp()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Download AuthForge.cs
+      </button>
+    </div>
+
+    <div class="sdk-card">
+      <div class="sdk-header">
+        <div class="sdk-icon cpp">⬡</div>
+        <div>
+          <div class="sdk-name">C++ SDK</div>
+          <div class="sdk-desc">For native Windows, Linux, and cross-platform apps</div>
+        </div>
+      </div>
+      <div class="sdk-meta">
+        <span class="pill">C++17</span>
+        <span class="pill">libcurl</span>
+        <span class="pill">nlohmann/json</span>
+      </div>
+      <button class="btn-download" onclick="downloadCPP()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Download authforge.hpp
+      </button>
+    </div>
+
+    <div class="sdk-card">
+      <div class="sdk-header">
+        <div class="sdk-icon python">⬡</div>
+        <div>
+          <div class="sdk-name">Python SDK</div>
+          <div class="sdk-desc">For scripts, bots, desktop tools, and automation</div>
+        </div>
+      </div>
+      <div class="sdk-meta">
+        <span class="pill">Python 3.7+</span>
+        <span class="pill">requests</span>
+        <span class="pill">v1.0</span>
+      </div>
+      <button class="btn-download" onclick="downloadPython()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><path d="M2 13h12"/></svg>
+        Download authforge.py
+      </button>
+    </div>
+  </div>
+
+  <!-- Code Examples -->
+  <div class="docs-section">
+    <div class="docs-title">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l-3 2 3 2M12 6l3 2-3 2M9 3l-2 10"/></svg>
+      Quick Start
+    </div>
+    <div class="lang-tabs">
+      <button class="lang-tab active" onclick="switchLang('csharp')">C#</button>
+      <button class="lang-tab" onclick="switchLang('cpp')">C++</button>
+      <button class="lang-tab" onclick="switchLang('python')">Python</button>
+    </div>
+
+    <div class="code-block" id="code-csharp">
+      <div class="code-header"><span class="code-label">Program.cs</span><button class="copy-code-btn" onclick="copyCode('csharp')">Copy</button></div>
+      <pre><span class="cm">// 1. Add AuthForge.cs to your project
+// 2. Install Newtonsoft.Json via NuGet
+// 3. Replace with your app's secret key</span>
+
+<span class="kw">using</span> AuthForgeSDK;
+
+<span class="kw">var</span> <span class="var">af</span> = <span class="kw">new</span> <span class="cls">AuthForge</span>(<span class="str">"YOUR_SECRET_KEY"</span>);
+
+<span class="cm">// Login with username + password</span>
+<span class="kw">var</span> <span class="var">login</span> = <span class="kw">await</span> <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>);
+<span class="kw">if</span> (<span class="var">login</span>.Success)
+{
+    Console.<span class="fn">WriteLine</span>(<span class="str">"Welcome, "</span> + <span class="var">login</span>.Data[<span class="str">"username"</span>]);
+    <span class="cm">// Grant access to your app</span>
+}
+<span class="kw">else</span>
+{
+    Console.<span class="fn">WriteLine</span>(<span class="str">"Error: "</span> + <span class="var">login</span>.Error);
+    <span class="cm">// Block access</span>
+}
+
+<span class="cm">// Login with HWID lock enabled</span>
+<span class="kw">string</span> <span class="var">hwid</span> = Environment.<span class="fn">GetEnvironmentVariable</span>(<span class="str">"COMPUTERNAME"</span>);
+<span class="kw">var</span> <span class="var">loginHwid</span> = <span class="kw">await</span> <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, <span class="var">hwid</span>);
+
+<span class="cm">// Validate a license key only (no username needed)</span>
+<span class="kw">var</span> <span class="var">check</span> = <span class="kw">await</span> <span class="var">af</span>.<span class="fn">CheckLicense</span>(<span class="str">"LICENSE-KEY"</span>);
+<span class="kw">if</span> (<span class="var">check</span>.Success) Console.<span class="fn">WriteLine</span>(<span class="str">"License valid!"</span>);</pre>
+    </div>
+
+    <div class="code-block" id="code-cpp" style="display:none">
+      <div class="code-header"><span class="code-label">main.cpp</span><button class="copy-code-btn" onclick="copyCode('cpp')">Copy</button></div>
+      <pre><span class="cm">// 1. Add authforge.hpp to your project
+// 2. Install libcurl and nlohmann/json
+// 3. Replace with your app's secret key</span>
+
+<span class="kw">#include</span> <span class="str">"authforge.hpp"</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cls">AuthForge</span> <span class="var">af</span>(<span class="str">"YOUR_SECRET_KEY"</span>);
+
+    <span class="cm">// Login with username + password</span>
+    <span class="kw">auto</span> <span class="var">login</span> = <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>);
+    <span class="kw">if</span> (<span class="var">login</span>.success) {
+        std::cout << <span class="str">"Welcome, "</span> << <span class="var">login</span>.message << std::endl;
+    } <span class="kw">else</span> {
+        std::cout << <span class="str">"Error: "</span> << <span class="var">login</span>.error << std::endl;
+    }
+
+    <span class="cm">// Login with HWID</span>
+    <span class="kw">auto</span> <span class="var">loginHwid</span> = <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, <span class="fn">GetHWID</span>());
+
+    <span class="cm">// Check a license key</span>
+    <span class="kw">auto</span> <span class="var">check</span> = <span class="var">af</span>.<span class="fn">CheckLicense</span>(<span class="str">"LICENSE-KEY"</span>);
+    <span class="kw">if</span> (<span class="var">check</span>.success) std::cout << <span class="str">"License valid!"</span> << std::endl;
+
+    <span class="kw">return</span> <span class="str">0</span>;
+}</pre>
+    </div>
+
+    <div class="code-block" id="code-python" style="display:none">
+      <div class="code-header"><span class="code-label">main.py</span><button class="copy-code-btn" onclick="copyCode('python')">Copy</button></div>
+      <pre><span class="cm"># 1. Add authforge.py to your project
+# 2. pip install requests
+# 3. Replace with your app's secret key</span>
+
+<span class="kw">from</span> authforge <span class="kw">import</span> <span class="cls">AuthForge</span>
+
+<span class="var">af</span> = <span class="cls">AuthForge</span>(<span class="str">"YOUR_SECRET_KEY"</span>)
+
+<span class="cm"># Login with username + password</span>
+<span class="var">login</span> = <span class="var">af</span>.<span class="fn">login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>)
+<span class="kw">if</span> <span class="var">login</span>[<span class="str">"success"</span>]:
+    <span class="fn">print</span>(<span class="str">f"Welcome, {login['user']['username']}"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">f"Error: {login['message']}"</span>)
+
+<span class="cm"># Login with HWID</span>
+<span class="kw">import</span> platform
+<span class="var">hwid</span> = platform.<span class="fn">node</span>()
+<span class="var">login</span> = <span class="var">af</span>.<span class="fn">login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, hwid=<span class="var">hwid</span>)
+
+<span class="cm"># Check a license key</span>
+<span class="var">check</span> = <span class="var">af</span>.<span class="fn">check_license</span>(<span class="str">"LICENSE-KEY"</span>)
+<span class="kw">if</span> <span class="var">check</span>[<span class="str">"success"</span>]: <span class="fn">print</span>(<span class="str">"License valid!"</span>)</pre>
+    </div>
+  </div>
+
+  <!-- API Reference -->
+  <div class="docs-section">
+    <div class="docs-title">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6h6M5 9h4"/></svg>
+      API Endpoint Reference
+    </div>
+    <table class="endpoint-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Required Fields</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="method">POST</span></td>
+          <td><span class="endpoint-path">/api/client/register</span></td>
+          <td><span class="param-list">secret_key<br>username<br>password<br>license_key</span></td>
+          <td style="font-size:12px;color:var(--muted)">Register a new end user. Requires a valid license key with available slots.</td>
+        </tr>
+        <tr>
+          <td><span class="method">POST</span></td>
+          <td><span class="endpoint-path">/api/client/login</span></td>
+          <td><span class="param-list">secret_key<br>username<br>password<br>hwid (optional)</span></td>
+          <td style="font-size:12px;color:var(--muted)">Authenticate a user. Pass hwid if HWID lock is enabled for the account.</td>
+        </tr>
+        <tr>
+          <td><span class="method">POST</span></td>
+          <td><span class="endpoint-path">/api/client/license/login</span></td>
+          <td><span class="param-list">secret_key<br>license_key</span></td>
+          <td style="font-size:12px;color:var(--muted)">Login using just a license key — no username or password needed.</td>
+        </tr>
+        <tr>
+          <td><span class="method">POST</span></td>
+          <td><span class="endpoint-path">/api/client/license/check</span></td>
+          <td><span class="param-list">secret_key<br>license_key</span></td>
+          <td style="font-size:12px;color:var(--muted)">Validate a license key without logging in. Returns status, expiry, and slot info.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+const API = 'https://authforge-backend-production.up.railway.app';
+let user = JSON.parse(localStorage.getItem('af_user') || '{}');
+if (!localStorage.getItem('af_token')) location.href = 'index.html';
+document.getElementById('un').textContent = user.username || '';
+document.getElementById('av').textContent = (user.username || '?')[0].toUpperCase();
+function logout() { localStorage.clear(); location.href = 'index.html'; }
+
+function switchLang(lang) {
+  ['csharp','cpp','python'].forEach(l => {
+    document.getElementById('code-' + l).style.display = l === lang ? 'block' : 'none';
+  });
+  document.querySelectorAll('.lang-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['csharp','cpp','python'][i] === lang);
+  });
+}
+
+function copyCode(lang) {
+  const pre = document.querySelector('#code-' + lang + ' pre');
+  navigator.clipboard.writeText(pre.innerText);
+}
+
+// ── C# SDK content ──────────────────────────────────────────────────────────
+const csharpSDK = `/*
+ * AuthForge C# SDK v1.0
+ * https://authforge-dashboard.vercel.app
+ *
+ * SETUP:
+ * 1. Add this file to your C# project
+ * 2. Install Newtonsoft.Json via NuGet:
+ *    Install-Package Newtonsoft.Json
+ * 3. Replace YOUR_SECRET_KEY with your app's secret key
+ *
+ * USAGE:
+ *   var af = new AuthForge("YOUR_SECRET_KEY");
+ *   var result = await af.Login("username", "password");
+ *   if (result.Success) { // let user in }
+ */
+
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace AuthForgeSDK
+{
+    public class AuthForgeResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        public string Error { get; set; }
+        public JObject Data { get; set; }
+    }
+
+    public class AuthForge
+    {
+        private static readonly HttpClient _http = new HttpClient();
+        private readonly string _secretKey;
+        private const string API_URL = "https://authforge-backend-production.up.railway.app/api/client";
+
+        public AuthForge(string secretKey)
+        {
+            if (string.IsNullOrWhiteSpace(secretKey))
+                throw new ArgumentException("Secret key cannot be empty.");
+            _secretKey = secretKey;
+        }
+
+        /// Login with username + password. Pass hwid if HWID lock is enabled.
+        public async Task<AuthForgeResponse> Login(string username, string password, string hwid = null)
+        {
+            var payload = new { secret_key = _secretKey, username, password, hwid };
+            return await Post("/login", payload);
+        }
+
+        /// Register a new user using a license key.
+        public async Task<AuthForgeResponse> Register(string username, string password, string licenseKey)
+        {
+            var payload = new { secret_key = _secretKey, username, password, license_key = licenseKey };
+            return await Post("/register", payload);
+        }
+
+        /// Login using just a license key (no username/password).
+        public async Task<AuthForgeResponse> LicenseLogin(string licenseKey)
+        {
+            var payload = new { secret_key = _secretKey, license_key = licenseKey };
+            return await Post("/license/login", payload);
+        }
+
+        /// Validate a license key without logging in.
+        public async Task<AuthForgeResponse> CheckLicense(string licenseKey)
+        {
+            var payload = new { secret_key = _secretKey, license_key = licenseKey };
+            return await Post("/license/check", payload);
+        }
+
+        private async Task<AuthForgeResponse> Post(string endpoint, object payload)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _http.PostAsync(API_URL + endpoint, content);
+                var body = await response.Content.ReadAsStringAsync();
+                var root = JObject.Parse(body);
+
+                return new AuthForgeResponse
+                {
+                    Success = root["success"] != null && root["success"].Value<bool>(),
+                    Message = root["message"] != null ? root["message"].Value<string>() : "",
+                    Error = root["error"] != null ? root["error"].Value<string>() : "",
+                    Data = root["user"] != null ? root["user"].Value<JObject>() :
+                           root["license"] != null ? root["license"].Value<JObject>() : null
+                };
+            }
+            catch (HttpRequestException)
+            {
+                return new AuthForgeResponse { Success = false, Error = "Cannot connect to AuthForge servers." };
+            }
+            catch (Exception ex)
+            {
+                return new AuthForgeResponse { Success = false, Error = "Unexpected error: " + ex.Message };
+            }
+        }
+    }
+}`;
+
+// ── C++ SDK content ──────────────────────────────────────────────────────────
+const cppSDK = `/*
+ * AuthForge C++ SDK v1.0
+ * https://authforge-dashboard.vercel.app
+ *
+ * SETUP:
+ * 1. Add this file to your C++ project
+ * 2. Install dependencies:
+ *    - libcurl (https://curl.se/libcurl/)
+ *    - nlohmann/json (https://github.com/nlohmann/json)
+ * 3. Link with: -lcurl
+ *
+ * USAGE:
+ *   AuthForge af("YOUR_SECRET_KEY");
+ *   auto result = af.Login("username", "password");
+ *   if (result.success) { // let user in }
+ */
+
+#pragma once
+#include <string>
+#include <curl/curl.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
+namespace AuthForgeSDK {
+
+    const std::string API_URL = "https://authforge-backend-production.up.railway.app/api/client";
+
+    struct AuthForgeResponse {
+        bool success = false;
+        std::string message;
+        std::string error;
+        json data;
+    };
+
+    static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
+        output->append((char*)contents, size * nmemb);
+        return size * nmemb;
+    }
+
+    static AuthForgeResponse PostRequest(const std::string& endpoint, const json& payload) {
+        AuthForgeResponse response;
+        CURL* curl = curl_easy_init();
+        if (!curl) {
+            response.error = "Failed to initialize CURL";
+            return response;
+        }
+        std::string body = payload.dump();
+        std::string responseBody;
+        struct curl_slist* headers = nullptr;
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        curl_easy_setopt(curl, CURLOPT_URL, (API_URL + endpoint).c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBody);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+        CURLcode res = curl_easy_perform(curl);
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        if (res != CURLE_OK) {
+            response.error = curl_easy_strerror(res);
+            return response;
+        }
+        try {
+            auto root = json::parse(responseBody);
+            response.success = root.value("success", false);
+            response.message = root.value("message", "");
+            response.error = root.value("error", "");
+            if (root.contains("user")) response.data = root["user"];
+            else if (root.contains("license")) response.data = root["license"];
+        } catch (...) {
+            response.error = "Failed to parse server response";
+        }
+        return response;
+    }
+
+    class AuthForge {
+    private:
+        std::string secretKey;
+    public:
+        AuthForge(const std::string& key) : secretKey(key) {}
+
+        // Login with username + password. Pass hwid if HWID lock is enabled.
+        AuthForgeResponse Login(const std::string& username, const std::string& password, const std::string& hwid = "") {
+            json payload = { {"secret_key", secretKey}, {"username", username}, {"password", password} };
+            if (!hwid.empty()) payload["hwid"] = hwid;
+            return PostRequest("/login", payload);
+        }
+
+        // Register a new user with a license key.
+        AuthForgeResponse Register(const std::string& username, const std::string& password, const std::string& licenseKey) {
+            json payload = { {"secret_key", secretKey}, {"username", username}, {"password", password}, {"license_key", licenseKey} };
+            return PostRequest("/register", payload);
+        }
+
+        // Login using just a license key.
+        AuthForgeResponse LicenseLogin(const std::string& licenseKey) {
+            json payload = { {"secret_key", secretKey}, {"license_key", licenseKey} };
+            return PostRequest("/license/login", payload);
+        }
+
+        // Validate a license key.
+        AuthForgeResponse CheckLicense(const std::string& licenseKey) {
+            json payload = { {"secret_key", secretKey}, {"license_key", licenseKey} };
+            return PostRequest("/license/check", payload);
+        }
+    };
+}`;
+
+// ── Python SDK content ───────────────────────────────────────────────────────
+const pythonSDK = `"""
+AuthForge Python SDK v1.0
+https://authforge-dashboard.vercel.app
+
+SETUP:
+    1. Add this file to your Python project
+    2. Install requests:
+       pip install requests
+    3. Replace YOUR_SECRET_KEY with your app secret key
+
+USAGE:
+    from authforge import AuthForge
+    af = AuthForge("YOUR_SECRET_KEY")
+    result = af.login("username", "password")
+    if result["success"]:
+        print("Welcome!")
+"""
+
+import requests
+
+API_URL = "https://authforge-backend-production.up.railway.app/api/client"
+
+class AuthForge:
+    def __init__(self, secret_key: str):
+        if not secret_key:
+            raise ValueError("Secret key cannot be empty")
+        self.secret_key = secret_key
+
+    def _post(self, endpoint: str, payload: dict) -> dict:
+        try:
+            r = requests.post(API_URL + endpoint, json=payload, timeout=10)
+            return r.json()
+        except requests.exceptions.ConnectionError:
+            return {"success": False, "message": "Cannot connect to AuthForge servers"}
+        except Exception as e:
+            return {"success": False, "message": str(e)}
+
+    def login(self, username: str, password: str, hwid: str = None) -> dict:
+        """Login with username and password. Pass hwid if HWID lock is enabled."""
+        payload = {"secret_key": self.secret_key, "username": username, "password": password}
+        if hwid:
+            payload["hwid"] = hwid
+        return self._post("/login", payload)
+
+    def register(self, username: str, password: str, license_key: str) -> dict:
+        """Register a new user using a license key."""
+        return self._post("/register", {
+            "secret_key": self.secret_key,
+            "username": username,
+            "password": password,
+            "license_key": license_key
+        })
+
+    def license_login(self, license_key: str) -> dict:
+        """Login using just a license key — no username or password needed."""
+        return self._post("/license/login", {
+            "secret_key": self.secret_key,
+            "license_key": license_key
+        })
+
+    def check_license(self, license_key: str) -> dict:
+        """Validate a license key without logging in."""
+        return self._post("/license/check", {
+            "secret_key": self.secret_key,
+            "license_key": license_key
+        })`;
+
+function downloadCSharp() {
+  download('AuthForge.cs', csharpSDK);
+}
+function downloadCPP() {
+  download('authforge.hpp', cppSDK);
+}
+function downloadPython() {
+  download('authforge.py', pythonSDK);
+}
+
+function download(filename, content) {
+  const blob = new Blob([content], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>
