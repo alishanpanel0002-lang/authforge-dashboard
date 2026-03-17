@@ -4,202 +4,224 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AuthForge — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0a0a0f; --surface: #111118; --surface2: #1a1a24;
-    --border: #2a2a3a; --accent: #6c63ff; --accent2: #00d4aa;
-    --danger: #ff4757; --text: #e8e8f0; --muted: #6b6b80;
-    --font-display: 'Syne', sans-serif; --font-mono: 'Space Mono', monospace;
-  }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-display); min-height: 100vh; display: flex; }
-  .sidebar {
-    width: 220px; background: var(--surface); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; padding: 24px 16px; position: fixed; height: 100vh;
-  }
-  .logo-mark { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; margin-bottom: 32px; padding: 0 8px; }
-  .logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
-  .nav-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; padding: 0 8px; margin-bottom: 8px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
-    color: var(--muted); transition: all 0.2s; margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left;
-  }
-  .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { background: rgba(108,99,255,0.15); color: var(--accent); }
-  .sidebar-bottom { margin-top: auto; }
-  .user-chip {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    background: var(--surface2); border-radius: 8px; margin-bottom: 8px;
-  }
-  .avatar { width: 28px; height: 28px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
-  .user-info { flex: 1; overflow: hidden; }
-  .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .user-role { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
-  .logout-btn { width: 100%; padding: 8px; background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-display); font-size: 12px; cursor: pointer; transition: all 0.2s; }
-  .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
-  .main { margin-left: 220px; flex: 1; padding: 32px; min-height: 100vh; }
-  .page { display: none; } .page.active { display: block; }
-  .page-header { margin-bottom: 28px; }
-  .page-title { font-size: 26px; font-weight: 800; }
-  .page-sub { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .stat-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .stat-value { font-size: 32px; font-weight: 800; }
-  .stat-value.accent { color: var(--accent); }
-  .stat-value.green { color: var(--accent2); }
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .section-title { font-size: 16px; font-weight: 700; }
-  .btn { padding: 9px 18px; border: none; border-radius: 8px; font-family: var(--font-display); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #7c73ff; }
-  .btn-danger { background: rgba(255,71,87,0.15); color: var(--danger); border: 1px solid rgba(255,71,87,0.3); }
-  .btn-danger:hover { background: rgba(255,71,87,0.25); }
-  .btn-sm { padding: 5px 12px; font-size: 11px; }
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; }
-  th { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-  td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(42,42,58,0.5); }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--surface2); }
-  .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 20px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; }
-  .badge-green { background: rgba(0,212,170,0.15); color: var(--accent2); }
-  .badge-red { background: rgba(255,71,87,0.15); color: var(--danger); }
-  .badge-purple { background: rgba(108,99,255,0.15); color: var(--accent); }
-  .mono { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
-  .empty-state { text-align: center; padding: 48px; color: var(--muted); }
-  .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
-  .empty-state p { font-size: 14px; }
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 400px; animation: fadeUp 0.3s ease; }
-  @keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
-  .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-  .field input { width: 100%; padding: 9px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--font-mono); font-size: 12px; outline: none; transition: border-color 0.2s; }
-  .field input:focus { border-color: var(--accent); }
-  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-  .msg { padding: 8px 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 11px; margin-top: 10px; display: none; }
-  .msg.error { background: rgba(255,71,87,0.1); border: 1px solid rgba(255,71,87,0.3); color: var(--danger); }
-  .msg.success { background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); color: var(--accent2); }
-  .key-display { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--accent2); word-break: break-all; margin-top: 10px; }
-  .copy-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 2px 6px; border-radius: 4px; }
-  .copy-btn:hover { color: var(--text); background: var(--surface2); }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0a; --surface: #111; --surface2: #1a1a1a;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.12);
+  --text: #ededed; --muted: #888; --muted2: #555;
+  --blue: #3b82f6; --blue-dim: rgba(59,130,246,0.12);
+  --green: #22c55e; --green-dim: rgba(34,197,94,0.1);
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
+  --font: 'Geist', -apple-system, sans-serif; --r: 8px;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar { width: 216px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
+.logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin-bottom: 24px; }
+.logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; flex-shrink: 0; }
+.logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
+.nav-group { margin-bottom: 20px; }
+.nav-label { font-size: 11px; color: var(--muted2); padding: 0 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.1s; border: none; background: none; width: 100%; text-align: left; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--surface2); color: var(--text); }
+.nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+.sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px; }
+.user-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; }
+.avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.user-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sign-out { width: 100%; padding: 6px 8px; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 13px; text-align: left; border-radius: 6px; cursor: pointer; transition: all 0.1s; }
+.sign-out:hover { background: var(--surface2); color: var(--red); }
+
+/* Main */
+.main { margin-left: 216px; flex: 1; padding: 32px 40px; }
+.page { display: none; } .page.active { display: block; }
+.page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; }
+.stat-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.stat-val { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+
+/* Table */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { border-bottom: 1px solid var(--border); }
+th { font-size: 12px; color: var(--muted); font-weight: 400; padding: 10px 16px; text-align: left; }
+td { padding: 11px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--surface2); }
+.empty { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-blue { background: var(--blue-dim); color: var(--blue); }
+.badge-amber { background: var(--amber-dim); color: var(--amber); }
+
+/* Buttons */
+.btn { padding: 6px 14px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.1s; border: 1px solid transparent; }
+.btn-primary { background: var(--text); color: #000; border-color: var(--text); }
+.btn-primary:hover { opacity: 0.85; }
+.btn-ghost { background: none; color: var(--muted); border-color: var(--border2); }
+.btn-ghost:hover { color: var(--text); border-color: var(--border2); background: var(--surface2); }
+.btn-danger { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.2); }
+.btn-danger:hover { opacity: 0.8; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* Mono */
+.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--muted); }
+.copy-btn { background: none; border: none; color: var(--muted2); cursor: pointer; padding: 2px 4px; border-radius: 4px; font-size: 12px; }
+.copy-btn:hover { color: var(--text); background: var(--surface2); }
+
+/* Modal */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 24px; width: 100%; max-width: 380px; }
+.modal-title { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+.field input, .field select { width: 100%; padding: 7px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; color-scheme: dark; }
+.field input:focus, .field select:focus { border-color: var(--border2); }
+.field input::placeholder { color: #444; }
+.modal-footer { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+.alert { display: none; padding: 8px 12px; border-radius: var(--r); font-size: 12px; margin-top: 10px; }
+.alert.err { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+.alert.ok { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.app-selector { margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.app-selector select { padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; }
 </style>
 </head>
 <body>
+
 <nav class="sidebar">
-  <div class="logo-mark"><div class="logo-icon">⚡</div>AuthForge</div>
-  <div class="nav-label">Menu</div>
-  <button class="nav-item active" onclick="showPage('overview')">📊 Overview</button>
-  <button class="nav-item" onclick="showPage('apps')">🔧 My Apps</button>
-  <button class="nav-item" onclick="showPage('licenses')">🔑 Licenses</button>
-  <button class="nav-item" onclick="showPage('users')">👤 Users</button>
+  <div class="logo"><div class="logo-dot"></div><span class="logo-text">AuthForge</span></div>
+  <div class="nav-group">
+    <div class="nav-label">Platform</div>
+    <button class="nav-item active" onclick="nav('overview')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Overview
+    </button>
+    <button class="nav-item" onclick="nav('apps')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M8 5v6"/></svg>
+      Applications
+    </button>
+    <button class="nav-item" onclick="nav('licenses')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="8" rx="1.5"/><path d="M5 5V4a3 3 0 016 0v1"/></svg>
+      Licenses
+    </button>
+    <button class="nav-item" onclick="nav('users')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+      Users
+    </button>
+  </div>
   <div class="sidebar-bottom">
-    <div class="user-chip">
-      <div class="avatar" id="user-avatar">?</div>
-      <div class="user-info">
-        <div class="user-name" id="user-name">Loading...</div>
-        <div class="user-role">Developer</div>
-      </div>
+    <div class="user-row">
+      <div class="avatar" id="av">?</div>
+      <span class="user-name" id="un">...</span>
     </div>
-    <button class="logout-btn" onclick="logout()">Sign out</button>
+    <button class="sign-out" onclick="logout()">Sign out</button>
   </div>
 </nav>
 
 <main class="main">
+
   <!-- Overview -->
-  <div class="page active" id="page-overview">
-    <div class="page-header">
-      <div class="page-title">Overview</div>
-      <div class="page-sub">// Your AuthForge stats at a glance</div>
+  <div class="page active" id="p-overview">
+    <div class="page-head"><div class="page-title">Overview</div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Applications</div><div class="stat-val" id="s-apps">—</div></div>
+      <div class="stat"><div class="stat-label">License Keys</div><div class="stat-val" id="s-lic">—</div></div>
+      <div class="stat"><div class="stat-label">Total Users</div><div class="stat-val" id="s-usr">—</div></div>
+      <div class="stat"><div class="stat-label">Active Keys</div><div class="stat-val" id="s-act">—</div></div>
     </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Total Apps</div><div class="stat-value accent" id="stat-apps">—</div></div>
-      <div class="stat-card"><div class="stat-label">Total Licenses</div><div class="stat-value green" id="stat-licenses">—</div></div>
-      <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="stat-users">—</div></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Application</th><th>Secret Key</th><th>Created</th></tr></thead>
+      <tbody id="ov-apps"></tbody></table>
     </div>
-    <div class="section-header"><div class="section-title">Your Apps</div><button class="btn btn-primary" onclick="showPage('apps')">Manage Apps →</button></div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>App Name</th><th>Secret Key</th><th>Created</th></tr></thead>
-      <tbody id="overview-apps-list"><tr><td colspan="3" class="empty-state"><p>Loading...</p></td></tr></tbody>
-    </table></div>
   </div>
 
   <!-- Apps -->
-  <div class="page" id="page-apps">
-    <div class="page-header">
-      <div class="page-title">My Apps</div>
-      <div class="page-sub">// Create and manage your applications</div>
+  <div class="page" id="p-apps">
+    <div class="page-head">
+      <div class="page-title">Applications</div>
+      <button class="btn btn-primary" onclick="openModal('m-app')">New application</button>
     </div>
-    <div class="section-header">
-      <div class="section-title">Applications</div>
-      <button class="btn btn-primary" onclick="openCreateApp()">+ New App</button>
+    <div class="table-wrap">
+      <table><thead><tr><th>Name</th><th>Secret Key</th><th>Created</th><th></th></tr></thead>
+      <tbody id="apps-tbody"></tbody></table>
     </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Name</th><th>Secret Key</th><th>Created</th><th>Actions</th></tr></thead>
-      <tbody id="apps-list"></tbody>
-    </table></div>
   </div>
 
   <!-- Licenses -->
-  <div class="page" id="page-licenses">
-    <div class="page-header">
+  <div class="page" id="p-licenses">
+    <div class="page-head">
       <div class="page-title">Licenses</div>
-      <div class="page-sub">// Generate and manage license keys</div>
+      <button class="btn btn-primary" onclick="openCreateLicense()">Generate license</button>
     </div>
-    <div class="section-header">
-      <div class="section-title">License Keys</div>
-      <button class="btn btn-primary" onclick="openCreateLicense()">+ Generate License</button>
+    <div class="app-selector">
+      <span style="color:var(--muted);font-size:13px">Filter by app:</span>
+      <select id="lic-filter" onchange="loadLicenses()"><option value="">All apps</option></select>
     </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>License Key</th><th>App</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead>
-      <tbody id="licenses-list"></tbody>
-    </table></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>License Key</th><th>App</th><th>Users</th><th>Status</th><th>Expires</th><th></th></tr></thead>
+      <tbody id="lic-tbody"></tbody></table>
+    </div>
   </div>
 
   <!-- Users -->
-  <div class="page" id="page-users">
-    <div class="page-header">
-      <div class="page-title">Users</div>
-      <div class="page-sub">// End users across all your apps</div>
+  <div class="page" id="p-users">
+    <div class="page-head"><div class="page-title">Users</div></div>
+    <div class="app-selector">
+      <span style="color:var(--muted);font-size:13px">Filter by app:</span>
+      <select id="usr-filter" onchange="loadUsers()"><option value="">All apps</option></select>
     </div>
-    <div class="section-header"><div class="section-title">All Users</div></div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Username</th><th>Email</th><th>App</th><th>Status</th><th>Joined</th></tr></thead>
-      <tbody id="users-list"></tbody>
-    </table></div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Username</th><th>Email</th><th>App</th><th>License</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+      <tbody id="usr-tbody"></tbody></table>
+    </div>
   </div>
+
 </main>
 
-<!-- Create App Modal -->
-<div class="modal-overlay" id="modal-create-app">
+<!-- New App Modal -->
+<div class="overlay" id="m-app">
   <div class="modal">
-    <div class="modal-title">Create New App</div>
-    <div class="field"><label>App Name</label><input type="text" id="new-app-name" placeholder="My Awesome App"></div>
-    <div class="msg" id="create-app-msg"></div>
-    <div class="modal-actions">
-      <button class="btn btn-primary" onclick="createApp()">Create App</button>
-      <button class="btn" style="background:var(--surface2);color:var(--muted)" onclick="closeModal('modal-create-app')">Cancel</button>
+    <div class="modal-title">New application</div>
+    <div class="field"><label>Application name</label><input type="text" id="app-name" placeholder="My App"></div>
+    <div class="alert" id="app-msg"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m-app')">Cancel</button>
+      <button class="btn btn-primary" onclick="createApp()">Create</button>
     </div>
   </div>
 </div>
 
-<!-- Create License Modal -->
-<div class="modal-overlay" id="modal-create-license">
+<!-- New License Modal -->
+<div class="overlay" id="m-lic">
   <div class="modal">
-    <div class="modal-title">Generate License Key</div>
-    <div class="field"><label>App</label>
-      <select id="license-app-select" style="width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-mono);font-size:12px;outline:none"></select>
+    <div class="modal-title">Generate license key</div>
+    <div class="field"><label>Application</label>
+      <select id="lic-app"></select>
     </div>
-    <div class="field"><label>Expires At (optional)</label><input type="date" id="license-expires" style="color-scheme:dark"></div>
-    <div class="msg" id="create-license-msg"></div>
-    <div class="modal-actions">
+    <div class="field"><label>Max users (how many users can register with this key)</label>
+      <input type="number" id="lic-max" value="1" min="1" max="1000">
+    </div>
+    <div class="field"><label>Expiry date (optional)</label>
+      <input type="date" id="lic-exp">
+    </div>
+    <div class="alert" id="lic-msg"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m-lic')">Cancel</button>
       <button class="btn btn-primary" onclick="createLicense()">Generate</button>
-      <button class="btn" style="background:var(--surface2);color:var(--muted)" onclick="closeModal('modal-create-license')">Cancel</button>
     </div>
   </div>
 </div>
@@ -210,172 +232,206 @@ let token = localStorage.getItem('af_token');
 let user = JSON.parse(localStorage.getItem('af_user') || '{}');
 let allApps = [];
 
-if (!token) window.location.href = 'index.html';
+if (!token) location.href = 'index.html';
 
-// Init user UI
-document.getElementById('user-name').textContent = user.username || 'Developer';
-document.getElementById('user-avatar').textContent = (user.username || 'D')[0].toUpperCase();
+document.getElementById('un').textContent = user.username || '';
+document.getElementById('av').textContent = (user.username || '?')[0].toUpperCase();
 
-function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+function logout() { localStorage.clear(); location.href = 'index.html'; }
 
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  document.querySelectorAll('.nav-item')[['overview','apps','licenses','users'].indexOf(name)].classList.add('active');
-  if (name === 'overview') loadOverview();
-  if (name === 'apps') loadApps();
-  if (name === 'licenses') loadLicenses();
-  if (name === 'users') loadUsers();
+function nav(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('p-' + p).classList.add('active');
+  const idx = ['overview','apps','licenses','users'].indexOf(p);
+  document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  if (p === 'overview') loadOverview();
+  if (p === 'apps') loadApps();
+  if (p === 'licenses') loadLicenses();
+  if (p === 'users') loadUsers();
 }
 
-function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }; }
-
-function showMsg(id, text, type) {
-  const el = document.getElementById(id);
-  el.textContent = text; el.className = `msg ${type}`; el.style.display = 'block';
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function H() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }; }
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-GB') : '—'; }
+function copy(t) { navigator.clipboard.writeText(t); }
 function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function setMsg(id, text, type) { const el = document.getElementById(id); el.textContent = text; el.className = `alert ${type}`; el.style.display = 'block'; }
 
-function copyText(text) {
-  navigator.clipboard.writeText(text);
-}
-
-function formatDate(d) { return d ? new Date(d).toLocaleDateString() : '—'; }
-
-async function loadApps() {
-  const r = await fetch(`${API}/api/apps`, { headers: authHeaders() });
+async function fetchApps() {
+  const r = await fetch(`${API}/api/apps`, { headers: H() });
   const d = await r.json();
   allApps = d.apps || [];
-  const tbody = document.getElementById('apps-list');
-  if (!allApps.length) { tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">🔧</div><p>No apps yet. Create your first app!</p></div></td></tr>`; return; }
-  tbody.innerHTML = allApps.map(a => `
-    <tr>
-      <td><strong>${a.name}</strong></td>
-      <td><span class="mono">${a.secret_key.substring(0,20)}...</span> <button class="copy-btn" onclick="copyText('${a.secret_key}')" title="Copy key">📋</button></td>
-      <td class="mono">${formatDate(a.created_at)}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="deleteApp('${a.id}')">Delete</button></td>
-    </tr>`).join('');
+  return allApps;
+}
+
+function populateSelects() {
+  ['lic-filter','usr-filter','lic-app'].forEach(id => {
+    const el = document.getElementById(id);
+    const cur = el.value;
+    const isFilter = id.includes('filter');
+    el.innerHTML = isFilter ? '<option value="">All apps</option>' : '';
+    allApps.forEach(a => {
+      const o = document.createElement('option');
+      o.value = a.id; o.textContent = a.name;
+      el.appendChild(o);
+    });
+    if (cur) el.value = cur;
+  });
 }
 
 async function loadOverview() {
-  const r = await fetch(`${API}/api/apps`, { headers: authHeaders() });
-  const d = await r.json();
-  allApps = d.apps || [];
-  document.getElementById('stat-apps').textContent = allApps.length;
-  let totalLicenses = 0, totalUsers = 0;
+  await fetchApps();
+  populateSelects();
+  document.getElementById('s-apps').textContent = allApps.length;
+  let totalLic = 0, totalUsr = 0, activeLic = 0;
   for (const app of allApps) {
-    const lr = await fetch(`${API}/api/licenses/${app.id}`, { headers: authHeaders() });
+    const lr = await fetch(`${API}/api/licenses/${app.id}`, { headers: H() });
     const ld = await lr.json();
-    totalLicenses += (ld.licenses || []).length;
-    const ur = await fetch(`${API}/api/apps/${app.id}/users`, { headers: authHeaders() });
+    const lics = ld.licenses || [];
+    totalLic += lics.length;
+    activeLic += lics.filter(l => l.is_active).length;
+    const ur = await fetch(`${API}/api/users/${app.id}`, { headers: H() });
     const ud = await ur.json();
-    totalUsers += (ud.users || []).length;
+    totalUsr += (ud.users || []).length;
   }
-  document.getElementById('stat-licenses').textContent = totalLicenses;
-  document.getElementById('stat-users').textContent = totalUsers;
-  const tbody = document.getElementById('overview-apps-list');
-  if (!allApps.length) { tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><p>No apps yet.</p></div></td></tr>`; return; }
-  tbody.innerHTML = allApps.map(a => `<tr><td><strong>${a.name}</strong></td><td><span class="mono">${a.secret_key.substring(0,24)}...</span></td><td class="mono">${formatDate(a.created_at)}</td></tr>`).join('');
-}
-
-async function loadLicenses() {
-  const r = await fetch(`${API}/api/apps`, { headers: authHeaders() });
-  const d = await r.json();
-  allApps = d.apps || [];
-  let all = [];
-  for (const app of allApps) {
-    const lr = await fetch(`${API}/api/licenses/${app.id}`, { headers: authHeaders() });
-    const ld = await lr.json();
-    (ld.licenses || []).forEach(l => all.push({...l, appName: app.name}));
-  }
-  const tbody = document.getElementById('licenses-list');
-  if (!all.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">🔑</div><p>No licenses yet.</p></div></td></tr>`; return; }
-  tbody.innerHTML = all.map(l => `
+  document.getElementById('s-lic').textContent = totalLic;
+  document.getElementById('s-usr').textContent = totalUsr;
+  document.getElementById('s-act').textContent = activeLic;
+  const tbody = document.getElementById('ov-apps');
+  tbody.innerHTML = allApps.length ? allApps.map(a => `
     <tr>
-      <td><span class="mono">${l.license_key}</span> <button class="copy-btn" onclick="copyText('${l.license_key}')" title="Copy">📋</button></td>
-      <td><span class="badge badge-purple">${l.appName}</span></td>
-      <td><span class="badge ${l.is_active ? 'badge-green' : 'badge-red'}">${l.is_active ? 'Active' : 'Disabled'}</span></td>
-      <td class="mono">${formatDate(l.expires_at)}</td>
-      <td>
-        <button class="btn btn-sm" style="background:var(--surface2);color:var(--muted);margin-right:4px" onclick="toggleLicense('${l.id}', ${!l.is_active})">${l.is_active ? 'Disable' : 'Enable'}</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteLicense('${l.id}')">Delete</button>
-      </td>
-    </tr>`).join('');
+      <td><span style="font-weight:500">${a.name}</span></td>
+      <td><span class="mono">${a.secret_key.substring(0,28)}...</span> <button class="copy-btn" onclick="copy('${a.secret_key}')">⎘</button></td>
+      <td class="mono">${fmtDate(a.created_at)}</td>
+    </tr>`).join('') : `<tr><td colspan="3" class="empty">No applications yet</td></tr>`;
 }
 
-async function loadUsers() {
-  const r = await fetch(`${API}/api/apps`, { headers: authHeaders() });
-  const d = await r.json();
-  allApps = d.apps || [];
-  let all = [];
-  for (const app of allApps) {
-    const ur = await fetch(`${API}/api/apps/${app.id}/users`, { headers: authHeaders() });
-    const ud = await ur.json();
-    (ud.users || []).forEach(u => all.push({...u, appName: app.name}));
-  }
-  const tbody = document.getElementById('users-list');
-  if (!all.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">👤</div><p>No users yet.</p></div></td></tr>`; return; }
-  tbody.innerHTML = all.map(u => `
+async function loadApps() {
+  await fetchApps();
+  populateSelects();
+  const tbody = document.getElementById('apps-tbody');
+  tbody.innerHTML = allApps.length ? allApps.map(a => `
     <tr>
-      <td><strong>${u.username}</strong></td>
-      <td class="mono">${u.email || '—'}</td>
-      <td><span class="badge badge-purple">${u.appName}</span></td>
-      <td><span class="badge ${u.is_banned ? 'badge-red' : 'badge-green'}">${u.is_banned ? 'Banned' : 'Active'}</span></td>
-      <td class="mono">${formatDate(u.created_at)}</td>
-    </tr>`).join('');
+      <td><span style="font-weight:500">${a.name}</span></td>
+      <td><span class="mono">${a.secret_key.substring(0,28)}...</span> <button class="copy-btn" onclick="copy('${a.secret_key}')">⎘</button></td>
+      <td class="mono">${fmtDate(a.created_at)}</td>
+      <td style="text-align:right"><button class="btn btn-danger btn-sm" onclick="deleteApp('${a.id}')">Delete</button></td>
+    </tr>`).join('') : `<tr><td colspan="4" class="empty">No applications yet</td></tr>`;
 }
-
-function openCreateApp() { document.getElementById('new-app-name').value = ''; document.getElementById('create-app-msg').style.display='none'; openModal('modal-create-app'); }
 
 async function createApp() {
-  const name = document.getElementById('new-app-name').value;
-  if (!name) return showMsg('create-app-msg', 'App name required', 'error');
-  const r = await fetch(`${API}/api/apps`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({name}) });
+  const name = document.getElementById('app-name').value.trim();
+  if (!name) return setMsg('app-msg','App name required','err');
+  const r = await fetch(`${API}/api/apps`, { method:'POST', headers: H(), body: JSON.stringify({name}) });
   const d = await r.json();
-  if (!r.ok) return showMsg('create-app-msg', d.error, 'error');
-  closeModal('modal-create-app');
+  if (!r.ok) return setMsg('app-msg', d.error, 'err');
+  closeModal('m-app');
+  document.getElementById('app-name').value = '';
   loadApps();
 }
 
 async function deleteApp(id) {
-  if (!confirm('Delete this app? All its users and licenses will be deleted too.')) return;
-  await fetch(`${API}/api/apps/${id}`, { method: 'DELETE', headers: authHeaders() });
+  if (!confirm('Delete this app? All licenses and users will be deleted too.')) return;
+  await fetch(`${API}/api/apps/${id}`, { method:'DELETE', headers: H() });
   loadApps();
 }
 
+async function loadLicenses() {
+  if (!allApps.length) await fetchApps();
+  populateSelects();
+  const filterApp = document.getElementById('lic-filter').value;
+  const appsToCheck = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
+  let all = [];
+  for (const app of appsToCheck) {
+    const r = await fetch(`${API}/api/licenses/${app.id}`, { headers: H() });
+    const d = await r.json();
+    (d.licenses || []).forEach(l => all.push({...l, appName: app.name}));
+  }
+  const tbody = document.getElementById('lic-tbody');
+  tbody.innerHTML = all.length ? all.map(l => `
+    <tr>
+      <td><span class="mono">${l.license_key}</span> <button class="copy-btn" onclick="copy('${l.license_key}')">⎘</button></td>
+      <td><span class="badge badge-blue">${l.appName}</span></td>
+      <td><span style="font-size:13px">${l.used_slots}/${l.max_users}</span></td>
+      <td><span class="badge ${l.is_active ? 'badge-green' : 'badge-red'}">${l.is_active ? 'Active' : 'Disabled'}</span></td>
+      <td class="mono">${fmtDate(l.expires_at)}</td>
+      <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn btn-ghost btn-sm" onclick="toggleLic('${l.id}',${!l.is_active})">${l.is_active ? 'Disable' : 'Enable'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteLic('${l.id}')">Delete</button>
+      </td>
+    </tr>`).join('') : `<tr><td colspan="6" class="empty">No licenses yet</td></tr>`;
+}
+
 function openCreateLicense() {
-  const sel = document.getElementById('license-app-select');
-  sel.innerHTML = allApps.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-  if (!allApps.length) return alert('Create an app first!');
-  document.getElementById('create-license-msg').style.display='none';
-  openModal('modal-create-license');
+  if (!allApps.length) return alert('Create an application first!');
+  document.getElementById('lic-msg').style.display = 'none';
+  document.getElementById('lic-max').value = 1;
+  document.getElementById('lic-exp').value = '';
+  openModal('m-lic');
 }
 
 async function createLicense() {
-  const app_id = document.getElementById('license-app-select').value;
-  const expires_at = document.getElementById('license-expires').value || null;
-  const r = await fetch(`${API}/api/licenses/${app_id}`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({expires_at}) });
+  const app_id = document.getElementById('lic-app').value;
+  const max_users = parseInt(document.getElementById('lic-max').value) || 1;
+  const expires_at = document.getElementById('lic-exp').value || null;
+  if (!app_id) return setMsg('lic-msg','Select an app','err');
+  const r = await fetch(`${API}/api/licenses/${app_id}`, { method:'POST', headers: H(), body: JSON.stringify({max_users, expires_at}) });
   const d = await r.json();
-  if (!r.ok) return showMsg('create-license-msg', d.error, 'error');
-  closeModal('modal-create-license');
+  if (!r.ok) return setMsg('lic-msg', d.error, 'err');
+  closeModal('m-lic');
   loadLicenses();
 }
 
-async function toggleLicense(id, is_active) {
-  await fetch(`${API}/api/licenses/${id}/toggle`, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({is_active}) });
+async function toggleLic(id, is_active) {
+  await fetch(`${API}/api/licenses/${id}/toggle`, { method:'PATCH', headers: H(), body: JSON.stringify({is_active}) });
   loadLicenses();
 }
 
-async function deleteLicense(id) {
-  if (!confirm('Delete this license?')) return;
-  await fetch(`${API}/api/licenses/${id}`, { method: 'DELETE', headers: authHeaders() });
+async function deleteLic(id) {
+  if (!confirm('Delete this license key?')) return;
+  await fetch(`${API}/api/licenses/${id}`, { method:'DELETE', headers: H() });
   loadLicenses();
 }
 
-// Load overview on start
+async function loadUsers() {
+  if (!allApps.length) await fetchApps();
+  populateSelects();
+  const filterApp = document.getElementById('usr-filter').value;
+  const appsToCheck = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
+  let all = [];
+  for (const app of appsToCheck) {
+    const r = await fetch(`${API}/api/users/${app.id}`, { headers: H() });
+    const d = await r.json();
+    (d.users || []).forEach(u => all.push({...u, appName: app.name}));
+  }
+  const tbody = document.getElementById('usr-tbody');
+  tbody.innerHTML = all.length ? all.map(u => `
+    <tr>
+      <td><span style="font-weight:500">${u.username}</span></td>
+      <td class="mono">${u.email || '—'}</td>
+      <td><span class="badge badge-blue">${u.appName}</span></td>
+      <td><span class="mono">${u.license_id ? u.license_id.substring(0,8)+'...' : '—'}</span></td>
+      <td><span class="badge ${u.is_banned ? 'badge-red' : 'badge-green'}">${u.is_banned ? 'Banned' : 'Active'}</span></td>
+      <td class="mono">${fmtDate(u.created_at)}</td>
+      <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn btn-ghost btn-sm" onclick="toggleBan('${u.id}',${!u.is_banned})">${u.is_banned ? 'Unban' : 'Ban'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">Delete</button>
+      </td>
+    </tr>`).join('') : `<tr><td colspan="7" class="empty">No users yet</td></tr>`;
+}
+
+async function toggleBan(id, is_banned) {
+  await fetch(`${API}/api/users/${id}/ban`, { method:'PATCH', headers: H(), body: JSON.stringify({is_banned}) });
+  loadUsers();
+}
+
+async function deleteUser(id) {
+  if (!confirm('Delete this user?')) return;
+  await fetch(`${API}/api/users/${id}`, { method:'DELETE', headers: H() });
+  loadUsers();
+}
+
 loadOverview();
 </script>
 </body>

@@ -3,210 +3,131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuthForge — Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<title>AuthForge</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --surface2: #1a1a24;
-    --border: #2a2a3a;
-    --accent: #6c63ff;
-    --accent2: #00d4aa;
-    --danger: #ff4757;
-    --text: #e8e8f0;
-    --muted: #6b6b80;
-    --font-display: 'Syne', sans-serif;
-    --font-mono: 'Space Mono', monospace;
-  }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-display);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  .bg-grid {
-    position: fixed; inset: 0; z-index: 0;
-    background-image: linear-gradient(var(--border) 1px, transparent 1px),
-                      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.3;
-  }
-  .bg-glow {
-    position: fixed; inset: 0; z-index: 0;
-    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(108,99,255,0.08) 0%, transparent 70%);
-  }
-  .container {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 420px;
-    padding: 20px;
-    animation: fadeUp 0.6s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .logo {
-    text-align: center; margin-bottom: 32px;
-  }
-  .logo-mark {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-family: var(--font-display); font-size: 28px; font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-  }
-  .logo-sub {
-    font-family: var(--font-mono); font-size: 11px;
-    color: var(--muted); margin-top: 4px; letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-  }
-  .card-title {
-    font-size: 20px; font-weight: 800;
-    margin-bottom: 4px;
-  }
-  .card-sub {
-    font-family: var(--font-mono); font-size: 11px;
-    color: var(--muted); margin-bottom: 28px;
-  }
-  .tabs {
-    display: flex; gap: 4px;
-    background: var(--bg); border-radius: 8px; padding: 4px;
-    margin-bottom: 24px;
-  }
-  .tab {
-    flex: 1; padding: 8px; border: none; background: none;
-    color: var(--muted); font-family: var(--font-display); font-size: 13px;
-    font-weight: 600; border-radius: 6px; cursor: pointer;
-    transition: all 0.2s;
-  }
-  .tab.active {
-    background: var(--surface2); color: var(--text);
-  }
-  .field { margin-bottom: 16px; }
-  .field label {
-    display: block; font-family: var(--font-mono);
-    font-size: 11px; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
-  }
-  .field input {
-    width: 100%; padding: 10px 14px;
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text);
-    font-family: var(--font-mono); font-size: 13px;
-    outline: none; transition: border-color 0.2s;
-  }
-  .field input:focus { border-color: var(--accent); }
-  .btn {
-    width: 100%; padding: 12px;
-    background: var(--accent); border: none;
-    border-radius: 8px; color: #fff;
-    font-family: var(--font-display); font-size: 14px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; margin-top: 8px;
-  }
-  .btn:hover { background: #7c73ff; transform: translateY(-1px); }
-  .btn:active { transform: translateY(0); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  .msg {
-    padding: 10px 14px; border-radius: 8px;
-    font-family: var(--font-mono); font-size: 12px;
-    margin-top: 12px; display: none;
-  }
-  .msg.error { background: rgba(255,71,87,0.1); border: 1px solid rgba(255,71,87,0.3); color: var(--danger); }
-  .msg.success { background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); color: var(--accent2); }
-  .form-section { display: none; }
-  .form-section.active { display: block; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.15);
+  --text: #ededed;
+  --muted: #888;
+  --accent: #fff;
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.1);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.1);
+  --font: 'Geist', -apple-system, sans-serif;
+  --radius: 8px;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wrap { width: 100%; max-width: 360px; padding: 24px; }
+.logo { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; justify-content: center; }
+.logo-dot { width: 20px; height: 20px; background: var(--blue); border-radius: 4px; }
+.logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+h1 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+.sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.tabs { display: flex; gap: 2px; background: var(--bg); border-radius: 6px; padding: 3px; margin-bottom: 20px; }
+.tab { flex: 1; padding: 6px; border: none; background: none; color: var(--muted); font-family: var(--font); font-size: 13px; font-weight: 500; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+.tab.active { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+.field input { width: 100%; padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; transition: border-color 0.15s; }
+.field input:focus { border-color: var(--border-hover); }
+.field input::placeholder { color: #444; }
+.btn { width: 100%; padding: 8px; background: var(--text); border: none; border-radius: var(--radius); color: #000; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 4px; transition: opacity 0.15s; }
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.alert { display: none; padding: 9px 12px; border-radius: var(--radius); font-size: 12px; margin-top: 12px; }
+.alert.err { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+.alert.ok { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+.form-section { display: none; }
+.form-section.active { display: block; }
 </style>
 </head>
 <body>
-<div class="bg-grid"></div>
-<div class="bg-glow"></div>
-<div class="container">
+<div class="wrap">
   <div class="logo">
-    <div class="logo-mark">
-      <div class="logo-icon">⚡</div>
-      AuthForge
-    </div>
-    <div class="logo-sub">Developer Platform</div>
+    <div class="logo-dot"></div>
+    <span class="logo-text">AuthForge</span>
   </div>
   <div class="card">
-    <div class="card-title">Welcome back</div>
-    <div class="card-sub">// Access your developer console</div>
+    <h1>Sign in</h1>
+    <p class="sub">Access your developer dashboard</p>
     <div class="tabs">
       <button class="tab active" onclick="switchTab('login')">Login</button>
       <button class="tab" onclick="switchTab('register')">Register</button>
     </div>
 
-    <div class="form-section active" id="login-form">
-      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="dev@example.com"></div>
-      <div class="field"><label>Password</label><input type="password" id="login-password" placeholder="••••••••"></div>
-      <button class="btn" onclick="doLogin()">Sign In →</button>
-      <div class="msg" id="login-msg"></div>
+    <div class="form-section active" id="s-login">
+      <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+      <button class="btn" onclick="doLogin()">Continue</button>
+      <div class="alert" id="l-msg"></div>
     </div>
 
-    <div class="form-section" id="register-form">
-      <div class="field"><label>Username</label><input type="text" id="reg-username" placeholder="cooldev"></div>
-      <div class="field"><label>Email</label><input type="email" id="reg-email" placeholder="dev@example.com"></div>
-      <div class="field"><label>Password</label><input type="password" id="reg-password" placeholder="••••••••"></div>
-      <button class="btn" onclick="doRegister()">Create Account →</button>
-      <div class="msg" id="register-msg"></div>
+    <div class="form-section" id="s-register">
+      <div class="field"><label>Username</label><input type="text" id="r-user" placeholder="yourname"></div>
+      <div class="field"><label>Email</label><input type="email" id="r-email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="r-pass" placeholder="••••••••"></div>
+      <button class="btn" onclick="doRegister()">Create account</button>
+      <div class="alert" id="r-msg"></div>
     </div>
   </div>
 </div>
 <script>
-  const API = 'https://authforge-backend-production.up.railway.app';
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1)));
-    document.getElementById('login-form').classList.toggle('active', tab==='login');
-    document.getElementById('register-form').classList.toggle('active', tab==='register');
-  }
-  function showMsg(id, text, type) {
-    const el = document.getElementById(id);
-    el.textContent = text; el.className = `msg ${type}`; el.style.display = 'block';
-  }
-  async function doLogin() {
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    if (!email || !password) return showMsg('login-msg', 'All fields required', 'error');
-    try {
-      const r = await fetch(`${API}/api/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
-      const d = await r.json();
-      if (!r.ok) return showMsg('login-msg', d.error, 'error');
-      localStorage.setItem('af_token', d.token);
-      localStorage.setItem('af_user', JSON.stringify(d.developer));
-      window.location.href = 'dashboard.html';
-    } catch(e) { showMsg('login-msg', 'Cannot connect to server', 'error'); }
-  }
-  async function doRegister() {
-    const username = document.getElementById('reg-username').value;
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-    if (!username || !email || !password) return showMsg('register-msg', 'All fields required', 'error');
-    try {
-      const r = await fetch(`${API}/api/auth/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, email, password}) });
-      const d = await r.json();
-      if (!r.ok) return showMsg('register-msg', d.error, 'error');
-      localStorage.setItem('af_token', d.token);
-      localStorage.setItem('af_user', JSON.stringify(d.developer));
-      window.location.href = 'dashboard.html';
-    } catch(e) { showMsg('register-msg', 'Cannot connect to server', 'error'); }
-  }
+const API = 'https://authforge-backend-production.up.railway.app';
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', (t==='login'&&i===0)||(t==='register'&&i===1)));
+  document.getElementById('s-login').classList.toggle('active', t==='login');
+  document.getElementById('s-register').classList.toggle('active', t==='register');
+}
+function msg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text; el.className = `alert ${type}`; el.style.display = 'block';
+}
+async function doLogin() {
+  const email = document.getElementById('l-email').value;
+  const password = document.getElementById('l-pass').value;
+  if (!email || !password) return msg('l-msg','All fields required','err');
+  try {
+    const r = await fetch(`${API}/api/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email,password}) });
+    const d = await r.json();
+    if (!r.ok) return msg('l-msg', d.error, 'err');
+    localStorage.setItem('af_token', d.token);
+    localStorage.setItem('af_user', JSON.stringify(d.developer));
+    window.location.href = 'dashboard.html';
+  } catch { msg('l-msg','Cannot connect to server','err'); }
+}
+async function doRegister() {
+  const username = document.getElementById('r-user').value;
+  const email = document.getElementById('r-email').value;
+  const password = document.getElementById('r-pass').value;
+  if (!username || !email || !password) return msg('r-msg','All fields required','err');
+  try {
+    const r = await fetch(`${API}/api/auth/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username,email,password}) });
+    const d = await r.json();
+    if (!r.ok) return msg('r-msg', d.error, 'err');
+    localStorage.setItem('af_token', d.token);
+    localStorage.setItem('af_user', JSON.stringify(d.developer));
+    window.location.href = 'dashboard.html';
+  } catch { msg('r-msg','Cannot connect to server','err'); }
+}
+if (localStorage.getItem('af_token')) window.location.href = 'dashboard.html';
 </script>
 </body>
 </html>
