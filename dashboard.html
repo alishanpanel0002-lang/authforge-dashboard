@@ -179,7 +179,10 @@ tbody tr:hover td { background: var(--surface2); }
 
   <!-- Users -->
   <div class="page" id="p-users">
-    <div class="page-head"><div class="page-title">Users</div></div>
+    <div class="page-head">
+      <div class="page-title">Users</div>
+      <button class="btn btn-primary" onclick="openCreateUser()">Create user</button>
+    </div>
     <div class="app-selector">
       <span style="color:var(--muted);font-size:13px">Filter by app:</span>
       <select id="usr-filter" onchange="loadUsers()"><option value="">All apps</option></select>
@@ -226,6 +229,27 @@ tbody tr:hover td { background: var(--surface2); }
   </div>
 </div>
 
+<!-- Create User Modal -->
+<div class="overlay" id="m-usr">
+  <div class="modal">
+    <div class="modal-title">Create user</div>
+    <div class="field"><label>Application</label>
+      <select id="usr-app"></select>
+    </div>
+    <div class="field"><label>License key (assign to user)</label>
+      <select id="usr-lic"><option value="">No license</option></select>
+    </div>
+    <div class="field"><label>Username</label><input type="text" id="usr-name" placeholder="client_username"></div>
+    <div class="field"><label>Password</label><input type="password" id="usr-pass" placeholder="••••••••"></div>
+    <div class="field"><label>Email (optional)</label><input type="email" id="usr-email" placeholder="client@example.com"></div>
+    <div class="alert" id="usr-msg"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m-usr')">Cancel</button>
+      <button class="btn btn-primary" onclick="createUser()">Create user</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = 'https://authforge-backend-production.up.railway.app';
 let token = localStorage.getItem('af_token');
@@ -266,7 +290,7 @@ async function fetchApps() {
 }
 
 function populateSelects() {
-  ['lic-filter','usr-filter','lic-app'].forEach(id => {
+  ['lic-filter','usr-filter','lic-app','usr-app'].forEach(id => {
     const el = document.getElementById(id);
     const cur = el.value;
     const isFilter = id.includes('filter');
@@ -278,6 +302,52 @@ function populateSelects() {
     });
     if (cur) el.value = cur;
   });
+}
+
+async function openCreateUser() {
+  if (!allApps.length) await fetchApps();
+  if (!allApps.length) return alert('Create an application first!');
+  populateSelects();
+  document.getElementById('usr-msg').style.display = 'none';
+  document.getElementById('usr-name').value = '';
+  document.getElementById('usr-pass').value = '';
+  document.getElementById('usr-email').value = '';
+  // Load licenses for first app
+  await loadLicenseOptions(allApps[0].id);
+  document.getElementById('usr-app').onchange = async function() {
+    await loadLicenseOptions(this.value);
+  };
+  openModal('m-usr');
+}
+
+async function loadLicenseOptions(appId) {
+  const r = await fetch(`${API}/api/licenses/${appId}`, { headers: H() });
+  const d = await r.json();
+  const sel = document.getElementById('usr-lic');
+  sel.innerHTML = '<option value="">No license</option>';
+  (d.licenses || []).filter(l => l.is_active).forEach(l => {
+    const o = document.createElement('option');
+    o.value = l.id;
+    o.textContent = `${l.license_key.substring(0,20)}... (${l.used_slots}/${l.max_users} slots used)`;
+    sel.appendChild(o);
+  });
+}
+
+async function createUser() {
+  const app_id = document.getElementById('usr-app').value;
+  const license_id = document.getElementById('usr-lic').value || null;
+  const username = document.getElementById('usr-name').value.trim();
+  const password = document.getElementById('usr-pass').value;
+  const email = document.getElementById('usr-email').value.trim();
+  if (!app_id || !username || !password) return setMsg('usr-msg','App, username and password required','err');
+  const r = await fetch(`${API}/api/users/${app_id}/create`, {
+    method: 'POST', headers: H(),
+    body: JSON.stringify({ username, password, email, license_id })
+  });
+  const d = await r.json();
+  if (!r.ok) return setMsg('usr-msg', d.error || d.message, 'err');
+  closeModal('m-usr');
+  loadUsers();
 }
 
 async function loadOverview() {
