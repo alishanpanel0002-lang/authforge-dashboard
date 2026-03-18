@@ -520,17 +520,22 @@ if (!token) location.href = 'index.html';
 
 // Init UI
 function initUI() {
-  document.getElementById('un').textContent = devUser.username || '';
-  document.getElementById('av-text').textContent = (devUser.username || '?')[0].toUpperCase();
+  var un = document.getElementById('un');
+  var avText = document.getElementById('av-text');
+  var up = document.getElementById('up');
+  var pb = document.getElementById('nav-plan');
+  if (un) un.textContent = devUser.username || '';
+  if (avText) avText.textContent = (devUser.username || '?')[0].toUpperCase();
   if (devUser.avatar_url) {
-    const av = document.getElementById('av');
-    av.innerHTML = '<img src="' + devUser.avatar_url + '" onerror="this.style.display=\'none\'">';
+    var av = document.getElementById('av');
+    if (av) av.innerHTML = '<img src="' + devUser.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
   }
-  const plan = devUser.plan || 'starter';
-  document.getElementById('up').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
-  const pb = document.getElementById('nav-plan');
-  pb.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
-  pb.className = 'plan-badge' + (plan === 'pro' ? ' pro' : plan === 'business' ? ' business' : '');
+  var plan = devUser.plan || 'starter';
+  if (up) up.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+  if (pb) {
+    pb.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+    pb.className = 'plan-badge' + (plan === 'pro' ? ' pro' : plan === 'business' ? ' business' : '');
+  }
 }
 initUI();
 
