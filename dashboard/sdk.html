@@ -345,11 +345,6 @@ function copyCode(lang) {
  *    Install-Package Newtonsoft.Json
  * 3. Initialize with your app's secret key
  * 4. Call Login, Register, LicenseLogin, or CheckLicense
- *
- * EXAMPLE:
- *   var af = new AuthForge("YOUR_APP_SECRET_KEY");
- *   var result = await af.Login("username", "password");
- *   if (result.Success) { // let user in }
  */
 
 using System;
@@ -382,58 +377,30 @@ namespace AuthForgeSDK
             _secretKey = secretKey;
         }
 
-        // ─── Login ────────────────────────────────────────────────────────────
-        /// <summary>
-        /// Log in an existing user with username and password.
-        /// Pass the hwid parameter if HWID locking is enabled on the account.
-        /// </summary>
-        /// <param name="username">The user's username</param>
-        /// <param name="password">The user's password</param>
-        /// <param name="hwid">Optional hardware ID for device locking</param>
         public async Task<AuthForgeResponse> Login(string username, string password, string hwid = null)
         {
             var payload = new { secret_key = _secretKey, username, password, hwid };
             return await Post("/login", payload);
         }
 
-        // ─── Register ─────────────────────────────────────────────────────────
-        /// <summary>
-        /// Register a new user. A valid license key with available slots is required.
-        /// </summary>
-        /// <param name="username">Desired username</param>
-        /// <param name="password">Desired password</param>
-        /// <param name="licenseKey">A valid license key to claim a slot on</param>
-        public async Task<AuthForgeResponse> Register(string username, string password, string licenseKey)
+        public async Task<AuthForgeResponse> Register(string username, string password, string licenseKey, string email = null)
         {
-            var payload = new { secret_key = _secretKey, username, password, license_key = licenseKey };
+            var payload = new { secret_key = _secretKey, username, password, license_key = licenseKey, email };
             return await Post("/register", payload);
         }
 
-        // ─── License Login ────────────────────────────────────────────────────
-        /// <summary>
-        /// Log in using just a license key — no username or password needed.
-        /// Useful for single-use or key-based activation models.
-        /// </summary>
-        /// <param name="licenseKey">The license key to authenticate with</param>
-        public async Task<AuthForgeResponse> LicenseLogin(string licenseKey)
+        public async Task<AuthForgeResponse> LicenseLogin(string licenseKey, string hwid = null)
         {
-            var payload = new { secret_key = _secretKey, license_key = licenseKey };
+            var payload = new { secret_key = _secretKey, license_key = licenseKey, hwid };
             return await Post("/license/login", payload);
         }
 
-        // ─── License Check ────────────────────────────────────────────────────
-        /// <summary>
-        /// Validate a license key without logging in.
-        /// Returns status, expiry date, and slot usage.
-        /// </summary>
-        /// <param name="licenseKey">The license key to validate</param>
         public async Task<AuthForgeResponse> CheckLicense(string licenseKey)
         {
             var payload = new { secret_key = _secretKey, license_key = licenseKey };
             return await Post("/license/check", payload);
         }
 
-        // ─── Internal POST helper ─────────────────────────────────────────────
         private async Task<AuthForgeResponse> Post(string endpoint, object payload)
         {
             try
@@ -442,33 +409,21 @@ namespace AuthForgeSDK
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(API_URL + endpoint, content);
                 var body = await response.Content.ReadAsStringAsync();
-
                 var root = JObject.Parse(body);
 
                 bool success = root["success"] != null && root["success"].Value<bool>();
                 string message = root["message"] != null ? root["message"].Value<string>() : "";
                 string error = root["error"]   != null ? root["error"].Value<string>()   : "";
 
-                // Data can be a user object or a license object depending on the endpoint
                 JObject data = null;
                 if (root["user"]    != null) data = root["user"].Value<JObject>();
                 else if (root["license"] != null) data = root["license"].Value<JObject>();
 
-                return new AuthForgeResponse
-                {
-                    Success = success,
-                    Message = message,
-                    Error   = error,
-                    Data    = data
-                };
-            }
-            catch (HttpRequestException)
-            {
-                return new AuthForgeResponse { Success = false, Error = "Cannot connect to AuthForge servers." };
+                return new AuthForgeResponse { Success = success, Message = message, Error = error, Data = data };
             }
             catch (Exception ex)
             {
-                return new AuthForgeResponse { Success = false, Error = string.Format("Unexpected error: {0}", ex.Message) };
+                return new AuthForgeResponse { Success = false, Error = ex.Message };
             }
         }
     }
@@ -476,23 +431,16 @@ namespace AuthForgeSDK
 
 // ── C++ SDK content ──────────────────────────────────────────────────────────
 const cppSDK = `/*
- * AuthForge C++ SDK v1.0
+ * AuthForge C++ SDK v2.0.0
  * https://authforge-dashboard.vercel.app
  *
  * SETUP:
- * 1. Add this file to your C++ project
- * 2. Install dependencies:
- *    - libcurl (https://curl.se/libcurl/)
- *    - nlohmann/json (https://github.com/nlohmann/json)
- * 3. Link with: -lcurl
- *
- * USAGE:
- *   AuthForge af("YOUR_SECRET_KEY");
- *   auto result = af.Login("username", "password");
- *   if (result.success) { // let user in }
+ * 1. Add this file to your project
+ * 2. Link with libcurl and use nlohmann/json
  */
 
 #pragma once
+#include <iostream>
 #include <string>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
@@ -500,7 +448,6 @@ const cppSDK = `/*
 using json = nlohmann::json;
 
 namespace AuthForgeSDK {
-
     const std::string API_URL = "https://authforge-backend-production.up.railway.app/api/client";
 
     struct AuthForgeResponse {
@@ -515,86 +462,62 @@ namespace AuthForgeSDK {
         return size * nmemb;
     }
 
-    static AuthForgeResponse PostRequest(const std::string& endpoint, const json& payload) {
-        AuthForgeResponse response;
-        CURL* curl = curl_easy_init();
-        if (!curl) {
-            response.error = "Failed to initialize CURL";
-            return response;
-        }
-        std::string body = payload.dump();
-        std::string responseBody;
-        struct curl_slist* headers = nullptr;
-        headers = curl_slist_append(headers, "Content-Type: application/json");
-        curl_easy_setopt(curl, CURLOPT_URL, (API_URL + endpoint).c_str());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBody);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-        CURLcode res = curl_easy_perform(curl);
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
-        if (res != CURLE_OK) {
-            response.error = curl_easy_strerror(res);
-            return response;
-        }
-        try {
-            auto root = json::parse(responseBody);
-            response.success = root.value("success", false);
-            response.message = root.value("message", "");
-            response.error = root.value("error", "");
-            if (root.contains("user")) response.data = root["user"];
-            else if (root.contains("license")) response.data = root["license"];
-        } catch (...) {
-            response.error = "Failed to parse server response";
-        }
-        return response;
-    }
-
     class AuthForge {
     private:
         std::string secretKey;
+        AuthForgeResponse Post(const std::string& endpoint, const json& payload) {
+            AuthForgeResponse response;
+            CURL* curl = curl_easy_init();
+            if (!curl) { response.error = "CURL init failed"; return response; }
+            std::string body = payload.dump();
+            std::string resp;
+            struct curl_slist* headers = nullptr;
+            headers = curl_slist_append(headers, "Content-Type: application/json");
+            curl_easy_setopt(curl, CURLOPT_URL, (API_URL + endpoint).c_str());
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
+            CURLcode res = curl_easy_perform(curl);
+            curl_slist_free_all(headers); curl_easy_cleanup(curl);
+            if (res != CURLE_OK) { response.error = curl_easy_strerror(res); return response; }
+            try {
+                auto root = json::parse(resp);
+                response.success = root.value("success", false);
+                response.message = root.value("message", "");
+                response.error = root.value("error", "");
+                if (root.contains("user")) response.data = root["user"];
+                else if (root.contains("license")) response.data = root["license"];
+            } catch(...) { response.error = "Parse error"; }
+            return response;
+        }
     public:
         AuthForge(const std::string& key) : secretKey(key) {}
-
-        // Login with username + password. Pass hwid if HWID lock is enabled.
-        AuthForgeResponse Login(const std::string& username, const std::string& password, const std::string& hwid = "") {
-            json payload = { {"secret_key", secretKey}, {"username", username}, {"password", password} };
-            if (!hwid.empty()) payload["hwid"] = hwid;
-            return PostRequest("/login", payload);
+        AuthForgeResponse Login(const std::string& u, const std::string& p, const std::string& h = "") {
+            json payload = {{"secret_key", secretKey}, {"username", u}, {"password", p}};
+            if(!h.empty()) payload["hwid"] = h;
+            return Post("/login", payload);
         }
-
-        // Register a new user with a license key.
-        AuthForgeResponse Register(const std::string& username, const std::string& password, const std::string& licenseKey) {
-            json payload = { {"secret_key", secretKey}, {"username", username}, {"password", password}, {"license_key", licenseKey} };
-            return PostRequest("/register", payload);
+        AuthForgeResponse Register(const std::string& u, const std::string& p, const std::string& l, const std::string& e = "") {
+            json payload = {{"secret_key", secretKey}, {"username", u}, {"password", p}, {"license_key", l}};
+            if(!e.empty()) payload["email"] = e;
+            return Post("/register", payload);
         }
-
-        // Login using just a license key.
-        AuthForgeResponse LicenseLogin(const std::string& licenseKey) {
-            json payload = { {"secret_key", secretKey}, {"license_key", licenseKey} };
-            return PostRequest("/license/login", payload);
-        }
-
-        // Validate a license key.
-        AuthForgeResponse CheckLicense(const std::string& licenseKey) {
-            json payload = { {"secret_key", secretKey}, {"license_key", licenseKey} };
-            return PostRequest("/license/check", payload);
+        AuthForgeResponse CheckLicense(const std::string& l) {
+            return Post("/license/check", {{"secret_key", secretKey}, {"license_key", l}});
         }
     };
 }`;
 
 // ── Python SDK content ───────────────────────────────────────────────────────
 const pythonSDK = `"""
-AuthForge Python SDK v1.0
+AuthForge Python SDK v2.0.0
 https://authforge-dashboard.vercel.app
 
 SETUP:
     1. Add this file to your Python project
     2. Install requests:
        pip install requests
-    3. Replace YOUR_SECRET_KEY with your app secret key
 
 USAGE:
     from authforge import AuthForge
@@ -630,28 +553,23 @@ class AuthForge:
             payload["hwid"] = hwid
         return self._post("/login", payload)
 
-    def register(self, username: str, password: str, license_key: str) -> dict:
+    def register(self, username: str, password: str, license_key: str, email: str = None) -> dict:
         """Register a new user using a license key."""
-        return self._post("/register", {
-            "secret_key": self.secret_key,
-            "username": username,
-            "password": password,
-            "license_key": license_key
-        })
+        payload = {"secret_key": self.secret_key, "username": username, "password": password, "license_key": license_key}
+        if email:
+            payload["email"] = email
+        return self._post("/register", payload)
 
-    def license_login(self, license_key: str) -> dict:
-        """Login using just a license key — no username or password needed."""
-        return self._post("/license/login", {
-            "secret_key": self.secret_key,
-            "license_key": license_key
-        })
+    def license_login(self, license_key: str, hwid: str = None) -> dict:
+        """Login using just a license key."""
+        payload = {"secret_key": self.secret_key, "license_key": license_key}
+        if hwid:
+            payload["hwid"] = hwid
+        return self._post("/license/login", payload)
 
     def check_license(self, license_key: str) -> dict:
         """Validate a license key without logging in."""
-        return self._post("/license/check", {
-            "secret_key": self.secret_key,
-            "license_key": license_key
-        })`;
+        return self._post("/license/check", {"secret_key": self.secret_key, "license_key": license_key})`;
 
 function downloadCSharp() {
   download('AuthForge.cs', csharpSDK);
