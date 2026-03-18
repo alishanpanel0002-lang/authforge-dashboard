@@ -161,6 +161,10 @@ tbody tr:hover td { background: var(--surface2); }
     <button class="nav-item" onclick="nav('settings')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>App Settings</button>
     <button class="nav-item" onclick="nav('account')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/></svg>My Account</button>
     <button class="nav-item" onclick="nav('billing')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M1 7h14"/></svg>Billing <span class="plan-badge" id="nav-plan">Free</span></button>
+    <button class="nav-item" onclick="nav('team')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><path d="M0 13c0-2.5 2-4 5-4s5 1.5 5 4"/><path d="M11 9c2 0 4 1 4 3.5"/></svg>
+      Team
+    </button>
     <a class="nav-item" href="sdk.html"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l-3 2 3 2M12 6l3 2-3 2M9 3l-2 10"/></svg>SDK & Docs</a>
   </div>
   <div class="nav-group" id="admin-nav" style="display:none">
@@ -398,6 +402,33 @@ tbody tr:hover td { background: var(--surface2); }
     <div style="font-size:13px;font-weight:600;margin-bottom:10px">All Applications</div>
     <div class="table-wrap"><table><thead><tr><th>App Name</th><th>Owner</th><th>Created</th></tr></thead><tbody id="admin-apps-tbody"></tbody></table></div>
   </div>
+
+  <!-- Team -->
+  <div class="page" id="p-team">
+    <div class="page-head">
+      <div class="page-title">Team Management</div>
+      <button class="btn btn-primary" onclick="openModal('m-invite')">Invite member</button>
+    </div>
+    <div id="team-business-only" style="display:none;background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r);padding:14px;font-size:13px;color:var(--amber);margin-bottom:16px">
+      ⚡ Team management is available on the <strong>Business plan</strong> only.
+    </div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">Team Members</div>
+    <div class="table-wrap" style="margin-bottom:20px">
+      <table><thead><tr><th>Member</th><th>View</th><th>Manage Users</th><th>Manage Licenses</th><th>Manage Apps</th><th>Settings</th><th></th></tr></thead>
+      <tbody id="team-tbody"></tbody></table>
+    </div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">Pending Invites</div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Email</th><th>Sent</th><th></th></tr></thead>
+      <tbody id="invites-tbody"></tbody></table>
+    </div>
+    <div style="font-size:13px;font-weight:600;margin:20px 0 10px">Teams I'm a member of</div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Owner</th><th>My Permissions</th></tr></thead>
+      <tbody id="my-teams-tbody"></tbody></table>
+    </div>
+  </div>
+
 </main>
 
 <!-- Modals -->
@@ -462,6 +493,20 @@ tbody tr:hover td { background: var(--surface2); }
   <button class="btn btn-warning btn-sm" onclick="resetHwids()" style="margin-top:6px">Reset all HWIDs</button>
   <div class="alert" id="manage-msg"></div>
   <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-manage')">Close</button><button class="btn btn-primary" onclick="saveUser()">Save</button></div>
+</div></div>
+
+
+<div class="overlay" id="m-invite"><div class="modal">
+  <div class="modal-title">Invite team member</div>
+  <div class="field"><label>Email address</label><input type="email" id="invite-email" placeholder="teammate@example.com"></div>
+  <div class="sec-div">Permissions</div>
+  <div class="toggle-row"><div><div class="toggle-label">View apps, users & licenses</div></div><label class="toggle"><input type="checkbox" id="p-view" checked><span class="toggle-slider"></span></label></div>
+  <div class="toggle-row"><div><div class="toggle-label">Manage users</div></div><label class="toggle"><input type="checkbox" id="p-users"><span class="toggle-slider"></span></label></div>
+  <div class="toggle-row"><div><div class="toggle-label">Manage licenses</div></div><label class="toggle"><input type="checkbox" id="p-licenses"><span class="toggle-slider"></span></label></div>
+  <div class="toggle-row"><div><div class="toggle-label">Manage apps</div></div><label class="toggle"><input type="checkbox" id="p-apps"><span class="toggle-slider"></span></label></div>
+  <div class="toggle-row"><div><div class="toggle-label">Manage settings</div></div><label class="toggle"><input type="checkbox" id="p-settings"><span class="toggle-slider"></span></label></div>
+  <div class="alert" id="invite-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-invite')">Cancel</button><button class="btn btn-primary" onclick="sendInvite()">Send invite</button></div>
 </div></div>
 
 <script>
@@ -1047,6 +1092,77 @@ async function adminDeleteDev(id) {
 if (new URLSearchParams(location.search).get('upgraded') === '1') {
   history.replaceState({}, '', location.pathname);
   setTimeout(() => { nav('billing'); }, 500);
+}
+
+
+async function loadTeam() {
+  const plan = devUser.plan || 'starter';
+  if (plan !== 'business') {
+    document.getElementById('team-business-only').style.display = 'block';
+    document.getElementById('team-tbody').innerHTML = '<tr><td colspan="7" class="empty">Business plan required</td></tr>';
+    return;
+  }
+  // Load members
+  const r = await fetch(API + '/api/team', { headers: H() });
+  const d = await r.json();
+  const members = d.members || [];
+  document.getElementById('team-tbody').innerHTML = members.length ? members.map(m => {
+    const dev = m.developers || {};
+    const perm = (val, id, memberId) => '<td><label class="toggle" style="margin:0 auto"><input type="checkbox"' + (val ? ' checked' : '') + ' onchange="updatePerm('' + memberId + '','' + id + '',this.checked)"><span class="toggle-slider"></span></label></td>';
+    return '<tr><td><strong>' + (dev.username||'—') + '</strong><div style="font-size:11px;color:var(--muted)">' + (dev.email||'') + '</div></td>' +
+      perm(m.can_view,'can_view',m.member_id) + perm(m.can_manage_users,'can_manage_users',m.member_id) +
+      perm(m.can_manage_licenses,'can_manage_licenses',m.member_id) + perm(m.can_manage_apps,'can_manage_apps',m.member_id) +
+      perm(m.can_manage_settings,'can_manage_settings',m.member_id) +
+      '<td><button class="btn btn-danger btn-sm" onclick="removeMember('' + m.member_id + '')">Remove</button></td></tr>';
+  }).join('') : '<tr><td colspan="7" class="empty">No team members yet</td></tr>';
+  // Load invites
+  const ir = await fetch(API + '/api/team/invites', { headers: H() });
+  const id2 = await ir.json();
+  const invites = id2.invites || [];
+  document.getElementById('invites-tbody').innerHTML = invites.length ? invites.map(i =>
+    '<tr><td>' + i.email + '</td><td class="mono">' + fmtDate(i.created_at) + '</td><td><button class="btn btn-danger btn-sm" onclick="cancelInvite('' + i.id + '')">Cancel</button></td></tr>'
+  ).join('') : '<tr><td colspan="3" class="empty">No pending invites</td></tr>';
+  // Load teams I belong to
+  const tr2 = await fetch(API + '/api/team/mine', { headers: H() });
+  const td2 = await tr2.json();
+  const myTeams = td2.teams || [];
+  document.getElementById('my-teams-tbody').innerHTML = myTeams.length ? myTeams.map(t => {
+    const owner = t.developers || {};
+    const perms = [t.can_view&&'View', t.can_manage_users&&'Users', t.can_manage_licenses&&'Licenses', t.can_manage_apps&&'Apps', t.can_manage_settings&&'Settings'].filter(Boolean);
+    return '<tr><td><strong>' + (owner.username||'—') + '</strong></td><td>' + perms.map(p => '<span class="badge badge-blue" style="margin-right:4px">' + p + '</span>').join('') + '</td></tr>';
+  }).join('') : '<tr><td colspan="2" class="empty">Not a member of any teams</td></tr>';
+}
+
+async function sendInvite() {
+  const email = document.getElementById('invite-email').value.trim();
+  if (!email) return setMsg('invite-msg','Email required','err');
+  const permissions = {
+    can_view: document.getElementById('p-view').checked,
+    can_manage_users: document.getElementById('p-users').checked,
+    can_manage_licenses: document.getElementById('p-licenses').checked,
+    can_manage_apps: document.getElementById('p-apps').checked,
+    can_manage_settings: document.getElementById('p-settings').checked
+  };
+  const r = await fetch(API + '/api/team/invite', { method:'POST', headers: H(), body: JSON.stringify({email, permissions}) });
+  const d = await r.json();
+  if (!r.ok) return setMsg('invite-msg', d.error, 'err');
+  setMsg('invite-msg','Invite sent!','ok');
+  setTimeout(() => { closeModal('m-invite'); loadTeam(); }, 1500);
+}
+
+async function updatePerm(memberId, permission, value) {
+  await fetch(API + '/api/team/' + memberId, { method:'PATCH', headers: H(), body: JSON.stringify({[permission]: value}) });
+}
+
+async function removeMember(memberId) {
+  if (!confirm('Remove this team member?')) return;
+  await fetch(API + '/api/team/' + memberId, { method:'DELETE', headers: H() });
+  loadTeam();
+}
+
+async function cancelInvite(id) {
+  await fetch(API + '/api/team/invites/' + id, { method:'DELETE', headers: H() });
+  loadTeam();
 }
 
 loadOverview();
