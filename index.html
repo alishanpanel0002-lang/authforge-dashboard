@@ -3,487 +3,387 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuthForge — Authentication for Developers</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>ShadowAuth — The Ultimate Authentication Guardian</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #050508; --surface: #0d0d14; --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
-  --text: #f0f0f5; --muted: #888899; --blue: #4f8ef7; --purple: #8b5cf6; --pink: #ec4899;
-  --green: #10b981; --amber: #f59e0b; --font: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
+  --bg: #030305; --surface: #0a0a0f; --border: rgba(220,38,38,0.1); --border2: rgba(220,38,38,0.2);
+  --text: #ffffff; --muted: #a1a1aa; --red: #dc2626; --red-dark: #7f1d1d; --accent: #ef4444;
+  --green: #10b981; --amber: #f59e0b; --font: 'Outfit', sans-serif; --mono: 'JetBrains Mono', monospace;
 }
 html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px; height: 60px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(5,5,8,0.85); backdrop-filter: blur(12px); }
-.nav-logo { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; letter-spacing: -0.3px; text-decoration: none; color: var(--text); }
-.nav-dot { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 11px; }
-.nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.15s; }
-.nav-links a:hover { color: var(--text); }
-.nav-cta { display: flex; align-items: center; gap: 12px; }
-.btn-ghost-sm { padding: 6px 16px; border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.15s; }
-.btn-ghost-sm:hover { background: rgba(255,255,255,0.06); }
-.btn-primary-sm { padding: 6px 16px; border-radius: 6px; background: var(--blue); color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.15s; }
-.btn-primary-sm:hover { background: #6b9ef8; }
-.hero { padding: 140px 48px 80px; text-align: center; position: relative; overflow: hidden; }
-.hero-glow { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 700px; height: 500px; background: radial-gradient(ellipse, rgba(79,142,247,0.12) 0%, rgba(139,92,246,0.08) 40%, transparent 70%); pointer-events: none; }
-.hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(79,142,247,0.3); background: rgba(79,142,247,0.08); color: var(--blue); font-size: 12px; font-weight: 600; margin-bottom: 24px; }
-.hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
-h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 20px; }
-.gradient-text { background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 50%, var(--pink) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.hero-sub { font-size: 18px; color: var(--muted); max-width: 560px; margin: 0 auto 36px; line-height: 1.7; }
-.hero-cta { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-.btn-big { padding: 13px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all 0.2s; font-family: var(--font); }
-.btn-big-primary { background: linear-gradient(135deg, var(--blue), var(--purple)); color: #fff; box-shadow: 0 0 40px rgba(79,142,247,0.25); }
-.btn-big-primary:hover { transform: translateY(-1px); box-shadow: 0 0 60px rgba(79,142,247,0.35); }
-.btn-big-ghost { background: none; border: 1px solid var(--border2); color: var(--text); }
-.btn-big-ghost:hover { background: rgba(255,255,255,0.05); }
-.hero-note { font-size: 12px; color: var(--muted); margin-top: 16px; }
-.code-preview { max-width: 640px; margin: 64px auto 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; text-align: left; }
-.code-preview-header { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot-r{background:#ff5f57}.dot-y{background:#ffbd2e}.dot-g{background:#28ca41}
-.code-tabs { display: flex; gap: 0; margin-left: 12px; }
-.code-tab { padding: 2px 12px; font-size: 11px; color: var(--muted); cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; font-family: var(--font); transition: all 0.1s; }
-.code-tab.active { color: var(--text); border-bottom-color: var(--blue); }
-.code-body { padding: 20px; font-family: var(--mono); font-size: 13px; line-height: 1.8; display: none; }
-.code-body.active { display: block; }
-.kw{color:#ff7b72}.str{color:#a5d6ff}.cm{color:#6e7681;font-style:italic}.fn{color:#d2a8ff}.var{color:#ffa657}.cls{color:#79c0ff}
-section { padding: 80px 48px; }
-.section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
-.section-title { font-size: clamp(28px,4vw,44px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 16px; }
-.section-sub { font-size: 16px; color: var(--muted); max-width: 520px; line-height: 1.7; }
-.center { text-align: center; } .center .section-sub { margin: 0 auto; }
-.features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-top: 56px; }
-.feature { background: var(--bg); padding: 32px; transition: background 0.2s; }
-.feature:hover { background: var(--surface); }
-.feature-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
-.feature-name { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-.feature-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
-.steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; margin-top: 56px; }
-.step { position: relative; }
-.step-num { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg,var(--blue),var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; margin-bottom: 16px; }
-.step-connector { position: absolute; top: 16px; left: 32px; right: -24px; height: 1px; background: linear-gradient(90deg,var(--border2),transparent); }
-.step:last-child .step-connector { display: none; }
-.step-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-.step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
-.sdk-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 48px; }
-.sdk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: all 0.2s; }
-.sdk-card:hover { border-color: var(--border2); transform: translateY(-2px); }
-.sdk-lang-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
-.sdk-lang-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-.sdk-lang-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
-.sdk-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-.sdk-tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border2); color: var(--muted); font-family: var(--mono); }
-.pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 56px; max-width: 900px; margin-left: auto; margin-right: auto; }
-.pricing-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; position: relative; }
-.pricing-card.featured { border-color: var(--blue); background: linear-gradient(160deg,rgba(79,142,247,0.06) 0%,var(--surface) 60%); }
-.pricing-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,var(--blue),var(--purple)); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; white-space: nowrap; }
-.pricing-name { font-size: 14px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
-.pricing-price { font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
-.pricing-price span { font-size: 14px; font-weight: 400; color: var(--muted); }
-.pricing-desc { font-size: 13px; color: var(--muted); margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
-.pricing-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-.pricing-features li { font-size: 13px; display: flex; align-items: center; gap: 8px; }
-.pricing-features li::before { content: '✓'; color: var(--green); font-weight: 700; font-size: 12px; flex-shrink: 0; }
-.pricing-features li.no::before { content: '✕'; color: var(--muted); }
-.btn-pricing { width: 100%; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font); transition: all 0.15s; text-align: center; text-decoration: none; display: block; }
-.btn-pricing-outline { background: none; border: 1px solid var(--border2); color: var(--text); }
-.btn-pricing-outline:hover { background: rgba(255,255,255,0.05); }
-.btn-pricing-fill { background: linear-gradient(135deg,var(--blue),var(--purple)); color: #fff; border: none; }
-.btn-pricing-fill:hover { opacity: 0.9; }
-.cta-banner { margin: 0 48px 80px; background: linear-gradient(135deg,rgba(79,142,247,0.08),rgba(139,92,246,0.08) 50%,rgba(236,72,153,0.05)); border: 1px solid rgba(79,142,247,0.2); border-radius: 20px; padding: 64px; text-align: center; }
-.cta-banner h2 { font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
-.cta-banner p { font-size: 16px; color: var(--muted); margin-bottom: 32px; }
-footer { border-top: 1px solid var(--border); padding: 40px 48px; display: flex; align-items: center; justify-content: space-between; }
-.footer-logo { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--text); text-decoration: none; }
-.footer-links { display: flex; gap: 24px; }
-.footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; }
-.footer-links a:hover { color: var(--text); }
-.footer-copy { font-size: 12px; color: var(--muted); }
-@media(max-width:768px){
-  nav{padding:0 20px}.nav-links{display:none}.hero{padding:100px 20px 60px}
-  section{padding:60px 20px}.features-grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}
-  .sdk-grid{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}
-  .cta-banner{margin:0 20px 60px;padding:40px 24px}footer{flex-direction:column;gap:20px;text-align:center}
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 60px; height: 72px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(3,3,5,0.8); backdrop-filter: blur(20px); }
+.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; text-decoration: none; color: var(--text); }
+.nav-logo span { color: var(--red); }
+.nav-links { display: flex; align-items: center; gap: 40px; }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.2s; position: relative; }
+.nav-links a:hover { color: var(--red); }
+.nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--red); transition: width 0.2s; }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta { display: flex; align-items: center; gap: 16px; }
+.btn-ghost-sm { padding: 8px 18px; border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+.btn-ghost-sm:hover { background: rgba(220,38,38,0.05); border-color: var(--red); }
+.btn-primary-sm { padding: 8px 20px; border-radius: 8px; background: var(--red); color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220,38,38,0.2); }
+.btn-primary-sm:hover { background: var(--accent); transform: translateY(-1px); }
+
+.hero { padding: 180px 60px 100px; text-align: center; position: relative; }
+.hero-glow { position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1000px; height: 600px; background: radial-gradient(circle, rgba(220,38,38,0.15) 0%, transparent 70%); pointer-events: none; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 30px; border: 1px solid var(--border2); background: rgba(220,38,38,0.05); color: var(--red); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 32px; }
+h1 { font-size: clamp(48px, 8vw, 84px); font-weight: 900; letter-spacing: -3px; line-height: 1; margin-bottom: 24px; color: #fff; }
+.metal-red { background: linear-gradient(135deg, #fff 0%, #dc2626 50%, #7f1d1d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-sub { font-size: 20px; color: var(--muted); max-width: 640px; margin: 0 auto 48px; line-height: 1.6; font-weight: 400; }
+.hero-cta { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.btn-big { padding: 16px 36px; border-radius: 12px; font-size: 16px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; transition: all 0.3s; font-family: var(--font); display: flex; align-items: center; gap: 8px; }
+.btn-red { background: var(--red); color: #fff; box-shadow: 0 8px 24px rgba(220,38,38,0.3); }
+.btn-red:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(220,38,38,0.4); }
+.btn-dark { background: #111; border: 1px solid var(--border2); color: #fff; }
+.btn-dark:hover { background: #1a1a1a; border-color: var(--red); }
+
+.code-window { max-width: 720px; margin: 80px auto 0; background: #08080c; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: left; }
+.code-header { background: #0f0f15; padding: 14px 20px; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.code-dots { display: flex; gap: 8px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot-red { background: #ff5f56; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #27c93f; }
+.code-tabs { display: flex; background: #000; border-radius: 8px; padding: 4px; }
+.code-tab { padding: 6px 16px; font-size: 12px; font-weight: 600; color: #555; background: none; border: none; cursor: pointer; border-radius: 6px; transition: all 0.2s; }
+.code-tab.active { background: #1a1a1a; color: #fff; }
+.code-content { padding: 24px; font-family: var(--mono); font-size: 14px; line-height: 1.8; color: #d1d1d1; }
+.kw { color: #dc2626; font-weight: 600; } .fn { color: #f87171; } .str { color: #fda4af; } .cm { color: #52525b; }
+
+section { padding: 120px 60px; }
+.section-header { text-align: center; margin-bottom: 80px; }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 30px; background: rgba(220,38,38,0.1); color: var(--red); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+.title { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px; }
+.subtitle { color: var(--muted); font-size: 18px; max-width: 600px; margin: 0 auto; }
+
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.feature-card { background: var(--surface); padding: 40px; border-radius: 20px; border: 1px solid var(--border); transition: all 0.3s; }
+.feature-card:hover { border-color: var(--red); transform: translateY(-5px); }
+.icon-box { width: 56px; height: 56px; border-radius: 14px; background: rgba(220,38,38,0.1); color: var(--red); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 24px; border: 1px solid var(--border); }
+.feature-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+.feature-text { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+.pricing-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+.price-card { background: var(--surface); border-radius: 24px; padding: 40px; border: 1px solid var(--border); position: relative; transition: all 0.3s; }
+.price-card.hot { border-color: var(--red); background: linear-gradient(180deg, rgba(220,38,38,0.05) 0%, var(--surface) 100%); }
+.price-card.hot::before { content: 'HOT'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--red); color: #fff; padding: 4px 16px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+.price-name { font-size: 16px; font-weight: 600; color: var(--muted); margin-bottom: 16px; }
+.price-val { font-size: 56px; font-weight: 900; letter-spacing: -3px; margin-bottom: 8px; }
+.price-val span { font-size: 16px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.price-features { list-style: none; margin: 32px 0; display: grid; gap: 14px; }
+.price-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #ddd; }
+.price-features li svg { color: var(--red); flex-shrink: 0; }
+.btn-price { width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; transition: 0.3s; text-decoration: none; text-align: center; display: block; }
+.btn-price-red { background: var(--red); color: #fff; } .btn-price-red:hover { background: var(--accent); }
+.btn-price-outline { border: 1px solid var(--border2); color: #fff; } .btn-price-outline:hover { border-color: var(--red); background: rgba(220,38,38,0.05); }
+
+#vision-mission { background: #050508; border-top: 1px solid var(--border); overflow: hidden; }
+.vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.vision-content { text-align: left; }
+.vision-image { background: linear-gradient(45deg, #111, #222); border-radius: 30px; height: 400px; border: 1px solid var(--border); position: relative; }
+.vision-image::after { content: '🛡️'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; opacity: 0.5; }
+
+footer { background: #020204; border-top: 1px solid var(--border); padding: 80px 60px 40px; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
+.footer-info p { color: var(--muted); font-size: 14px; margin-top: 16px; max-width: 300px; }
+.footer-col h4 { margin-bottom: 24px; font-size: 15px; font-weight: 700; color: #fff; }
+.footer-col a { display: block; margin-bottom: 12px; color: var(--muted); text-decoration: none; font-size: 14px; transition: 0.2s; }
+.footer-col a:hover { color: var(--red); }
+.footer-bottom { padding-top: 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 13px; }
+
+/* FAQ & Reviews */
+.faq-grid { display: grid; gap: 16px; max-width: 800px; margin: 0 auto; }
+.faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: left; transition: all 0.2s; }
+.faq-item:hover { border-color: var(--red); }
+.faq-q { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--red); }
+.faq-a { font-size: 14px; color: var(--muted); }
+
+.review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+.review-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; text-align: left; }
+.review-text { font-style: italic; color: #ddd; margin-bottom: 20px; font-size: 14px; }
+.review-user { display: flex; align-items: center; gap: 12px; }
+.review-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--red-dark); }
+.review-info div:first-child { font-weight: 700; font-size: 14px; }
+.review-info div:last-child { font-size: 12px; color: var(--muted); }
+
+.sentinel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1000px; margin: 60px auto 0; }
+.sentinel-card { text-align: center; }
+.sentinel-img { width: 100px; height: 100px; border-radius: 50%; background: #111; margin: 0 auto 16px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 32px; transition: transform 0.3s; }
+.sentinel-card:hover .sentinel-img { transform: scale(1.1); border-color: var(--red); }
+.sentinel-name { font-weight: 700; font-size: 16px; }
+.sentinel-role { font-size: 12px; color: var(--red); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+
+@media (max-width: 968px) {
+  nav { padding: 0 24px; } .nav-links { display: none; }
+  section { padding: 80px 24px; } .features, .pricing-container, .vision-grid, .review-grid, .sentinel-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="#"><div class="nav-dot">⚡</div>AuthForge</a>
+  <a class="nav-logo" href="#">Shadow<span>Auth</span></a>
   <div class="nav-links">
     <a href="#features">Features</a>
-    <a href="#how">How it works</a>
+    <a href="#vision-mission">Vision & Mission</a>
     <a href="#sdks">SDKs</a>
     <a href="#pricing">Pricing</a>
   </div>
   <div class="nav-cta">
-    <a class="btn-ghost-sm" href="dashboard/index.html">Sign in</a>
-    <a class="btn-primary-sm" href="dashboard/index.html">Get started free</a>
+    <a class="btn-ghost-sm" href="dashboard/index.html">Login</a>
+    <a class="btn-primary-sm" href="dashboard/index.html">Guard Now</a>
   </div>
 </nav>
 
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-badge"><div class="hero-badge-dot"></div>Now with HWID locking & license keys</div>
-  <h1>Authentication built<br>for <span class="gradient-text">real applications</span></h1>
-  <p class="hero-sub">Stop building auth from scratch. AuthForge gives you license keys, user management, HWID locking, and ready-to-use SDKs for C#, C++, and Python.</p>
+  <div class="hero-badge"><span class="hero-badge-dot"></span> Next-Gen Protection for Your Software</div>
+  <h1>Secure Your Code with <br><span class="metal-red">ShadowAuth</span></h1>
+  <p class="hero-sub">The ultimate authentication layer for desktop developers. Protect your assets with hardware locking, real-time license management, and powerful integrations.</p>
   <div class="hero-cta">
-    <a class="btn-big btn-big-primary" href="dashboard/index.html">Start for free →</a>
-    <a class="btn-big btn-big-ghost" href="#how">See how it works</a>
+    <a class="btn-big btn-red" href="dashboard/index.html">Create Security Layer <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a class="btn-big btn-dark" href="#vision-mission">Our Mission</a>
   </div>
-  <p class="hero-note">Free tier available · No credit card required</p>
-  <div class="code-preview">
-    <div class="code-preview-header">
-      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+  
+  <div class="code-window">
+    <div class="code-header">
+      <div class="code-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
       <div class="code-tabs">
-        <button class="code-tab active" onclick="switchTab('cs')">C#</button>
-        <button class="code-tab" onclick="switchTab('cpp')">C++</button>
-        <button class="code-tab" onclick="switchTab('py')">Python</button>
+        <button class="code-tab active" data-lang="cpp">C++</button>
+        <button class="code-tab" data-lang="cs">C#</button>
+        <button class="code-tab" data-lang="py">Python</button>
       </div>
     </div>
-    <div class="code-body active" id="tab-cs"><span class="cm">// Drop in AuthForge.cs — done in 3 lines</span>
-<span class="kw">var</span> <span class="var">af</span> = <span class="kw">new</span> <span class="cls">AuthForge</span>(<span class="str">"your_secret_key"</span>);
-<span class="kw">var</span> <span class="var">result</span> = <span class="kw">await</span> <span class="var">af</span>.<span class="fn">Login</span>(<span class="var">username</span>, <span class="var">password</span>);
-<span class="kw">if</span> (<span class="var">result</span>.Success) <span class="fn">GrantAccess</span>();</div>
-    <div class="code-body" id="tab-cpp"><span class="cm">// Add authforge.hpp — integrate in minutes</span>
-<span class="cls">AuthForge</span> <span class="var">af</span>(<span class="str">"your_secret_key"</span>);
-<span class="kw">auto</span> <span class="var">result</span> = <span class="var">af</span>.<span class="fn">Login</span>(<span class="var">username</span>, <span class="var">password</span>);
-<span class="kw">if</span> (<span class="var">result</span>.success) <span class="fn">grant_access</span>();</div>
-    <div class="code-body" id="tab-py"><span class="cm"># pip install requests, add authforge.py — done</span>
-<span class="var">af</span> = <span class="cls">AuthForge</span>(<span class="str">"your_secret_key"</span>)
-<span class="var">result</span> = <span class="var">af</span>.<span class="fn">login</span>(<span class="var">username</span>, <span class="var">password</span>)
-<span class="kw">if</span> <span class="var">result</span>[<span class="str">"success"</span>]: <span class="fn">grant_access</span>()</div>
+    <div class="code-content" id="code-box">
+      <span class="cm">// ShadowAuth C++ Integration</span><br>
+      <span class="kw">#include</span> <span class="str">"shadowauth.hpp"</span><br><br>
+      <span class="kw">auto</span> guard = <span class="fn">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>);<br>
+      <span class="kw">if</span> (guard.<span class="fn">Login</span>(user, pass).success) {<br>
+      &nbsp;&nbsp;<span class="fn">ExecuteSecureLogic</span>();<br>
+      }
+    </div>
   </div>
 </section>
 
 <section id="features">
-  <div class="center">
-    <div class="section-label">Features</div>
-    <div class="section-title">Everything you need to protect<br>your application</div>
-    <div class="section-sub">AuthForge handles the hard parts so you can focus on building your product.</div>
+  <div class="section-header">
+    <div class="badge">Advanced Features</div>
+    <div class="title">Enterprise Protection</div>
+    <div class="subtitle">ShadowAuth was built by developers who understand software protection. No loopholes. Only solid defense.</div>
   </div>
-  <div class="features-grid">
-    <div class="feature"><div class="feature-icon" style="background:rgba(79,142,247,0.12)">🔑</div><div class="feature-name">License Key System</div><div class="feature-desc">Generate and distribute license keys with configurable user limits, expiry dates, and instant enable/disable controls.</div></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(139,92,246,0.12)">🖥️</div><div class="feature-name">HWID Locking</div><div class="feature-desc">Lock users to their registered devices. Set max device counts, view registered HWIDs, and reset them from your dashboard.</div></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(16,185,129,0.12)">👥</div><div class="feature-name">User Management</div><div class="feature-desc">Create users, assign licenses, set expiry dates, ban accounts, and manage everything from a clean dashboard.</div></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(236,72,153,0.12)">⚡</div><div class="feature-name">Ready-to-use SDKs</div><div class="feature-desc">Drop in a single file and you're done. SDKs for C#, C++, and Python with full documentation and examples.</div></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(245,158,11,0.12)">🛡️</div><div class="feature-name">Account Expiry</div><div class="feature-desc">Set per-user or per-license expiry dates. Expired users are automatically blocked at login.</div></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(20,184,166,0.12)">🔌</div><div class="feature-name">REST API</div><div class="feature-desc">Full REST API means you can integrate AuthForge into any language or platform beyond the official SDKs.</div></div>
-  </div>
-</section>
-
-<section id="how" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="center">
-    <div class="section-label">How it works</div>
-    <div class="section-title">Up and running in minutes</div>
-    <div class="section-sub">No complex setup. No infrastructure to manage.</div>
-  </div>
-  <div class="steps">
-    <div class="step"><div class="step-connector"></div><div class="step-num">1</div><div class="step-title">Create your account</div><div class="step-desc">Sign up on AuthForge and create your first application in seconds.</div></div>
-    <div class="step"><div class="step-connector"></div><div class="step-num">2</div><div class="step-title">Generate license keys</div><div class="step-desc">Create license keys with user limits, expiry dates, and HWID settings from your dashboard.</div></div>
-    <div class="step"><div class="step-connector"></div><div class="step-num">3</div><div class="step-title">Add the SDK</div><div class="step-desc">Download the SDK for your language, drop it in your project, and paste your secret key.</div></div>
-    <div class="step"><div class="step-num">4</div><div class="step-title">Ship and protect</div><div class="step-desc">Your app is protected. Manage users and licenses from anywhere, anytime.</div></div>
-  </div>
-</section>
-
-<section id="sdks">
-  <div class="center">
-    <div class="section-label">SDKs</div>
-    <div class="section-title">Your language, your choice</div>
-    <div class="section-sub">Official SDKs for the most popular desktop application languages.</div>
-  </div>
-  <div class="sdk-grid">
-    <div class="sdk-card"><div class="sdk-lang-icon" style="background:rgba(168,85,247,0.12)">⬡</div><div class="sdk-lang-name">C# SDK</div><div class="sdk-lang-desc">For WinForms, WPF, Console, and any .NET application. Add one file, install Newtonsoft.Json, done.</div><div class="sdk-tags"><span class="sdk-tag">.NET 4.7+</span><span class="sdk-tag">Newtonsoft.Json</span><span class="sdk-tag">async/await</span></div></div>
-    <div class="sdk-card"><div class="sdk-lang-icon" style="background:rgba(59,130,246,0.12)">⬡</div><div class="sdk-lang-name">C++ SDK</div><div class="sdk-lang-desc">Header-only SDK for native Windows and cross-platform apps. Uses libcurl and nlohmann/json.</div><div class="sdk-tags"><span class="sdk-tag">C++17</span><span class="sdk-tag">libcurl</span><span class="sdk-tag">header-only</span></div></div>
-    <div class="sdk-card"><div class="sdk-lang-icon" style="background:rgba(245,158,11,0.12)">⬡</div><div class="sdk-lang-name">Python SDK</div><div class="sdk-lang-desc">For scripts, bots, automation tools, and desktop apps with PyQt or Tkinter.</div><div class="sdk-tags"><span class="sdk-tag">Python 3.7+</span><span class="sdk-tag">requests</span><span class="sdk-tag">sync</span></div></div>
-  </div>
-</section>
-
-<section id="pricing" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="center">
-    <div class="section-label">Pricing</div>
-    <div class="section-title">Simple, transparent pricing</div>
-    <div class="section-sub">Start free, scale when you need to. No hidden fees.</div>
-  </div>
-  <div class="pricing-grid">
-    <div class="pricing-card">
-      <div class="pricing-name">Starter</div>
-      <div class="pricing-price">$0 <span>/ month</span></div>
-      <div class="pricing-desc">Perfect for hobby projects and testing.</div>
-      <ul class="pricing-features">
-        <li>1 application</li><li>50 users</li><li>20 license keys</li>
-        <li>HWID locking</li><li>All SDKs</li>
-        <li class="no">Priority support</li><li class="no">Custom domain</li>
-      </ul>
-      <a href="dashboard/index.html" class="btn-pricing btn-pricing-outline">Get started free</a>
+  <div class="features">
+    <div class="feature-card">
+      <div class="icon-box">🛡️</div>
+      <div class="feature-title">Hardware Locking</div>
+      <div class="feature-text">Bind users to specific machines. Prevent account sharing with our proprietary HWID fingerprinting technology.</div>
     </div>
-    <div class="pricing-card featured">
-      <div class="pricing-badge">Most Popular</div>
-      <div class="pricing-name">Pro</div>
-      <div class="pricing-price"> $2 <span>/ month</span></div>
-      <div class="pricing-desc">For serious developers and small studios.</div>
-      <ul class="pricing-features">
-        <li>10 applications</li><li>10,000 users</li><li>Unlimited license keys</li>
-        <li>HWID locking</li><li>All SDKs</li><li>Priority support</li>
-        <li class="no">Custom domain</li>
-      </ul>
-      <a href="dashboard/index.html" class="btn-pricing btn-pricing-fill">Get started</a>
+    <div class="feature-card">
+      <div class="icon-box">👥</div>
+      <div class="feature-title">Team Collaboration</div>
+      <div class="feature-text">Add your staff members with custom roles and permissions. Manage your application as a collective team.</div>
     </div>
-    <div class="pricing-card">
-      <div class="pricing-name">Business</div>
-      <div class="pricing-price">$5 <span>/ month</span></div>
-      <div class="pricing-desc">For teams and commercial software products.</div>
-      <ul class="pricing-features">
-        <li>Unlimited applications</li><li>Unlimited users</li><li>Unlimited license keys</li>
-        <li>HWID locking</li><li>All SDKs</li><li>Priority support</li><li>Custom domain</li>
-      </ul>
-      <a href="dashboard/index.html" class="btn-pricing btn-pricing-outline">Get started</a>
+    <div class="feature-card">
+      <div class="icon-box">🤖</div>
+      <div class="feature-title">Bot Integrations</div>
+      <div class="feature-text">Connect Discord, Telegram, or WhatsApp bots to monitor log-ins, license redemptions, and suspicious activity.</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon-box">📊</div>
+      <div class="feature-title">Analytics Engine</div>
+      <div class="feature-text">Visualise your user growth and retention. Track every login attempt and device reset in real-time.</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon-box">⚡</div>
+      <div class="feature-title">Instant Setup</div>
+      <div class="feature-text">Go live in minutes. Our SDKs are header-only and dependency-free for maximum compatibility.</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon-box">🔑</div>
+      <div class="feature-title">Key Management</div>
+      <div class="feature-text">Generate bulk license keys with custom expiry, plan limits, and automated Discord role synchronization.</div>
     </div>
   </div>
 </section>
 
-
-<!-- Reviews -->
-<section id="reviews" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="center">
-    <div class="section-label">Reviews</div>
-    <div class="section-title">Loved by developers</div>
-    <div class="section-sub">See what developers are saying about AuthForge.</div>
+<section id="vision-mission">
+  <div class="vision-grid">
+    <div class="vision-content">
+      <div class="badge">Vision & Mission</div>
+      <div class="title">Security for All</div>
+      <p style="font-size: 18px; color: #ccc; margin-bottom: 24px;">Our mission is to democratize high-level authentication. For too long, robust software protection was only available to large enterprises. <strong>ShadowAuth</strong> was founded to provide indie developers and small teams with the same level of security.</p>
+      <p style="color: var(--muted); margin-bottom: 32px;">We are committed to providing a <strong>free, robust tier</strong> for developers worldwide, ensuring that your location or financial status doesn't prevent you from shielding your hard-earned code.</p>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <div style="color:var(--red); font-weight:700; font-size: 18px; margin-bottom:8px;">Zero Lock-in</div>
+          <div style="font-size:13px; color:var(--muted)">Export your users and data anytime. Your business is yours.</div>
+        </div>
+        <div>
+          <div style="color:var(--red); font-weight:700; font-size: 18px; margin-bottom:8px;">Global Focus</div>
+          <div style="font-size:13px; color:var(--muted)">Priced for international accessibility. No gatekeeping.</div>
+        </div>
+      </div>
+    </div>
+    <div class="vision-image"></div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px">
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px">
-      <div style="display:flex;gap:4px;margin-bottom:12px">★★★★★</div>
-      <p style="font-size:13px;color:#ccc;line-height:1.7;margin-bottom:16px">"AuthForge saved me weeks of development time. The HWID locking feature alone is worth it — my software piracy dropped by 90% after integrating it."</p>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">A</div>
-        <div><div style="font-size:13px;font-weight:500">Ahmed K.</div><div style="font-size:11px;color:#888">Game Developer</div></div>
+</section>
+
+<section id="pricing">
+  <div class="section-header">
+    <div class="badge">Pricing Plans</div>
+    <div class="title">Scale with ShadowAuth</div>
+    <div class="subtitle">Choose a tier that fits your growth. Upgrade as your empire expands.</div>
+  </div>
+  <div class="pricing-container">
+    <div class="price-card">
+      <div class="price-name">Phantom (Free)</div>
+      <div class="price-val">$0<span>/mo</span></div>
+      <div class="price-features">
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 1 Application</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 50 Active Users</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Custom HWID Fingerprint</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Community Discord</li>
+      </div>
+      <a href="dashboard/index.html" class="btn-price btn-price-outline">Enlist Free</a>
+    </div>
+    <div class="price-card hot">
+      <div class="price-name">Spectre (Pro)</div>
+      <div class="price-val">$2<span>/mo</span></div>
+      <div class="price-features">
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 10 Applications</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 10,000 Active Users</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Unlimited Licenses</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Priority Watchdog</li>
+      </div>
+      <a href="dashboard/index.html" class="btn-price btn-price-red">Ascend to Pro</a>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Business Onyx</div>
+      <div class="price-val">$5<span>/mo</span></div>
+      <div class="price-features">
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Unlimited Everything</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Team Management</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Bot Integration Suite</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Direct API Support</li>
+      </div>
+      <a href="dashboard/index.html" class="btn-price btn-price-outline">Business Entry</a>
+    </div>
+  </div>
+</section>
+
+<section id="sentinels">
+  <div class="section-header">
+    <div class="badge">Core Team</div>
+    <div class="title">Meet the Sentinels</div>
+    <div class="subtitle">The architects behind the ShadowAuth security engine.</div>
+  </div>
+  <div class="sentinel-grid">
+    <div class="sentinel-card"><div class="sentinel-img">👹</div><div class="sentinel-name">Shadow-1</div><div class="sentinel-role">Lead Architect</div></div>
+    <div class="sentinel-card"><div class="sentinel-img">⚔️</div><div class="sentinel-name">Ghost-X</div><div class="sentinel-role">Security Ops</div></div>
+    <div class="sentinel-card"><div class="sentinel-img">🩸</div><div class="sentinel-name">Viper</div><div class="sentinel-role">SDK Developer</div></div>
+    <div class="sentinel-card"><div class="sentinel-img">🐺</div><div class="sentinel-name">Wolfbane</div><div class="sentinel-role">Backend Engineer</div></div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="section-header">
+    <div class="badge">Testimonials</div>
+    <div class="title">Trusted by Guardians</div>
+    <div class="subtitle">See what developers are saying about our shielding technology.</div>
+  </div>
+  <div class="review-grid">
+    <div class="review-card">
+      <p class="review-text">"ShadowAuth's HWID locking is the best I've used. No more fake hardware reports and account sharing."</p>
+      <div class="review-user">
+        <div class="review-avatar"></div>
+        <div class="review-info"><div>Alex_Dev</div><div>Desktop Software Creator</div></div>
       </div>
     </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px">
-      <div style="display:flex;gap:4px;margin-bottom:12px">★★★★★</div>
-      <p style="font-size:13px;color:#ccc;line-height:1.7;margin-bottom:16px">"The C# SDK integration took literally 5 minutes. I dropped AuthForge.cs into my project and had full user authentication working before I finished my coffee."</p>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:#8b5cf6;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">M</div>
-        <div><div style="font-size:13px;font-weight:500">Marcus T.</div><div style="font-size:11px;color:#888">.NET Developer</div></div>
+    <div class="review-card">
+      <p class="review-text">"The Business Onyx plan's direct API support helped us migrate 5,000 users in a single afternoon."</p>
+      <div class="review-user">
+        <div class="review-avatar"></div>
+        <div class="review-info"><div>Sintax-X</div><div>Enterprise Security Lead</div></div>
       </div>
     </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px">
-      <div style="display:flex;gap:4px;margin-bottom:12px">★★★★★</div>
-      <p style="font-size:13px;color:#ccc;line-height:1.7;margin-bottom:16px">"Finally an auth platform built for desktop apps, not just web. License key management, Discord webhooks, custom error messages — everything I needed in one place."</p>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:#10b981;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">S</div>
-        <div><div style="font-size:13px;font-weight:500">Sara L.</div><div style="font-size:11px;color:#888">Software Engineer</div></div>
-      </div>
-    </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px">
-      <div style="display:flex;gap:4px;margin-bottom:12px">★★★★★</div>
-      <p style="font-size:13px;color:#ccc;line-height:1.7;margin-bottom:16px">"The pricing is unbeatable. I was paying $30/month for a competitor. AuthForge gives me more features at a fraction of the cost. The team management feature is a game changer."</p>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">R</div>
-        <div><div style="font-size:13px;font-weight:500">Reza P.</div><div style="font-size:11px;color:#888">Indie Developer</div></div>
-      </div>
-    </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px">
-      <div style="display:flex;gap:4px;margin-bottom:12px">★★★★★</div>
-      <p style="font-size:13px;color:#ccc;line-height:1.7;margin-bottom:16px">"I integrated the Python SDK into my automation tools in under 10 minutes. The analytics dashboard shows me exactly who is logging in and from where. Love it."</p>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:#ec4899;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">J</div>
-        <div><div style="font-size:13px;font-weight:500">James W.</div><div style="font-size:11px;color:#888">Python Developer</div></div>
-      </div>
-    </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px">
-      <div style="display:flex;gap:4px;margin-bottom:12px">★★★★★</div>
-      <p style="font-size:13px;color:#ccc;line-height:1.7;margin-bottom:16px">"Set up Discord webhook notifications and now I get pinged every time a user logs in or a license expires. Real-time visibility into my app users is incredible."</p>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">K</div>
-        <div><div style="font-size:13px;font-weight:500">Kai N.</div><div style="font-size:11px;color:#888">Full Stack Dev</div></div>
+    <div class="review-card">
+      <p class="review-text">"Aggressive aesthetic, ironclad security. It's exactly what my software needed to stand out."</p>
+      <div class="review-user">
+        <div class="review-avatar"></div>
+        <div class="review-info"><div>NitroCoder</div><div>C++ Indie Dev</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FAQs -->
 <section id="faq">
-  <div class="center">
-    <div class="section-label">FAQ</div>
-    <div class="section-title">Frequently asked questions</div>
-    <div class="section-sub">Got questions? We have answers.</div>
+  <div class="section-header">
+    <div class="badge">Common Questions</div>
+    <div class="title">F.A.Q</div>
   </div>
-  <div style="max-width:680px;margin:48px auto 0;display:flex;flex-direction:column;gap:12px">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer" onclick="toggleFaq(this)">
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500">What languages does AuthForge support?<span style="color:#888;font-size:18px">+</span></div>
-      <div style="display:none;font-size:13px;color:#888;margin-top:10px;line-height:1.7">AuthForge officially supports C#, C++, and Python with ready-to-use SDK files. Since the API is a standard REST API, you can integrate with any language that can make HTTP requests — Java, Go, Rust, VB.NET, and more.</div>
+  <div class="faq-grid">
+    <div class="faq-item">
+      <div class="faq-q">Is the HWID fingerprinting bypass-proof?</div>
+      <div class="faq-a">We use multi-vector hardware analysis including disk IDs, motherboard serials, and network adaptations. While no system is 100% bypass-proof, ShadowAuth is one of the most resilient layers in the market.</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer" onclick="toggleFaq(this)">
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500">Is my data safe?<span style="color:#888;font-size:18px">+</span></div>
-      <div style="display:none;font-size:13px;color:#888;margin-top:10px;line-height:1.7">Yes. All passwords are hashed with bcrypt before storage. Data is stored on Supabase (PostgreSQL) with row-level security. All API communication is over HTTPS. We never store plain-text passwords.</div>
+    <div class="faq-item">
+      <div class="faq-q">Can I self-host the bots?</div>
+      <div class="faq-a">Yes. Business Onyx users can provide their own API keys for Discord and Telegram to host their own private bot instances linked to our engine.</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer" onclick="toggleFaq(this)">
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500">What is HWID locking?<span style="color:#888;font-size:18px">+</span></div>
-      <div style="display:none;font-size:13px;color:#888;margin-top:10px;line-height:1.7">HWID (Hardware ID) locking ties a user account to specific devices. On first login, the device's HWID is registered. Future logins from unregistered devices are blocked. You can set how many devices each user is allowed, and reset their HWIDs from the dashboard.</div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer" onclick="toggleFaq(this)">
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500">Can I upgrade or downgrade my plan?<span style="color:#888;font-size:18px">+</span></div>
-      <div style="display:none;font-size:13px;color:#888;margin-top:10px;line-height:1.7">Yes. You can upgrade anytime and the new limits apply immediately. Downgrading is also possible — your existing data is never deleted, but you won't be able to create new resources beyond the lower plan's limits.</div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer" onclick="toggleFaq(this)">
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500">Do you offer refunds?<span style="color:#888;font-size:18px">+</span></div>
-      <div style="display:none;font-size:13px;color:#888;margin-top:10px;line-height:1.7">Yes, we offer a 7-day money-back guarantee on all paid plans. If you're not satisfied, contact us within 7 days of your purchase for a full refund.</div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer" onclick="toggleFaq(this)">
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500">What happens when I hit my plan limits?<span style="color:#888;font-size:18px">+</span></div>
-      <div style="display:none;font-size:13px;color:#888;margin-top:10px;line-height:1.7">You'll receive a clear error message when trying to exceed your plan's limits. Your existing data remains intact — you just won't be able to create new resources until you upgrade.</div>
+    <div class="faq-item">
+      <div class="faq-q">Do you support custom domains?</div>
+      <div class="faq-a">Custom domains for dashboard and API endpoints are available for Business Onyx subscribers.</div>
     </div>
   </div>
 </section>
-
-<!-- Vision & Mission -->
-<section id="vision" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div style="max-width:760px;margin:0 auto;text-align:center">
-    <div class="section-label">Our Mission</div>
-    <div class="section-title">Authentication should be free for everyone</div>
-    <p style="font-size:16px;color:#888;line-height:1.8;margin:16px 0 40px">We believe every developer — whether they're a student in Pakistan, a freelancer in Nigeria, or an indie dev in Brazil — deserves access to enterprise-grade authentication tools without paying enterprise prices.</p>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:left">
-      <div style="padding:20px;background:var(--bg);border:1px solid var(--border);border-radius:10px">
-        <div style="font-size:24px;margin-bottom:12px">🌍</div>
-        <div style="font-size:14px;font-weight:600;margin-bottom:8px">Built for everyone</div>
-        <div style="font-size:13px;color:#888;line-height:1.6">AuthForge is priced for developers worldwide, not just those in wealthy countries. Our free tier is genuinely free — no credit card, no time limit.</div>
-      </div>
-      <div style="padding:20px;background:var(--bg);border:1px solid var(--border);border-radius:10px">
-        <div style="font-size:24px;margin-bottom:12px">⚡</div>
-        <div style="font-size:14px;font-weight:600;margin-bottom:8px">Built for desktop</div>
-        <div style="font-size:13px;color:#888;line-height:1.6">Every other auth platform is built for web apps. AuthForge is the first platform designed from the ground up for desktop application developers.</div>
-      </div>
-      <div style="padding:20px;background:var(--bg);border:1px solid var(--border);border-radius:10px">
-        <div style="font-size:24px;margin-bottom:12px">🔓</div>
-        <div style="font-size:14px;font-weight:600;margin-bottom:8px">No lock-in</div>
-        <div style="font-size:13px;color:#888;line-height:1.6">Your data is always yours. Export it anytime. Our open REST API means you can switch or build your own solution on top of AuthForge without being locked in.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Our Community & Staff -->
-<section id="community" style="background:var(--bg);padding:80px 48px;">
-  <div class="center">
-    <div class="section-label">Community</div>
-    <div class="section-title">Meet our team & developers</div>
-    <div class="section-sub">The people building and using AuthForge.</div>
-  </div>
-  
-  <div id="staff-container" style="display:none; max-width:800px; margin:40px auto; gap:24px; flex-direction:column;">
-    <h3 style="font-size:16px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">AuthForge Staff</h3>
-    <div id="admins-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;"></div>
-    
-    <h3 style="font-size:16px; margin-top:24px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">Top Developers</h3>
-    <div id="devs-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;"></div>
-  </div>
-</section>
-
-<div class="cta-banner">
-  <h2>Ready to protect your app?</h2>
-  <p>Join developers who trust AuthForge to secure their software.</p>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a class="btn-big btn-big-primary" href="dashboard/index.html">Start for free →</a>
-    <a class="btn-big btn-big-ghost" href="dashboard/sdk.html">View documentation</a>
-  </div>
-</div>
 
 <footer>
-  <a class="footer-logo" href="#"><div class="nav-dot">⚡</div>AuthForge</a>
-  <div class="footer-links">
-    <a href="#features">Features</a><a href="#pricing">Pricing</a>
-    <a href="dashboard/sdk.html">Docs</a><a href="dashboard/index.html">Dashboard</a>
+  <div class="footer-top">
+    <div class="footer-info">
+      <a class="nav-logo" href="#">Shadow<span>Auth</span></a>
+      <p>Providing ironclad security with sleek simplicity. Built for the modern desktop developer.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="dashboard/sdk.html">SDKs</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#vision-mission">Our Vision</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <a href="#">Documentation</a>
+      <a href="#">Discord Support</a>
+      <a href="#">Contact Us</a>
+    </div>
   </div>
-  <div class="footer-copy">© 2025 AuthForge. All rights reserved.</div>
+  <div class="footer-bottom">
+    <div>© 2026 ShadowAuth Security. Powered by AuthForge Engine.</div>
+    <div>Crafted for Ironclad Code.</div>
+  </div>
 </footer>
 
 <script>
-function switchTab(lang) {
-  document.querySelectorAll('.code-tab').forEach((t,i) => t.classList.toggle('active', ['cs','cpp','py'][i] === lang));
-  document.querySelectorAll('.code-body').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + lang).classList.add('active');
-}
-window.addEventListener('scroll', () => {
-  let cur = '';
-  document.querySelectorAll('section[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
-  document.querySelectorAll('.nav-links a').forEach(a => { a.style.color = a.getAttribute('href') === '#' + cur ? 'var(--text)' : ''; });
+const codeData = {
+  cpp: `<span class="cm">// ShadowAuth C++ Integration</span><br><span class="kw">#include</span> <span class="str">"shadowauth.hpp"</span><br><br><span class="kw">auto</span> guard = <span class="fn">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>);<br><span class="kw">if</span> (guard.<span class="fn">Login</span>(user, pass).success) {<br>&nbsp;&nbsp;<span class="fn">ExecuteSecureLogic</span>();<br>}`,
+  cs: `<span class="cm">// ShadowAuth C# Integration</span><br><span class="kw">using</span> ShadowAuthSDK;<br><br><span class="kw">var</span> guard = <span class="kw">new</span> <span class="cls">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>);<br><span class="kw">var</span> res = <span class="kw">await</span> guard.<span class="fn">Login</span>(user, pass);<br><span class="kw">if</span> (res.Success) {<br>&nbsp;&nbsp;<span class="fn">GrantAccess</span>();<br>}`,
+  py: `<span class="cm"># ShadowAuth Python Integration</span><br><span class="kw">from</span> shadowauth <span class="kw">import</span> ShadowAuth<br><br>guard = <span class="fn">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>)<br><span class="kw">if</span> guard.<span class="fn">login</span>(user, pass)[<span class="str">"success"</span>]:<br>&nbsp;&nbsp;<span class="fn">grant_access</span>()`
+};
+
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('code-box').innerHTML = codeData[tab.dataset.lang];
+  };
 });
-</script>
-
-<script>
-function toggleFaq(el) {
-  const answer = el.querySelector('div:last-child');
-  const icon = el.querySelector('span');
-  const isOpen = answer.style.display === 'block';
-  answer.style.display = isOpen ? 'none' : 'block';
-  icon.textContent = isOpen ? '+' : '−';
-}
-</script>
-</script>
-
-<script>
-// Fetch Dynamic Config & Team data
-const API_BASE = 'https://authforge-backend-production.up.railway.app';
-// Fallback for local testing
-// const API_BASE = 'http://localhost:3000';
-
-async function loadDynamicContent() {
-  try {
-    // 1. Fetch Config
-    const confRes = await fetch(`${API_BASE}/api/public/config`);
-    if (confRes.ok) {
-      const { config } = await confRes.json();
-      if (config.theme && config.theme !== 'dark') {
-          // Could dynamically inject a theme CSS class here
-          document.body.classList.add(`theme-${config.theme}`);
-      }
-      if (config.homepage_announcement) {
-          const ann = document.createElement('div');
-          ann.style.cssText = 'background:var(--blue); color:#fff; text-align:center; padding:10px; font-weight:600; font-size:14px; position:relative; z-index:200;';
-          ann.innerText = config.homepage_announcement;
-          document.body.prepend(ann);
-          document.querySelector('nav').style.top = `${ann.offsetHeight}px`;
-      }
-    }
-    
-    // 2. Fetch Team/Admins
-    const teamRes = await fetch(`${API_BASE}/api/public/team`);
-    if (teamRes.ok) {
-      const { admins, developers } = await teamRes.json();
-      const adminList = document.getElementById('admins-list');
-      const devList = document.getElementById('devs-list');
-      const container = document.getElementById('staff-container');
-      
-      const makeCard = (u) => {
-        return `<div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; align-items:center; gap:12px;">
-           <img src="${u.avatar_url || 'https://www.gravatar.com/avatar/?d=mp'}" style="width:40px;height:40px;border-radius:50%;" />
-           <div>
-             <div style="font-size:14px;font-weight:600;">${u.username}</div>
-             <div style="font-size:11px;color:var(--muted);">${u.discord_username ? 'Discord: ' + u.discord_username : 'Developer'}</div>
-           </div>
-        </div>`;
-      };
-      
-      if (admins && admins.length) {
-        container.style.display = 'flex';
-        adminList.innerHTML = admins.map(makeCard).join('');
-      }
-      if (developers && developers.length) {
-        container.style.display = 'flex';
-        devList.innerHTML = developers.map(makeCard).join('');
-      } else {
-        devList.parentElement.style.display = 'none'; // hide heading if no devs
-      }
-    }
-  } catch(e) { console.error('Failed to load dynamic content', e); }
-}
-
-document.addEventListener('DOMContentLoaded', loadDynamicContent);
 </script>
 
 </body>

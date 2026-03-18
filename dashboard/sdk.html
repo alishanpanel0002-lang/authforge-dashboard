@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuthForge — SDK Downloads</title>
+<title>ShadowAuth — Sentinel SDKs</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #0a0a0a; --surface: #111; --surface2: #1a1a1a;
-  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.12);
-  --text: #ededed; --muted: #888; --muted2: #555;
-  --blue: #3b82f6; --blue-dim: rgba(59,130,246,0.12);
-  --green: #22c55e; --green-dim: rgba(34,197,94,0.1);
-  --purple: #a855f7; --purple-dim: rgba(168,85,247,0.1);
+  --bg: #050508; --surface: #0a0a0f; --surface2: #121217;
+  --border: rgba(220,38,38,0.1); --border2: rgba(220,38,38,0.2);
+  --text: #ffffff; --muted: #a1a1aa; --muted2: #52525b;
+  --red: #dc2626; --red-dim: rgba(220,38,38,0.1);
+  --blue: #dc2626; --blue-dim: rgba(220,38,38,0.12);
+  --green: #10b981; --green-dim: rgba(16,185,129,0.1);
+  --purple: #ef4444; --purple-dim: rgba(239,68,68,0.1);
   --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
-  --font: 'Geist', -apple-system, sans-serif; --r: 8px;
+  --font: 'Outfit', sans-serif; --r: 10px;
 }
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
 .sidebar { width: 216px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
@@ -85,7 +86,7 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
 </head>
 <body>
 <nav class="sidebar">
-  <div class="logo"><div class="logo-dot"></div><span class="logo-text">AuthForge</span></div>
+  <div class="logo"><div class="logo-dot" style="background:var(--red); border-radius: 2px;"></div><span class="logo-text">Shadow<span style="color:var(--red)">Auth</span></span></div>
   <div style="margin-bottom:20px">
     <div class="nav-label">Platform</div>
     <a class="nav-item" href="dashboard.html">
@@ -334,10 +335,11 @@ function copyCode(lang) {
   navigator.clipboard.writeText(pre.innerText);
 }
 
-// ── C# SDK content ───────────────const csharpSDK = `/*
- * AuthForge C# SDK
+// ── C# SDK content ───────────────
+const csharpSDK = `/*
+ * ShadowAuth C# SDK
  * Version: 2.0.0
- * Website: https://authforge-dashboard.vercel.app
+ * Website: https://shadowauth-dashboard.vercel.app
  *
  * HOW TO USE:
  * 1. Add this file to your C# project
@@ -354,9 +356,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AuthForgeSDK
+namespace ShadowAuthSDK
 {
-    public class AuthForgeResponse
+    public class ShadowAuthResponse
     {
         public bool Success { get; set; }
         public string Message { get; set; }
@@ -364,44 +366,44 @@ namespace AuthForgeSDK
         public JObject Data { get; set; }
     }
 
-    public class AuthForge
+    public class ShadowAuth
     {
         private static readonly HttpClient _http = new HttpClient();
         private readonly string _secretKey;
-        private const string API_URL = "https://authforge-backend-production.up.railway.app/api/client";
+        private const string API_URL = "https://shadowauth-backend-production.up.railway.app/api/client";
 
-        public AuthForge(string secretKey)
+        public ShadowAuth(string secretKey)
         {
             if (string.IsNullOrWhiteSpace(secretKey))
                 throw new ArgumentException("Secret key cannot be empty.");
             _secretKey = secretKey;
         }
 
-        public async Task<AuthForgeResponse> Login(string username, string password, string hwid = null)
+        public async Task<ShadowAuthResponse> Login(string username, string password, string hwid = null)
         {
             var payload = new { secret_key = _secretKey, username, password, hwid };
             return await Post("/login", payload);
         }
 
-        public async Task<AuthForgeResponse> Register(string username, string password, string licenseKey, string email = null)
+        public async Task<ShadowAuthResponse> Register(string username, string password, string licenseKey, string email = null)
         {
             var payload = new { secret_key = _secretKey, username, password, license_key = licenseKey, email };
             return await Post("/register", payload);
         }
 
-        public async Task<AuthForgeResponse> LicenseLogin(string licenseKey, string hwid = null)
+        public async Task<ShadowAuthResponse> LicenseLogin(string licenseKey, string hwid = null)
         {
             var payload = new { secret_key = _secretKey, license_key = licenseKey, hwid };
             return await Post("/license/login", payload);
         }
 
-        public async Task<AuthForgeResponse> CheckLicense(string licenseKey)
+        public async Task<ShadowAuthResponse> CheckLicense(string licenseKey)
         {
             var payload = new { secret_key = _secretKey, license_key = licenseKey };
             return await Post("/license/check", payload);
         }
 
-        private async Task<AuthForgeResponse> Post(string endpoint, object payload)
+        private async Task<ShadowAuthResponse> Post(string endpoint, object payload)
         {
             try
             {
@@ -419,11 +421,11 @@ namespace AuthForgeSDK
                 if (root["user"]    != null) data = root["user"].Value<JObject>();
                 else if (root["license"] != null) data = root["license"].Value<JObject>();
 
-                return new AuthForgeResponse { Success = success, Message = message, Error = error, Data = data };
+                return new ShadowAuthResponse { Success = success, Message = message, Error = error, Data = data };
             }
             catch (Exception ex)
             {
-                return new AuthForgeResponse { Success = false, Error = ex.Message };
+                return new ShadowAuthResponse { Success = false, Error = ex.Message };
             }
         }
     }
@@ -431,8 +433,8 @@ namespace AuthForgeSDK
 
 // ── C++ SDK content ──────────────────────────────────────────────────────────
 const cppSDK = `/*
- * AuthForge C++ SDK v2.0.0
- * https://authforge-dashboard.vercel.app
+ * ShadowAuth C++ SDK v2.0.0
+ * https://shadowauth-dashboard.vercel.app
  *
  * SETUP:
  * 1. Add this file to your project
@@ -447,10 +449,10 @@ const cppSDK = `/*
 
 using json = nlohmann::json;
 
-namespace AuthForgeSDK {
-    const std::string API_URL = "https://authforge-backend-production.up.railway.app/api/client";
+namespace ShadowAuthSDK {
+    const std::string API_URL = "https://shadowauth-backend-production.up.railway.app/api/client";
 
-    struct AuthForgeResponse {
+    struct ShadowAuthResponse {
         bool success = false;
         std::string message;
         std::string error;
@@ -462,11 +464,11 @@ namespace AuthForgeSDK {
         return size * nmemb;
     }
 
-    class AuthForge {
+    class ShadowAuth {
     private:
         std::string secretKey;
-        AuthForgeResponse Post(const std::string& endpoint, const json& payload) {
-            AuthForgeResponse response;
+        ShadowAuthResponse Post(const std::string& endpoint, const json& payload) {
+            ShadowAuthResponse response;
             CURL* curl = curl_easy_init();
             if (!curl) { response.error = "CURL init failed"; return response; }
             std::string body = payload.dump();
@@ -492,18 +494,18 @@ namespace AuthForgeSDK {
             return response;
         }
     public:
-        AuthForge(const std::string& key) : secretKey(key) {}
-        AuthForgeResponse Login(const std::string& u, const std::string& p, const std::string& h = "") {
+        ShadowAuth(const std::string& key) : secretKey(key) {}
+        ShadowAuthResponse Login(const std::string& u, const std::string& p, const std::string& h = "") {
             json payload = {{"secret_key", secretKey}, {"username", u}, {"password", p}};
             if(!h.empty()) payload["hwid"] = h;
             return Post("/login", payload);
         }
-        AuthForgeResponse Register(const std::string& u, const std::string& p, const std::string& l, const std::string& e = "") {
+        ShadowAuthResponse Register(const std::string& u, const std::string& p, const std::string& l, const std::string& e = "") {
             json payload = {{"secret_key", secretKey}, {"username", u}, {"password", p}, {"license_key", l}};
             if(!e.empty()) payload["email"] = e;
             return Post("/register", payload);
         }
-        AuthForgeResponse CheckLicense(const std::string& l) {
+        ShadowAuthResponse CheckLicense(const std::string& l) {
             return Post("/license/check", {{"secret_key", secretKey}, {"license_key", l}});
         }
     };
@@ -511,8 +513,8 @@ namespace AuthForgeSDK {
 
 // ── Python SDK content ───────────────────────────────────────────────────────
 const pythonSDK = `"""
-AuthForge Python SDK v2.0.0
-https://authforge-dashboard.vercel.app
+ShadowAuth Python SDK v2.0.0
+https://shadowauth-dashboard.vercel.app
 
 SETUP:
     1. Add this file to your Python project
@@ -520,18 +522,18 @@ SETUP:
        pip install requests
 
 USAGE:
-    from authforge import AuthForge
-    af = AuthForge("YOUR_SECRET_KEY")
-    result = af.login("username", "password")
+    from shadowauth import ShadowAuth
+    sa = ShadowAuth("YOUR_SECRET_KEY")
+    result = sa.login("username", "password")
     if result["success"]:
         print("Welcome!")
 """
 
 import requests
 
-API_URL = "https://authforge-backend-production.up.railway.app/api/client"
+API_URL = "https://shadowauth-backend-production.up.railway.app/api/client"
 
-class AuthForge:
+class ShadowAuth:
     def __init__(self, secret_key: str):
         if not secret_key:
             raise ValueError("Secret key cannot be empty")
@@ -542,7 +544,7 @@ class AuthForge:
             r = requests.post(API_URL + endpoint, json=payload, timeout=10)
             return r.json()
         except requests.exceptions.ConnectionError:
-            return {"success": False, "message": "Cannot connect to AuthForge servers"}
+            return {"success": False, "message": "Cannot connect to ShadowAuth servers"}
         except Exception as e:
             return {"success": False, "message": str(e)}
 
@@ -572,13 +574,13 @@ class AuthForge:
         return self._post("/license/check", {"secret_key": self.secret_key, "license_key": license_key})`;
 
 function downloadCSharp() {
-  download('AuthForge.cs', csharpSDK);
+  download('ShadowAuth.cs', csharpSDK);
 }
 function downloadCPP() {
-  download('authforge.hpp', cppSDK);
+  download('shadowauth.hpp', cppSDK);
 }
 function downloadPython() {
-  download('authforge.py', pythonSDK);
+  download('shadowauth.py', pythonSDK);
 }
 
 function download(filename, content) {
