@@ -139,6 +139,36 @@ tbody tr:hover td { background: var(--surface2); }
 /* 2FA */
 .qr-wrap { text-align: center; padding: 16px; background: white; border-radius: 8px; display: inline-block; margin: 12px auto; }
 .qr-wrap img { width: 180px; height: 180px; }
+
+/* Team Chat */
+.chat-container { height: 400px; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.chat-msg { display: flex; gap: 10px; max-width: 80%; }
+.chat-msg.me { align-self: flex-end; flex-direction: row-reverse; }
+.chat-bubble { background: var(--surface2); padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; border: 1px solid var(--border); }
+.chat-msg.me .chat-bubble { background: var(--blue-dim); border-color: rgba(59,130,246,0.3); }
+.chat-meta { font-size: 10px; color: var(--muted); margin-top: 4px; display: block; }
+.chat-input-wrap { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.chat-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; color: var(--text); outline: none; font-size: 13px; }
+
+/* Announcements */
+.announcement-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; border-left: 3px solid var(--blue); }
+.ann-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.ann-msg { font-size: 13px; line-height: 1.5; }
+
+/* Bot Grid */
+.bot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.bot-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+.bot-card:hover { border-color: var(--border2); }
+.bot-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.bot-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 18px; }
+.bot-title { font-size: 14px; font-weight: 600; }
+.bot-status { margin-left: auto; font-size: 11px; }
+
+/* Christmas Theme Override Example */
+body.theme-christmas { --blue: #16a34a; --blue-dim: rgba(22,163,74,0.12); }
+body.theme-christmas .logo-dot { background: #dc2626; }
+body.theme-christmas .nav-item.active { background: rgba(220,38,38,0.1); color: #dc2626; }
 </style>
 </head>
 <body>
@@ -164,6 +194,10 @@ tbody tr:hover td { background: var(--surface2); }
     <button class="nav-item" onclick="nav('team')">
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><path d="M0 13c0-2.5 2-4 5-4s5 1.5 5 4"/><path d="M11 9c2 0 4 1 4 3.5"/></svg>
       Team
+    </button>
+    <button class="nav-item" onclick="nav('bots')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6V4a2 2 0 012-2h6a2 2 0 012 2v2M2 6h12v1H2V6zm1 4v3a1 1 0 001 1h8a1 1 0 001-1v-3"/></svg>
+      Bots & Integrations
     </button>
     <a class="nav-item" href="sdk.html"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l-3 2 3 2M12 6l3 2-3 2M9 3l-2 10"/></svg>SDK & Docs</a>
   </div>
@@ -353,6 +387,17 @@ tbody tr:hover td { background: var(--surface2); }
         <div id="twofa-actions"></div>
         <div class="alert" id="twofa-msg"></div>
       </div>
+      <div class="settings-card">
+        <div class="settings-card-title">Linked Accounts</div>
+        <div class="settings-card-sub">Link your social accounts for quick login and role sync.</div>
+        <div id="discord-link-box" style="display:flex; align-items:center; justify-content:space-between; padding:10px; background:var(--bg); border:1px solid var(--border); border-radius:6px; margin-bottom:8px;">
+           <div style="display:flex; align-items:center; gap:10px;">
+             <svg style="width:20px; color:#5865F2" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107a14.314 14.314 0 0 0 1.226 1.994a.078.078 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.947 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.946-2.419 2.157-2.419c1.21 0 2.176 1.086 2.157 2.419c0 1.334-.946 2.419-2.157 2.419z"/></svg>
+             <span id="discord-un">Discord</span>
+           </div>
+           <button class="btn btn-primary btn-sm" id="btn-discord-link" onclick="linkDiscord()">Link Account</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -400,7 +445,30 @@ tbody tr:hover td { background: var(--surface2); }
     <div style="font-size:13px;font-weight:600;margin-bottom:10px">All Developers</div>
     <div class="table-wrap" style="margin-bottom:16px"><table><thead><tr><th>Username</th><th>Email</th><th>Plan</th><th>Role</th><th>Joined</th><th></th></tr></thead><tbody id="admin-devs-tbody"></tbody></table></div>
     <div style="font-size:13px;font-weight:600;margin-bottom:10px">All Applications</div>
-    <div class="table-wrap"><table><thead><tr><th>App Name</th><th>Owner</th><th>Created</th></tr></thead><tbody id="admin-apps-tbody"></tbody></table></div>
+    <div class="table-wrap" style="margin-bottom:24px"><table><thead><tr><th>App Name</th><th>Owner</th><th>Created</th></tr></thead><tbody id="admin-apps-tbody"></tbody></table></div>
+
+    <div class="page-title" style="margin-bottom:12px;">Global Site Configuration</div>
+    <div class="settings-grid">
+      <div class="settings-card">
+        <div class="settings-card-title">Dashboard Appearance & Theme</div>
+        <div class="field"><label>Site Theme</label>
+          <select id="adm-theme">
+            <option value="dark">Default Dark</option>
+            <option value="christmas">Christmas</option>
+            <option value="halloween">Halloween</option>
+            <option value="premium">Premium Blue</option>
+          </select>
+        </div>
+        <div class="field"><label>Holiday/Sale Announcement</label><input type="text" id="adm-ann" placeholder="Merry Christmas! 50% OFF use code XMAS"></div>
+        <button class="btn btn-primary" onclick="saveAdminConfig()" style="width:100%">Save Global Config</button>
+      </div>
+      <div class="settings-card">
+        <div class="settings-card-title">Discounts & Promotions</div>
+        <div class="toggle-row"><div><div class="toggle-label">BOGO (Buy One Get One)</div></div><label class="toggle"><input type="checkbox" id="adm-bogo"><span class="toggle-slider"></span></label></div>
+        <div class="field"><label>Discount Percent</label><input type="number" id="adm-discount" value="0" min="0" max="100"></div>
+        <div class="alert" id="adm-msg"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Team -->
@@ -427,7 +495,45 @@ tbody tr:hover td { background: var(--surface2); }
       <table><thead><tr><th>Owner</th><th>My Permissions</th></tr></thead>
       <tbody id="my-teams-tbody"></tbody></table>
     </div>
+
+    <!-- Team Features: Chat & Announcements -->
+    <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-top: 32px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px">Team Chat</div>
+        <div class="chat-container">
+          <div class="chat-messages" id="team-chat-box">
+             <div style="color:var(--muted); font-size:12px; text-align:center;">Select a team or stay in your own to chat</div>
+          </div>
+          <div class="chat-input-wrap">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChat()">
+            <button class="btn btn-primary btn-sm" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+           <div style="font-size:13px;font-weight:600;">Announcements</div>
+           <button class="btn btn-ghost btn-sm" id="btn-new-ann" onclick="openModal('m-ann')" style="display:none">Post</button>
+        </div>
+        <div id="team-ann-list">
+           <div style="color:var(--muted); font-size:12px; text-align:center;">No announcements.</div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Bots -->
+  <div class="page" id="p-bots">
+    <div class="page-head">
+      <div class="page-title">Bots & Integrations</div>
+      <button class="btn btn-primary" onclick="openModal('m-bot')">Add Integration</button>
+    </div>
+    <div id="bots-warn" style="display:none;background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r);padding:14px;font-size:13px;color:var(--amber);margin-bottom:16px">
+      Bot hostings and integrations are exclusively for the Business plan.
+    </div>
+    <div class="bot-grid" id="bot-list"></div>
+  </div>
+
 
 </main>
 
@@ -500,6 +606,7 @@ tbody tr:hover td { background: var(--surface2); }
 <div class="overlay" id="m-invite"><div class="modal">
   <div class="modal-title">Invite team member</div>
   <div class="field"><label>Email address</label><input type="email" id="invite-email" placeholder="teammate@example.com"></div>
+  <div class="field"><label>Role Name (e.g. Developer, Moderator)</label><input type="text" id="invite-role" placeholder="Developer"></div>
   <div class="sec-div">Permissions</div>
   <div class="toggle-row"><div><div class="toggle-label">View apps, users and licenses</div></div><label class="toggle"><input type="checkbox" id="p-view" checked><span class="toggle-slider"></span></label></div>
   <div class="toggle-row"><div><div class="toggle-label">Manage users</div></div><label class="toggle"><input type="checkbox" id="p-users"><span class="toggle-slider"></span></label></div>
@@ -509,6 +616,47 @@ tbody tr:hover td { background: var(--surface2); }
   <div class="alert" id="invite-msg"></div>
   <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-invite')">Cancel</button><button class="btn btn-primary" onclick="sendInvite()">Send invite</button></div>
 </div></div>
+
+<!-- Bot Modal -->
+<div class="overlay" id="m-bot"><div class="modal">
+  <div class="modal-title">Add Bot / Integration</div>
+  <div class="field"><label>Platform</label>
+    <select id="bot-platform">
+      <option value="discord">Discord (Auto-sync)</option>
+      <option value="telegram">Telegram</option>
+      <option value="whatsapp">WhatsApp</option>
+      <option value="custom">Custom (API Key)</option>
+    </select>
+  </div>
+  <div class="field"><label>Bot Token / API Key</label><input type="password" id="bot-token" placeholder="Paste your bot token here"></div>
+  <div class="alert" id="bot-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-bot')">Cancel</button><button class="btn btn-primary" onclick="addBot()">Add</button></div>
+</div></div>
+
+<!-- Announcement Modal -->
+<div class="overlay" id="m-ann"><div class="modal">
+  <div class="modal-title">Post Team Announcement</div>
+  <div class="field"><label>Message</label><textarea id="ann-message" rows="4" placeholder="Important: We are updating our software tomorrow..."></textarea></div>
+  <div class="alert" id="ann-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-ann')">Cancel</button><button class="btn btn-primary" onclick="postAnnouncement()">Post</button></div>
+</div></div>
+
+<!-- Admin Dev Manage Modal -->
+<div class="overlay" id="m-adm-dev"><div class="modal">
+  <div class="modal-title" id="adm-dev-title">Manage Developer</div>
+  <input type="hidden" id="adm-dev-id">
+  <div class="field"><label>Plan</label>
+    <select id="adm-dev-plan">
+      <option value="starter">Starter</option>
+      <option value="pro">Pro</option>
+      <option value="business">Business</option>
+    </select>
+  </div>
+  <div class="field"><label>Plan Expiry</label><input type="date" id="adm-dev-exp"></div>
+  <div class="alert" id="adm-dev-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-adm-dev')">Cancel</button><button class="btn btn-primary" onclick="saveAdminDev()">Update User</button></div>
+</div></div>
+
 
 <script>
 const API = 'https://authforge-backend-production.up.railway.app';
@@ -566,7 +714,7 @@ function nav(p) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('p-' + p).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(el => { if (el.getAttribute('onclick') === "nav('" + p + "')") el.classList.add('active'); });
-  const loaders = { overview: loadOverview, apps: loadApps, licenses: loadLicenses, users: loadUsers, analytics: loadAnalyticsPage, security: loadSecurity, settings: loadSettingsPage, account: loadAccount, billing: loadBilling, admin: loadAdmin };
+  const loaders = { overview: loadOverview, apps: loadApps, licenses: loadLicenses, users: loadUsers, analytics: loadAnalyticsPage, security: loadSecurity, settings: loadSettingsPage, account: loadAccount, billing: loadBilling, admin: loadAdmin, team: loadTeamPage, bots: loadBots };
   if (loaders[p]) loaders[p]();
 }
 
@@ -999,6 +1147,11 @@ async function loadAccount() {
   document.getElementById('acc-username').value = dev.username || '';
   document.getElementById('acc-email').value = dev.email || '';
   document.getElementById('acc-created').value = fmtDate(dev.created_at);
+  const unBox = document.getElementById('discord-un');
+  unBox.textContent = dev.discord_username ? 'Discord: ' + dev.discord_username : 'Discord (Not linked)';
+  document.getElementById('btn-discord-link').textContent = dev.discord_username ? 'Linked' : 'Link Account';
+  if (dev.discord_username) document.getElementById('btn-discord-link').disabled = true;
+
   const tfaStatus = document.getElementById('twofa-status');
   const tfaActions = document.getElementById('twofa-actions');
   if (dev.two_factor_enabled) {
@@ -1074,13 +1227,31 @@ async function loadAdmin() {
   const dr = await fetch(API + '/api/admin/developers', { headers: H() });
   const dd = await dr.json();
   document.getElementById('admin-devs-tbody').innerHTML = (dd.developers || []).map(d =>
-    '<tr><td><strong>' + d.username + '</strong></td><td class="mono">' + d.email + '</td><td><span class="badge badge-blue">' + (d.plan||'starter') + '</span></td><td>' + (d.is_admin ? '<span class="badge badge-amber">Admin</span>' : '<span style="color:var(--muted2);font-size:12px">Dev</span>') + '</td><td class="mono">' + fmtDate(d.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="toggleAdmin(\'' + d.id + '\',' + !d.is_admin + ')">' + (d.is_admin ? 'Demote' : 'Promote') + '</button><button class="btn btn-danger btn-sm" onclick="adminDeleteDev(\'' + d.id + '\')">Delete</button></div></td></tr>'
+    '<tr><td><strong>' + d.username + '</strong></td><td class="mono">' + d.email + '</td><td><span class="badge badge-blue">' + (d.plan||'starter') + '</span></td><td>' + (d.is_admin ? '<span class="badge badge-amber">Admin</span>' : '<span style="color:var(--muted2);font-size:12px">Dev</span>') + '</td><td class="mono">' + fmtDate(d.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openAdminDevModal(\''+d.id+'\',\''+d.username+'\',\''+(d.plan||'starter')+'\',\''+(d.plan_expires_at||'')+'\')">Plan</button><button class="btn btn-ghost btn-sm" onclick="toggleAdmin(\'' + d.id + '\',' + !d.is_admin + ')">' + (d.is_admin ? 'Demote' : 'Promote') + '</button><button class="btn btn-danger btn-sm" onclick="adminDeleteDev(\'' + d.id + '\')">Delete</button></div></td></tr>'
   ).join('');
   const ar = await fetch(API + '/api/admin/apps', { headers: H() });
   const ad = await ar.json();
   document.getElementById('admin-apps-tbody').innerHTML = (ad.apps || []).map(a =>
     '<tr><td><strong>' + a.name + '</strong></td><td class="mono">' + (a.developers?.username||'—') + '</td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>'
   ).join('');
+  loadAdminConfig();
+}
+
+async function openAdminDevModal(id, username, plan, expiry) {
+  document.getElementById('adm-dev-id').value = id;
+  document.getElementById('adm-dev-title').innerText = 'Manage: ' + username;
+  document.getElementById('adm-dev-plan').value = plan || 'starter';
+  document.getElementById('adm-dev-exp').value = expiry ? expiry.substring(0,10) : '';
+  openModal('m-adm-dev');
+}
+
+async function saveAdminDev() {
+  const id = document.getElementById('adm-dev-id').value;
+  const plan = document.getElementById('adm-dev-plan').value;
+  const plan_expires_at = document.getElementById('adm-dev-exp').value || null;
+  const r = await fetch(API + '/api/admin/developers/' + id, { method:'PATCH', headers: H(), body: JSON.stringify({plan, plan_expires_at}) });
+  if (r.ok) { closeModal('m-adm-dev'); loadAdmin(); }
+  else alert((await r.json()).error);
 }
 
 async function toggleAdmin(id, is_admin) {
@@ -1093,6 +1264,27 @@ async function adminDeleteDev(id) {
   await fetch(API + '/api/admin/developers/' + id, { method:'DELETE', headers: H() });
   loadAdmin();
 }
+
+async function loadAdminConfig() {
+  const r = await fetch(API + '/api/admin/config', { headers: H() });
+  const d = await r.json(); const c = d.config || {};
+  document.getElementById('adm-theme').value = c.theme || 'dark';
+  document.getElementById('adm-ann').value = c.homepage_announcement || '';
+  document.getElementById('adm-bogo').checked = c.bogo_active || false;
+  document.getElementById('adm-discount').value = c.discount_percent || 0;
+}
+
+async function saveAdminConfig() {
+  const body = {
+    theme: document.getElementById('adm-theme').value,
+    homepage_announcement: document.getElementById('adm-ann').value,
+    bogo_active: document.getElementById('adm-bogo').checked,
+    discount_percent: parseInt(document.getElementById('adm-discount').value) || 0
+  };
+  const r = await fetch(API + '/api/admin/config', { method:'PATCH', headers:H(), body: JSON.stringify(body) });
+  if (r.ok) setMsg('adm-msg', 'Global config saved!', 'ok');
+}
+
 
 // Handle upgrade success
 if (new URLSearchParams(location.search).get('upgraded') === '1') {
@@ -1161,6 +1353,7 @@ async function loadTeam() {
 
 async function sendInvite() {
   var email = document.getElementById('invite-email').value.trim();
+  var role_name = document.getElementById('invite-role').value.trim() || 'Member';
   if (!email) return setMsg('invite-msg','Email required','err');
   var permissions = {
     can_view: document.getElementById('p-view').checked,
@@ -1169,7 +1362,7 @@ async function sendInvite() {
     can_manage_apps: document.getElementById('p-apps').checked,
     can_manage_settings: document.getElementById('p-settings').checked
   };
-  var r = await fetch(API + '/api/team/invite', { method:'POST', headers: H(), body: JSON.stringify({email: email, permissions: permissions}) });
+  var r = await fetch(API + '/api/team/invite', { method:'POST', headers: H(), body: JSON.stringify({email: email, permissions: permissions, role_name: role_name}) });
   var d = await r.json();
   if (!r.ok) return setMsg('invite-msg', d.error, 'err');
   setMsg('invite-msg','Invite sent!','ok');
@@ -1190,6 +1383,117 @@ async function removeMember(memberId) {
 async function cancelInvite(id) {
   await fetch(API + '/api/team/invites/' + id, { method:'DELETE', headers: H() });
   loadTeam();
+}
+
+// ── New Team & Chat ──────────────────────────────────────────────────────────
+async function loadTeamPage() {
+  await loadTeam();
+  await loadAnnouncements();
+  await loadChat();
+}
+
+async function loadChat() {
+  const box = document.getElementById('team-chat-box');
+  const team_id = devUser.id; // Could add team switcher later
+  const r = await fetch(API + '/api/team/chat?team_id=' + team_id, { headers: H() });
+  const d = await r.json();
+  const msgs = d.messages || [];
+  box.innerHTML = msgs.length ? msgs.map(m => {
+    const isMe = m.sender_id === devUser.id;
+    return '<div class="chat-msg ' + (isMe ? 'me' : '') + '"><div class="chat-bubble">' + m.message + '<span class="chat-meta">' + (m.sender?.username||'User') + ' • ' + fmtTime(m.created_at) + '</span></div></div>';
+  }).join('') : '<div style="color:var(--muted); font-size:12px; text-align:center;">No messages yet.</div>';
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendChat() {
+  const el = document.getElementById('chat-input');
+  const message = el.value.trim();
+  if (!message) return;
+  el.value = '';
+  await fetch(API + '/api/team/chat', { method:'POST', headers:H(), body: JSON.stringify({message}) });
+  loadChat();
+}
+
+async function loadAnnouncements() {
+  const r = await fetch(API + '/api/team/announcements', { headers: H() });
+  const d = await r.json();
+  if (devUser.plan === 'business') document.getElementById('btn-new-ann').style.display = 'block';
+  document.getElementById('team-ann-list').innerHTML = (d.announcements || []).map(a =>
+    '<div class="announcement-card"><div class="ann-meta">' + fmtTime(a.created_at) + '</div><div class="ann-msg">' + a.message + '</div></div>'
+  ).join('') || '<div style="color:var(--muted); font-size:12px; text-align:center;">No announcements.</div>';
+}
+
+async function postAnnouncement() {
+  const message = document.getElementById('ann-message').value.trim();
+  if (!message) return;
+  await fetch(API + '/api/team/announcements', { method:'POST', headers:H(), body: JSON.stringify({message}) });
+  closeModal('m-ann'); document.getElementById('ann-message').value = '';
+  loadAnnouncements();
+}
+
+// ── Bots ──────────────────────────────────────────────────────────────────
+async function loadBots() {
+  const plan = devUser.plan || 'starter';
+  const warn = document.getElementById('bots-warn');
+  if (plan !== 'business') { 
+    warn.style.display = 'block'; 
+    document.getElementById('bot-list').innerHTML = ''; 
+    return; 
+  }
+  warn.style.display = 'none';
+  const r = await fetch(API + '/api/bots', { headers: H() });
+  const d = await r.json();
+  const bots = d.bots || [];
+  document.getElementById('bot-list').innerHTML = bots.map(b => {
+    const icon = b.platform === 'discord' ? '💬' : b.platform === 'telegram' ? '✈️' : b.platform === 'whatsapp' ? '📱' : '⚙️';
+    return '<div class="bot-card"><div class="bot-head"><div class="bot-icon" style="background:var(--blue-dim)">' + icon + '</div><div><div class="bot-title">' + b.platform.charAt(0).toUpperCase() + b.platform.slice(1) + ' Bot</div><div style="font-size:11px;color:var(--muted)">' + (b.custom_api_key ? 'Using API Key' : 'Hosted') + '</div></div><div class="bot-status"><span class="badge ' + (b.is_active ? 'badge-green' : 'badge-red') + '">' + (b.is_active ? 'Active' : 'Off') + '</span></div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" style="flex:1" onclick="toggleBot(\''+b.id+'\','+(!b.is_active)+')">' + (b.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteBot(\''+b.id+'\')">Delete</button></div></div>';
+  }).join('');
+}
+
+async function addBot() {
+  const platform = document.getElementById('bot-platform').value;
+  const token = document.getElementById('bot-token').value.trim();
+  if (!token) return setMsg('bot-msg', 'Token required', 'err');
+  const r = await fetch(API + '/api/bots', { method:'POST', headers:H(), body: JSON.stringify({platform, bot_token: token}) });
+  if (!r.ok) return setMsg('bot-msg', (await r.json()).error, 'err');
+  closeModal('m-bot'); loadBots();
+}
+
+async function deleteBot(id) {
+  if (!confirm('Delete this bot?')) return;
+  await fetch(API + '/api/bots/' + id, { method:'DELETE', headers: H() });
+  loadBots();
+}
+
+async function toggleBot(id, is_active) {
+  await fetch(API + '/api/bots/' + id + '/toggle', { method:'PATCH', headers: H(), body: JSON.stringify({is_active}) });
+  loadBots();
+}
+
+async function linkDiscord() {
+  const params = new URLSearchParams({
+    client_id: '1319767566085165137', // Replace with actual if different, usually consistent from env
+    redirect_uri: window.location.origin + window.location.pathname,
+    response_type: 'code',
+    scope: 'identify email',
+    state: 'link_discord'
+  });
+  window.location.href = 'https://discord.com/api/oauth2/authorize?' + params.toString();
+}
+
+// Handle Link Success
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('state') === 'link_discord' && urlParams.get('code')) {
+  const code = urlParams.get('code');
+  history.replaceState({}, '', window.location.pathname);
+  fetch(API + '/api/auth/discord-code', { 
+    method: 'POST', 
+    headers: H(), 
+    body: JSON.stringify({ code, redirect_uri: window.location.origin + window.location.pathname, link_only: true }) 
+  }).then(r => r.json()).then(d => {
+    if (d.error) alert(d.error);
+    else { alert('Discord account linked!'); nav('account'); }
+  });
 }
 
 loadOverview();

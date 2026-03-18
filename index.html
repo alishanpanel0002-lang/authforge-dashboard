@@ -367,6 +367,23 @@ footer { border-top: 1px solid var(--border); padding: 40px 48px; display: flex;
   </div>
 </section>
 
+<!-- Our Community & Staff -->
+<section id="community" style="background:var(--bg);padding:80px 48px;">
+  <div class="center">
+    <div class="section-label">Community</div>
+    <div class="section-title">Meet our team & developers</div>
+    <div class="section-sub">The people building and using AuthForge.</div>
+  </div>
+  
+  <div id="staff-container" style="display:none; max-width:800px; margin:40px auto; gap:24px; flex-direction:column;">
+    <h3 style="font-size:16px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">AuthForge Staff</h3>
+    <div id="admins-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;"></div>
+    
+    <h3 style="font-size:16px; margin-top:24px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">Top Developers</h3>
+    <div id="devs-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;"></div>
+  </div>
+</section>
+
 <div class="cta-banner">
   <h2>Ready to protect your app?</h2>
   <p>Join developers who trust AuthForge to secure their software.</p>
@@ -406,6 +423,67 @@ function toggleFaq(el) {
   answer.style.display = isOpen ? 'none' : 'block';
   icon.textContent = isOpen ? '+' : '−';
 }
+</script>
+</script>
+
+<script>
+// Fetch Dynamic Config & Team data
+const API_BASE = 'https://authforge-backend-production.up.railway.app';
+// Fallback for local testing
+// const API_BASE = 'http://localhost:3000';
+
+async function loadDynamicContent() {
+  try {
+    // 1. Fetch Config
+    const confRes = await fetch(`${API_BASE}/api/public/config`);
+    if (confRes.ok) {
+      const { config } = await confRes.json();
+      if (config.theme && config.theme !== 'dark') {
+          // Could dynamically inject a theme CSS class here
+          document.body.classList.add(`theme-${config.theme}`);
+      }
+      if (config.homepage_announcement) {
+          const ann = document.createElement('div');
+          ann.style.cssText = 'background:var(--blue); color:#fff; text-align:center; padding:10px; font-weight:600; font-size:14px; position:relative; z-index:200;';
+          ann.innerText = config.homepage_announcement;
+          document.body.prepend(ann);
+          document.querySelector('nav').style.top = `${ann.offsetHeight}px`;
+      }
+    }
+    
+    // 2. Fetch Team/Admins
+    const teamRes = await fetch(`${API_BASE}/api/public/team`);
+    if (teamRes.ok) {
+      const { admins, developers } = await teamRes.json();
+      const adminList = document.getElementById('admins-list');
+      const devList = document.getElementById('devs-list');
+      const container = document.getElementById('staff-container');
+      
+      const makeCard = (u) => {
+        return `<div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; align-items:center; gap:12px;">
+           <img src="${u.avatar_url || 'https://www.gravatar.com/avatar/?d=mp'}" style="width:40px;height:40px;border-radius:50%;" />
+           <div>
+             <div style="font-size:14px;font-weight:600;">${u.username}</div>
+             <div style="font-size:11px;color:var(--muted);">${u.discord_username ? 'Discord: ' + u.discord_username : 'Developer'}</div>
+           </div>
+        </div>`;
+      };
+      
+      if (admins && admins.length) {
+        container.style.display = 'flex';
+        adminList.innerHTML = admins.map(makeCard).join('');
+      }
+      if (developers && developers.length) {
+        container.style.display = 'flex';
+        devList.innerHTML = developers.map(makeCard).join('');
+      } else {
+        devList.parentElement.style.display = 'none'; // hide heading if no devs
+      }
+    }
+  } catch(e) { console.error('Failed to load dynamic content', e); }
+}
+
+document.addEventListener('DOMContentLoaded', loadDynamicContent);
 </script>
 
 </body>
