@@ -125,7 +125,7 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
       <div class="sdk-meta">
         <span class="pill">.NET 4.7+</span>
         <span class="pill">Newtonsoft.Json</span>
-        <span class="pill">v1.0</span>
+        <span class="pill">v2.0</span>
       </div>
       <button class="btn-download" onclick="downloadCSharp()">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><path d="M2 13h12"/></svg>
@@ -334,19 +334,20 @@ function copyCode(lang) {
   navigator.clipboard.writeText(pre.innerText);
 }
 
-// ── C# SDK content ──────────────────────────────────────────────────────────
-const csharpSDK = `/*
- * AuthForge C# SDK v1.0
- * https://authforge-dashboard.vercel.app
+// ── C# SDK content ───────────────const csharpSDK = `/*
+ * AuthForge C# SDK
+ * Version: 2.0.0
+ * Website: https://authforge-dashboard.vercel.app
  *
- * SETUP:
+ * HOW TO USE:
  * 1. Add this file to your C# project
  * 2. Install Newtonsoft.Json via NuGet:
  *    Install-Package Newtonsoft.Json
- * 3. Replace YOUR_SECRET_KEY with your app's secret key
+ * 3. Initialize with your app's secret key
+ * 4. Call Login, Register, LicenseLogin, or CheckLicense
  *
- * USAGE:
- *   var af = new AuthForge("YOUR_SECRET_KEY");
+ * EXAMPLE:
+ *   var af = new AuthForge("YOUR_APP_SECRET_KEY");
  *   var result = await af.Login("username", "password");
  *   if (result.Success) { // let user in }
  */
@@ -381,34 +382,58 @@ namespace AuthForgeSDK
             _secretKey = secretKey;
         }
 
-        /// Login with username + password. Pass hwid if HWID lock is enabled.
+        // ─── Login ────────────────────────────────────────────────────────────
+        /// <summary>
+        /// Log in an existing user with username and password.
+        /// Pass the hwid parameter if HWID locking is enabled on the account.
+        /// </summary>
+        /// <param name="username">The user's username</param>
+        /// <param name="password">The user's password</param>
+        /// <param name="hwid">Optional hardware ID for device locking</param>
         public async Task<AuthForgeResponse> Login(string username, string password, string hwid = null)
         {
             var payload = new { secret_key = _secretKey, username, password, hwid };
             return await Post("/login", payload);
         }
 
-        /// Register a new user using a license key.
+        // ─── Register ─────────────────────────────────────────────────────────
+        /// <summary>
+        /// Register a new user. A valid license key with available slots is required.
+        /// </summary>
+        /// <param name="username">Desired username</param>
+        /// <param name="password">Desired password</param>
+        /// <param name="licenseKey">A valid license key to claim a slot on</param>
         public async Task<AuthForgeResponse> Register(string username, string password, string licenseKey)
         {
             var payload = new { secret_key = _secretKey, username, password, license_key = licenseKey };
             return await Post("/register", payload);
         }
 
-        /// Login using just a license key (no username/password).
+        // ─── License Login ────────────────────────────────────────────────────
+        /// <summary>
+        /// Log in using just a license key — no username or password needed.
+        /// Useful for single-use or key-based activation models.
+        /// </summary>
+        /// <param name="licenseKey">The license key to authenticate with</param>
         public async Task<AuthForgeResponse> LicenseLogin(string licenseKey)
         {
             var payload = new { secret_key = _secretKey, license_key = licenseKey };
             return await Post("/license/login", payload);
         }
 
+        // ─── License Check ────────────────────────────────────────────────────
+        /// <summary>
         /// Validate a license key without logging in.
+        /// Returns status, expiry date, and slot usage.
+        /// </summary>
+        /// <param name="licenseKey">The license key to validate</param>
         public async Task<AuthForgeResponse> CheckLicense(string licenseKey)
         {
             var payload = new { secret_key = _secretKey, license_key = licenseKey };
             return await Post("/license/check", payload);
         }
 
+        // ─── Internal POST helper ─────────────────────────────────────────────
         private async Task<AuthForgeResponse> Post(string endpoint, object payload)
         {
             try
@@ -417,15 +442,24 @@ namespace AuthForgeSDK
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _http.PostAsync(API_URL + endpoint, content);
                 var body = await response.Content.ReadAsStringAsync();
+
                 var root = JObject.Parse(body);
+
+                bool success = root["success"] != null && root["success"].Value<bool>();
+                string message = root["message"] != null ? root["message"].Value<string>() : "";
+                string error = root["error"]   != null ? root["error"].Value<string>()   : "";
+
+                // Data can be a user object or a license object depending on the endpoint
+                JObject data = null;
+                if (root["user"]    != null) data = root["user"].Value<JObject>();
+                else if (root["license"] != null) data = root["license"].Value<JObject>();
 
                 return new AuthForgeResponse
                 {
-                    Success = root["success"] != null && root["success"].Value<bool>(),
-                    Message = root["message"] != null ? root["message"].Value<string>() : "",
-                    Error = root["error"] != null ? root["error"].Value<string>() : "",
-                    Data = root["user"] != null ? root["user"].Value<JObject>() :
-                           root["license"] != null ? root["license"].Value<JObject>() : null
+                    Success = success,
+                    Message = message,
+                    Error   = error,
+                    Data    = data
                 };
             }
             catch (HttpRequestException)
@@ -434,7 +468,7 @@ namespace AuthForgeSDK
             }
             catch (Exception ex)
             {
-                return new AuthForgeResponse { Success = false, Error = "Unexpected error: " + ex.Message };
+                return new AuthForgeResponse { Success = false, Error = string.Format("Unexpected error: {0}", ex.Message) };
             }
         }
     }
