@@ -321,6 +321,12 @@ body.theme-christmas .nav-item.active { background: rgba(220,38,38,0.1); color: 
           <div class="alert" id="webhook-msg"></div>
         </div>
         <div class="settings-card">
+          <div class="settings-card-title">Security Webhooks (Spectre/Onyx)</div>
+          <div class="settings-card-sub">Send raw event data to your own server endpoints.</div>
+          <div id="hook-list" style="margin-bottom:12px"></div>
+          <button class="btn btn-ghost btn-sm" onclick="openWebhookModal()" style="width:100%">+ Add Security Webhook</button>
+        </div>
+        <div class="settings-card">
           <div class="settings-card-title">IP Whitelist</div>
           <div class="settings-card-sub">Only allow logins from specific IP addresses.</div>
           <div class="toggle-row" style="margin-bottom:10px"><div><div class="toggle-label">Enable IP whitelist</div></div><label class="toggle"><input type="checkbox" id="ip-whitelist-toggle" onchange="toggleIPWhitelist()"><span class="toggle-slider"></span></label></div>
@@ -629,8 +635,30 @@ body.theme-christmas .nav-item.active { background: rgba(220,38,38,0.1); color: 
     </select>
   </div>
   <div class="field"><label>Bot Token / API Key</label><input type="password" id="bot-token" placeholder="Paste your bot token here"></div>
+  <div class="sec-div">Advanced Command Settings (Business Only)</div>
+  <div class="field-row">
+    <div class="field"><label>Command Prefix</label><input type="text" id="bot-prefix" placeholder="!" value="!"></div>
+    <div class="field"><label>Command Channel ID</label><input type="text" id="bot-channel" placeholder="123456789..."></div>
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Leave Channel ID empty to allow commands in all channels (if shared). Provide a channel ID for security.</div>
   <div class="alert" id="bot-msg"></div>
   <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-bot')">Cancel</button><button class="btn btn-primary" onclick="addBot()">Add</button></div>
+</div></div>
+
+<!-- Webhook Modal -->
+<div class="overlay" id="m-webhook"><div class="modal">
+  <div class="modal-title">Sentinel Security Webhook</div>
+  <div class="field"><label>Application</label><select id="hook-app"></select></div>
+  <div class="field"><label>Endpoint URL</label><input type="text" id="hook-url" placeholder="https://yourserver.com/shadowauth-events"></div>
+  <div class="sec-div">Dispatch Events</div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+    <div class="toggle-row"><div><div class="toggle-label">Login</div></div><label class="toggle"><input type="checkbox" id="ev-login" checked><span class="toggle-slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Failed Login</div></div><label class="toggle"><input type="checkbox" id="ev-failed" checked><span class="toggle-slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">HWID Reset</div></div><label class="toggle"><input type="checkbox" id="ev-reset" checked><span class="toggle-slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Ban Event</div></div><label class="toggle"><input type="checkbox" id="ev-ban" checked><span class="toggle-slider"></span></label></div>
+  </div>
+  <div class="alert" id="hook-msg"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('m-webhook')">Cancel</button><button class="btn btn-primary" onclick="createWebhook()">Save Hook</button></div>
 </div></div>
 
 <!-- Announcement Modal -->
@@ -737,7 +765,19 @@ function populateSelects(ids) {
   });
 }
 
+async function applyTheme() {
+  const r = await fetch(API + '/api/public/config');
+  const d = await r.json();
+  const c = d.config || {};
+  if (c.theme && c.theme !== 'dark') {
+    document.body.className = 'theme-' + c.theme;
+  } else {
+    document.body.className = '';
+  }
+}
+
 async function loadOverview() {
+  applyTheme();
   await fetchApps(); populateSelects();
   document.getElementById('s-apps').textContent = allApps.length;
   let tl = 0, tu = 0, logins = 0;
@@ -1055,6 +1095,7 @@ function goSettings(appId) { nav('settings'); setTimeout(() => { document.getEle
 
 async function loadSettingsPage() {
   if (!allApps.length) await fetchApps(); populateSelects(['settings-app-select']);
+  loadWebhooks();
 }
 
 async function loadSettings() {
@@ -1069,6 +1110,7 @@ async function loadSettings() {
   ['invalid_credentials','banned','expired','hwid_required','hwid_max_reached','license_invalid','license_disabled','license_expired','license_full','ip_blocked'].forEach(k => {
     const el = document.getElementById('em-' + k); if (el) el.value = msgs['err_' + k] || '';
   });
+  loadWebhooks();
   // Load IP list
   const ir = await fetch(API + '/api/apps/' + appId + '/ip-whitelist', { headers: H() });
   const id2 = await ir.json();
@@ -1284,7 +1326,10 @@ async function saveAdminConfig() {
     discount_percent: parseInt(document.getElementById('adm-discount').value) || 0
   };
   const r = await fetch(API + '/api/admin/config', { method:'PATCH', headers:H(), body: JSON.stringify(body) });
-  if (r.ok) setMsg('adm-msg', 'Global config saved!', 'ok');
+  if (r.ok) {
+    setMsg('adm-msg', 'Global config saved!', 'ok');
+    applyTheme();
+  }
 }
 
 
@@ -1448,17 +1493,57 @@ async function loadBots() {
   const bots = d.bots || [];
   document.getElementById('bot-list').innerHTML = bots.map(b => {
     const icon = b.platform === 'discord' ? '💬' : b.platform === 'telegram' ? '✈️' : b.platform === 'whatsapp' ? '📱' : '⚙️';
-    return '<div class="bot-card"><div class="bot-head"><div class="bot-icon" style="background:var(--blue-dim)">' + icon + '</div><div><div class="bot-title">' + b.platform.charAt(0).toUpperCase() + b.platform.slice(1) + ' Bot</div><div style="font-size:11px;color:var(--muted)">' + (b.custom_api_key ? 'Using API Key' : 'Hosted') + '</div></div><div class="bot-status"><span class="badge ' + (b.is_active ? 'badge-green' : 'badge-red') + '">' + (b.is_active ? 'Active' : 'Off') + '</span></div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" style="flex:1" onclick="toggleBot(\''+b.id+'\','+(!b.is_active)+')">' + (b.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteBot(\''+b.id+'\')">Delete</button></div></div>';
+    return '<div class="bot-card"><div class="bot-head"><div class="bot-icon" style="background:var(--blue-dim)">' + icon + '</div><div><div class="bot-title">' + b.platform.charAt(0).toUpperCase() + b.platform.slice(1) + ' Bot</div><div style="font-size:11px;color:var(--muted)">' + (b.bot_prefix ? 'Prefix: '+b.bot_prefix : 'Legacy') + '</div></div><div class="bot-status"><span class="badge ' + (b.is_active ? 'badge-green' : 'badge-red') + '">' + (b.is_active ? 'Active' : 'Off') + '</span></div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" style="flex:1" onclick="toggleBot(\''+b.id+'\','+(!b.is_active)+')">' + (b.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteBot(\''+b.id+'\')">Delete</button></div></div>';
   }).join('');
 }
 
 async function addBot() {
   const platform = document.getElementById('bot-platform').value;
   const token = document.getElementById('bot-token').value.trim();
+  const bot_prefix = document.getElementById('bot-prefix').value.trim();
+  const command_channel_id = document.getElementById('bot-channel').value.trim();
   if (!token) return setMsg('bot-msg', 'Token required', 'err');
-  const r = await fetch(API + '/api/bots', { method:'POST', headers:H(), body: JSON.stringify({platform, bot_token: token}) });
+  const r = await fetch(API + '/api/bots', { method:'POST', headers:H(), body: JSON.stringify({platform, bot_token: token, bot_prefix, command_channel_id}) });
   if (!r.ok) return setMsg('bot-msg', (await r.json()).error, 'err');
   closeModal('m-bot'); loadBots();
+}
+
+// ── Webhooks ───────────────────────────────────────────────────────────────
+async function openWebhookModal() {
+  populateSelects(['hook-app']);
+  openModal('m-webhook');
+}
+
+async function loadWebhooks() {
+  const r = await fetch(API + '/api/webhooks', { headers: H() });
+  const d = await r.json();
+  const container = document.getElementById('hook-list');
+  if (!r.ok) { container.innerHTML = '<div style="color:var(--red); font-size:11px">' + (d.error||'Failed to load hooks') + '</div>'; return; }
+  const hooks = d.webhooks || [];
+  container.innerHTML = hooks.map(h => {
+    const app = allApps.find(a => a.id === h.app_id)?.name || 'All Apps';
+    return '<div class="session-item" style="padding:8px; margin-bottom:4px"><div><div style="font-size:12px; font-weight:600">' + app + '</div><div style="font-size:10px; color:var(--muted); max-width:180px; overflow:hidden; text-overflow:ellipsis">' + h.url + '</div></div><button class="btn btn-danger btn-sm" onclick="deleteWebhook(\''+h.id+'\')">×</button></div>';
+  }).join('') || '<div style="color:var(--muted); font-size:11px">No active webhooks.</div>';
+}
+
+async function createWebhook() {
+  const app_id = document.getElementById('hook-app').value;
+  const url = document.getElementById('hook-url').value.trim();
+  const events = [];
+  if (document.getElementById('ev-login').checked) events.push('login');
+  if (document.getElementById('ev-failed').checked) events.push('failed_login');
+  if (document.getElementById('ev-reset').checked) events.push('hwid_reset');
+  if (document.getElementById('ev-ban').checked) events.push('ban');
+  
+  if (!url) return setMsg('hook-msg', 'URL required', 'err');
+  const r = await fetch(API + '/api/webhooks', { method:'POST', headers:H(), body: JSON.stringify({app_id: app_id||null, url, events}) });
+  if (!r.ok) return setMsg('hook-msg', (await r.json()).error, 'err');
+  closeModal('m-webhook'); loadWebhooks();
+}
+
+async function deleteWebhook(id) {
+  await fetch(API + '/api/webhooks/' + id, { method:'DELETE', headers: H() });
+  loadWebhooks();
 }
 
 async function deleteBot(id) {

@@ -161,6 +161,14 @@ function discordSignIn() {
 }
 
 // Handle OAuth callbacks
+async function applyTheme() {
+  const r = await fetch(API + '/api/public/config');
+  const d = await r.json();
+  const c = d.config || {};
+  if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
+}
+applyTheme();
+
 async function handleOAuthCallback() {
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');

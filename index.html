@@ -279,7 +279,7 @@ footer { background: #020204; border-top: 1px solid var(--border); padding: 80px
     <div class="title">Meet the Sentinels</div>
     <div class="subtitle">The architects behind the ShadowAuth security engine.</div>
   </div>
-  <div class="sentinel-grid">
+  <div class="sentinel-grid" id="sentinel-grid">
     <div class="sentinel-card"><div class="sentinel-img">👹</div><div class="sentinel-name">Shadow-1</div><div class="sentinel-role">Lead Architect</div></div>
     <div class="sentinel-card"><div class="sentinel-img">⚔️</div><div class="sentinel-name">Ghost-X</div><div class="sentinel-role">Security Ops</div></div>
     <div class="sentinel-card"><div class="sentinel-img">🩸</div><div class="sentinel-name">Viper</div><div class="sentinel-role">SDK Developer</div></div>
@@ -384,6 +384,55 @@ document.querySelectorAll('.code-tab').forEach(tab => {
     document.getElementById('code-box').innerHTML = codeData[tab.dataset.lang];
   };
 });
+
+const API = 'https://authforge-backend-production.up.railway.app';
+
+async function initPage() {
+  const r = await fetch(API + '/api/public/config');
+  const d = await r.json();
+  const c = d.config || {};
+  if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
+  
+  // Apply Promo
+  if (c.bogo_active) {
+    document.querySelectorAll('.pricing-container').forEach(p => {
+      const b = document.createElement('div');
+      b.className = 'hero-badge'; b.style.marginBottom = '20px';
+      b.innerHTML = '<span class="hero-badge-dot" style="background:var(--green)"></span> LIMITED: BOGO Active — BUY ONE GET ONE FREE!';
+      p.parentNode.insertBefore(b, p);
+    });
+  }
+  if (c.discount_percent > 0) {
+    document.querySelectorAll('.price-val').forEach(pv => {
+      if (pv.textContent.includes('$0')) return;
+      const old = pv.innerHTML;
+      pv.innerHTML = '<span style="text-decoration:line-through; font-size:14px; opacity:0.5; margin-right:8px">' + old.split('<span>')[0] + '</span>' + old;
+      pv.style.color = 'var(--green)';
+    });
+  }
+  if (c.homepage_announcement) {
+    const ann = document.createElement('div');
+    ann.style.background = 'var(--red)'; ann.style.color = '#fff'; ann.style.padding = '10px'; ann.style.textAlign = 'center'; ann.style.fontSize = '13px'; ann.style.fontWeight = '700';
+    ann.textContent = c.homepage_announcement;
+    document.body.prepend(ann);
+  }
+  
+  // Load Sentinels (Team)
+  const tr = await fetch(API + '/api/public/team');
+  const td = await tr.json();
+  const container = document.getElementById('sentinel-grid');
+  if (td.admins) {
+    container.innerHTML = [...td.admins, ...td.developers].map(m => {
+      const avatar = m.avatar_url ? `<img src="${m.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : (m.username[0].toUpperCase());
+      return `<div class="sentinel-card">
+        <div class="sentinel-img">${avatar}</div>
+        <div class="sentinel-name">${m.username}</div>
+        <div class="sentinel-role">${m.is_admin ? 'Admin' : (m.plan === 'business' ? 'Elite Partner' : 'Developer')}</div>
+      </div>`;
+    }).join('');
+  }
+}
+initPage();
 </script>
 
 </body>
