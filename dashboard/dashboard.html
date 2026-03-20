@@ -165,10 +165,19 @@ tbody tr:hover td { background: var(--surface2); }
 .bot-title { font-size: 14px; font-weight: 600; }
 .bot-status { margin-left: auto; font-size: 11px; }
 
-/* Christmas Theme Override Example */
-body.theme-christmas { --blue: #16a34a; --blue-dim: rgba(22,163,74,0.12); }
-body.theme-christmas .logo-dot { background: #dc2626; }
-body.theme-christmas .nav-item.active { background: rgba(220,38,38,0.1); color: #dc2626; }
+/* Themes Engine */
+body.theme-christmas { --red: #16a34a; --accent: #22c55e; --red-dim: rgba(22,163,74,0.12); --blue: #dc2626; }
+body.theme-halloween { --red: #f97316; --accent: #fb923c; --red-dim: rgba(249,115,22,0.12); --blue: #a855f7; }
+body.theme-ocean { --red: #0ea5e9; --accent: #38bdf8; --red-dim: rgba(14,165,233,0.12); --blue: #0ea5e9; }
+body.theme-blood { --red: #991b1b; --accent: #ef4444; --red-dim: rgba(153,27,27,0.15); --blue: #7f1d1d; }
+
+/* Apply Theme to Components */
+body[class^="theme-"] .logo-dot { background: var(--red) !important; }
+body[class^="theme-"] .nav-item.active { background: var(--red-dim); color: var(--red); }
+body[class^="theme-"] .btn-primary { background: var(--red); }
+body[class^="theme-"] .badge-red { background: var(--red-dim); color: var(--red); }
+body[class^="theme-"] .plan-badge.pro, body[class^="theme-"] .plan-badge.business { background: var(--red); }
+body[class^="theme-"] .sidebar-bottom .avatar { background: var(--red-dim); color: var(--red); }
 </style>
 </head>
 <body>
