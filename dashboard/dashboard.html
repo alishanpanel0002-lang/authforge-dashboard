@@ -20,7 +20,8 @@
   --font: 'Outfit', sans-serif; --r: 10px;
 }
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
-.sidebar { width: 220px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; }
+.sidebar { width: 220px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; background: var(--bg); }
+body[class^="theme-"] .sidebar { background: transparent; backdrop-filter: blur(10px); }
 .logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin-bottom: 24px; }
 .logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; flex-shrink: 0; }
 .logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
@@ -44,7 +45,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 .user-plan { font-size: 11px; color: var(--muted); }
 .sign-out { width: 100%; padding: 6px 8px; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 13px; text-align: left; border-radius: 6px; cursor: pointer; }
 .sign-out:hover { background: var(--surface2); color: var(--red); }
-.main { margin-left: 220px; flex: 1; padding: 28px 36px; max-width: calc(100vw - 220px); }
+.main { margin-left: 220px; flex: 1; padding: 28px 36px; max-width: calc(100vw - 220px); background: var(--bg); min-height: 100vh; }
+body[class^="theme-"] .main { background: transparent; }
 .page { display: none; } .page.active { display: block; }
 .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .page-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
