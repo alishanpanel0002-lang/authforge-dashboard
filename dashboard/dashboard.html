@@ -167,17 +167,22 @@ tbody tr:hover td { background: var(--surface2); }
 
 /* Themes Engine */
 body.theme-christmas { --red: #16a34a; --accent: #22c55e; --red-dim: rgba(22,163,74,0.12); --blue: #dc2626; }
+body.theme-christmas::before { content: '❄️'; position: fixed; top: -50px; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 24px; animation: snow 10s linear infinite; opacity: 0.3; word-spacing: 50px; }
+@keyframes snow { from { transform: translateY(0); } to { transform: translateY(100vh); } }
+
 body.theme-halloween { --red: #f97316; --accent: #fb923c; --red-dim: rgba(249,115,22,0.12); --blue: #a855f7; }
+body.theme-halloween::before { content: '👻 🎃'; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 32px; animation: float 6s ease-in-out infinite; opacity: 0.1; display: flex; justify-content: space-around; align-items: center; }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
+
 body.theme-ocean { --red: #0ea5e9; --accent: #38bdf8; --red-dim: rgba(14,165,233,0.12); --blue: #0ea5e9; }
 body.theme-blood { --red: #991b1b; --accent: #ef4444; --red-dim: rgba(153,27,27,0.15); --blue: #7f1d1d; }
 
 /* Apply Theme to Components */
 body[class^="theme-"] .logo-dot { background: var(--red) !important; }
 body[class^="theme-"] .nav-item.active { background: var(--red-dim); color: var(--red); }
-body[class^="theme-"] .btn-primary { background: var(--red); }
+body[class^="theme-"] .btn-primary { background: var(--red); color: white !important; }
 body[class^="theme-"] .badge-red { background: var(--red-dim); color: var(--red); }
-body[class^="theme-"] .plan-badge.pro, body[class^="theme-"] .plan-badge.business { background: var(--red); }
-body[class^="theme-"] .sidebar-bottom .avatar { background: var(--red-dim); color: var(--red); }
+body[class^="theme-"] .plan-badge.pro, body[class^="theme-"] .plan-badge.business { background: var(--red); color: white !important; }
 </style>
 </head>
 <body>
@@ -1241,8 +1246,13 @@ async function disable2FA() {
 
 // ── Billing ───────────────────────────────────────────────────────────────────
 async function loadBilling() {
-  const r = await fetch(API + '/api/stripe/billing', { headers: H() });
-  const d = await r.json(); const b = d.billing || {};
+  const [br, cr] = await Promise.all([
+    fetch(API + '/api/stripe/billing', { headers: H() }),
+    fetch(API + '/api/public/config')
+  ]);
+  const bData = await br.json(); const b = bData.billing || {};
+  const cData = await cr.json(); const c = cData.config || {};
+  
   const plan = b.plan || 'starter';
   const planName = plan === 'starter' ? 'Phantom' : plan === 'pro' ? 'Spectre' : plan === 'business' ? 'Business Onyx' : 'Staff';
   document.getElementById('current-plan-badge').textContent = planName;
@@ -1254,6 +1264,19 @@ async function loadBilling() {
   document.querySelectorAll('.plan-option').forEach(el => el.classList.remove('current'));
   const planEl = document.getElementById('plan-' + plan);
   if (planEl) planEl.classList.add('current');
+
+  // Handle Discounts & Promos in Dashboard
+  if (c.discount_percent > 0) {
+    document.querySelectorAll('.plan-price').forEach(pv => {
+      if (pv.textContent.includes('$0')) return;
+      const old = pv.dataset.orig || pv.innerHTML;
+      if (!pv.dataset.orig) pv.dataset.orig = old;
+      const val = parseInt(old.match(/\$(\d+)/)[1]);
+      const discounted = (val * (1 - c.discount_percent / 100)).toFixed(2);
+      pv.innerHTML = '<span style="text-decoration:line-through; font-size:14px; opacity:0.5; margin-right:8px">$' + val + '</span> $' + discounted + ' <span>/ month</span>';
+      pv.style.color = 'var(--green)';
+    });
+  }
 }
 
 async function upgradePlan(plan) {
