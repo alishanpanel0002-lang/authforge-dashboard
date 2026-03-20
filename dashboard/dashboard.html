@@ -166,16 +166,19 @@ tbody tr:hover td { background: var(--surface2); }
 .bot-status { margin-left: auto; font-size: 11px; }
 
 /* Themes Engine */
-body.theme-christmas { --red: #16a34a; --accent: #22c55e; --red-dim: rgba(22,163,74,0.12); --blue: #dc2626; }
-body.theme-christmas::before { content: '❄️'; position: fixed; top: -50px; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 24px; animation: snow 10s linear infinite; opacity: 0.3; word-spacing: 50px; }
+body.theme-christmas { --red: #16a34a; --accent: #22c55e; --red-dim: rgba(22,163,74,0.12); --blue: #dc2626; background: radial-gradient(circle at top right, #0a2e1a, #050508) fixed; }
+body.theme-christmas::before { content: ''; position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/snow.png'); opacity: 0.1; pointer-events: none; z-index: 1; }
+body.theme-christmas::after { content: '❄️'; position: fixed; top: -50px; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 24px; animation: snow 10s linear infinite; opacity: 0.3; word-spacing: 120px; }
+
+body.theme-halloween { --red: #f97316; --accent: #fb923c; --red-dim: rgba(249,115,22,0.12); --blue: #a855f7; background: radial-gradient(circle at top left, #1a0a2e, #050508) fixed; }
+body.theme-halloween::before { content: ''; position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); opacity: 0.05; pointer-events: none; z-index: 1; }
+body.theme-halloween::after { content: '👻 🎃'; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 32px; animation: float 6s ease-in-out infinite; opacity: 0.1; display: flex; justify-content: space-around; align-items: center; }
+
+body.theme-ocean { --red: #0ea5e9; --accent: #38bdf8; --red-dim: rgba(14,165,233,0.12); --blue: #0ea5e9; background: radial-gradient(circle at bottom right, #0a1a2e, #050508) fixed; }
+body.theme-blood { --red: #991b1b; --accent: #ef4444; --red-dim: rgba(153,27,27,0.15); --blue: #7f1d1d; background: radial-gradient(circle at center, #1a0505, #050508) fixed; }
+
 @keyframes snow { from { transform: translateY(0); } to { transform: translateY(100vh); } }
-
-body.theme-halloween { --red: #f97316; --accent: #fb923c; --red-dim: rgba(249,115,22,0.12); --blue: #a855f7; }
-body.theme-halloween::before { content: '👻 🎃'; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 32px; animation: float 6s ease-in-out infinite; opacity: 0.1; display: flex; justify-content: space-around; align-items: center; }
 @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
-
-body.theme-ocean { --red: #0ea5e9; --accent: #38bdf8; --red-dim: rgba(14,165,233,0.12); --blue: #0ea5e9; }
-body.theme-blood { --red: #991b1b; --accent: #ef4444; --red-dim: rgba(153,27,27,0.15); --blue: #7f1d1d; }
 
 /* Apply Theme to Components */
 body[class^="theme-"] .logo-dot { background: var(--red) !important; }
