@@ -673,7 +673,7 @@ body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--pri
           </div>
           <div class="chat-input-wrap">
             <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChat()">
-            <button class="btn btn-primary btn-sm" onclick="sendChat()">Send</button>
+            <button class="btn btn-primary btn-sm" id="btn-chat-send" onclick="sendChat()">Send</button>
           </div>
         </div>
       </div>
@@ -1669,17 +1669,43 @@ async function loadChat() {
   const msgs = d.messages || [];
   box.innerHTML = msgs.length ? msgs.map(m => {
     const isMe = m.sender_id === devUser.id;
-    return '<div class="chat-msg ' + (isMe ? 'me' : '') + '"><div class="chat-bubble">' + m.message + '<span class="chat-meta">' + (m.sender?.username||'User') + ' • ' + fmtTime(m.created_at) + '</span></div></div>';
+    let actions = '';
+    if (isMe) {
+        actions = `<span style="margin-left:8px; cursor:pointer; color:var(--primary-light)" onclick="editChat('${m.id}', '${m.message.replace(/'/g, "\\'")}')">Edit</span> <span style="margin-left:6px; cursor:pointer; color:var(--red)" onclick="deleteChat('${m.id}')">Del</span>`;
+    }
+    return '<div class="chat-msg ' + (isMe ? 'me' : '') + '"><div class="chat-bubble">' + m.message + '<span class="chat-meta">' + (m.sender?.username||'User') + ' • ' + fmtTime(m.created_at) + actions + '</span></div></div>';
   }).join('') : '<div style="color:var(--muted); font-size:12px; text-align:center;">No messages yet.</div>';
   box.scrollTop = box.scrollHeight;
 }
+
+let editingChatId = null;
 
 async function sendChat() {
   const el = document.getElementById('chat-input');
   const message = el.value.trim();
   if (!message) return;
   el.value = '';
-  await fetch(API + '/api/team/chat', { method:'POST', headers:H(), body: JSON.stringify({message}) });
+  if (editingChatId) {
+    await fetch(API + '/api/team/chat/' + editingChatId, { method:'PATCH', headers:H(), body: JSON.stringify({message}) });
+    editingChatId = null;
+    document.getElementById('btn-chat-send').innerText = 'Send';
+  } else {
+    await fetch(API + '/api/team/chat', { method:'POST', headers:H(), body: JSON.stringify({message}) });
+  }
+  loadChat();
+}
+
+function editChat(id, msg) {
+  editingChatId = id;
+  const el = document.getElementById('chat-input');
+  el.value = msg;
+  el.focus();
+  document.getElementById('btn-chat-send').innerText = 'Save';
+}
+
+async function deleteChat(id) {
+  if (!confirm("Delete this message?")) return;
+  await fetch(API + '/api/team/chat/' + id, { method:'DELETE', headers:H() });
   loadChat();
 }
 
