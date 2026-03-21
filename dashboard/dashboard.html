@@ -27,10 +27,27 @@
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
 .sidebar { width: 220px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; background: var(--bg); }
 body[class^="theme-"] .sidebar { background: transparent; backdrop-filter: blur(10px); }
-.logo { display: flex; align-items: center; gap: 9px; padding: 4px 8px; margin-bottom: 24px; }
-.logo-icon { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0; }
-.logo-text { font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
-.logo-text span { color: var(--primary-light); }
+.logo { display: flex; align-items: center; gap: 12px; padding: 4px 8px; margin-bottom: 30px; }
+.logo-icon { 
+  position: relative; width: 28px; height: 28px; border-radius: 8px; 
+  background: linear-gradient(135deg, var(--primary), var(--accent)); 
+  display: flex; align-items: center; justify-content: center; 
+  font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;
+  box-shadow: 0 4px 15px var(--primary-glow);
+  overflow: hidden;
+  font-style: italic;
+}
+.logo-icon::after {
+  content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: logo-shimmer 4s infinite;
+}
+@keyframes logo-shimmer {
+  0% { transform: rotate(45deg) translateY(100%); }
+  20%, 100% { transform: rotate(45deg) translateY(-100%); }
+}
+.logo-text { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+.logo-text span { color: var(--primary-light); font-weight: 300; }
 .nav-group { margin-bottom: 16px; }
 .nav-label { font-size: 11px; color: var(--muted2); padding: 0 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
 .nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.1s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
@@ -676,10 +693,9 @@ body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--pri
   <div class="page" id="p-bots">
     <div class="page-head">
       <div class="page-title">Bots & Integrations</div>
-      <button class="btn btn-primary" onclick="openModal('m-bot')">Add Integration</button>
     </div>
-    <div id="bots-warn" style="display:none;background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r);padding:14px;font-size:13px;color:var(--amber);margin-bottom:16px">
-      Bot hostings and integrations are exclusively for the Business plan.
+    <div id="bots-warn" style="display:block;background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r);padding:14px;font-size:13px;color:var(--amber);margin-bottom:16px">
+      🚧 Bot hostings and integrations are currently undergoing scheduled maintenance. Please check back later.
     </div>
     <div class="bot-grid" id="bot-list"></div>
   </div>
@@ -1679,30 +1695,20 @@ async function loadAnnouncements() {
 async function postAnnouncement() {
   const message = document.getElementById('ann-message').value.trim();
   if (!message) return;
-  await fetch(API + '/api/team/announcements', { method:'POST', headers:H(), body: JSON.stringify({message}) });
+  const r = await fetch(API + '/api/team/announcements', { method:'POST', headers:H(), body: JSON.stringify({message}) });
+  const d = await r.json();
+  if (!r.ok) return setMsg('ann-msg', d.error, 'err');
   closeModal('m-ann'); document.getElementById('ann-message').value = '';
   loadAnnouncements();
 }
 
-// ── Bots ──────────────────────────────────────────────────────────────────
+// ── Bots (Maintenance) ────────────────────────────────────────────────────────
 async function loadBots() {
   showLoader();
   try {
-    const plan = devUser.plan || 'starter';
-    const warn = document.getElementById('bots-warn');
-    if (plan !== 'business') { 
-      warn.style.display = 'block'; 
-      document.getElementById('bot-list').innerHTML = ''; 
-      return; 
-    }
-    warn.style.display = 'none';
-    const r = await fetch(API + '/api/bots', { headers: H() });
-    const d = await r.json();
-    const bots = d.bots || [];
-    document.getElementById('bot-list').innerHTML = bots.map(b => {
-      const icon = b.platform === 'discord' ? '💬' : b.platform === 'telegram' ? '✈️' : b.platform === 'whatsapp' ? '📱' : '⚙️';
-      return '<div class="bot-card"><div class="bot-head"><div class="bot-icon" style="background:var(--blue-dim)">' + icon + '</div><div><div class="bot-title">' + b.platform.charAt(0).toUpperCase() + b.platform.slice(1) + ' Bot</div><div style="font-size:11px;color:var(--muted)">' + (b.bot_prefix ? 'Prefix: '+b.bot_prefix : 'Legacy') + '</div></div><div class="bot-status"><span class="badge ' + (b.is_active ? 'badge-green' : 'badge-red') + '">' + (b.is_active ? 'Active' : 'Off') + '</span></div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" style="flex:1" onclick="toggleBot(\''+b.id+'\','+(!b.is_active)+')">' + (b.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteBot(\''+b.id+'\')">Delete</button></div></div>';
-    }).join('');
+    document.getElementById('bots-warn').style.display = 'block';
+    document.getElementById('bot-list').innerHTML = ''; 
+    return;
   } finally { hideLoader(); }
 }
 
