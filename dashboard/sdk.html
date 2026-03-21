@@ -355,14 +355,13 @@ pre { padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 12.5
         Download nyxauth.py
       </button>
     </div>
-  </div>
 
     <div class="sdk-card">
       <div class="sdk-header">
-        <div class="sdk-icon nodejs" style="color:var(--green)">⬡</div>
+        <div class="sdk-icon nodejs" style="color:var(--green); background: rgba(16,185,129,0.1);">⬡</div>
         <div>
           <div class="sdk-name">Node.js SDK</div>
-          <div class="sdk-desc">For web backends, electron, CLIs</div>
+          <div class="sdk-desc">For web backends, Electron app, and CLIs</div>
         </div>
       </div>
       <div class="sdk-pills">
@@ -556,7 +555,7 @@ if (!localStorage.getItem('af_token')) location.href = 'index.html';
 document.getElementById('un').textContent = user.username || '';
 const avEl = document.getElementById('av');
 if (user.avatar_url) {
-  avEl.innerHTML = \`<img src="\${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;">\`;
+  avEl.innerHTML = `<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
 } else {
   avEl.textContent = (user.username || '?')[0].toUpperCase();
 }
@@ -575,8 +574,6 @@ function switchLang(lang) {
   });
   document.querySelectorAll('.lang-tab').forEach((t, i) => {
     t.classList.toggle('active', ['csharp', 'cpp', 'python', 'nodejs'][i] === lang);
-  });
-}ve', ['csharp', 'cpp', 'python'][i] === lang);
   });
 }
 
@@ -818,7 +815,8 @@ class NyxAuth:
 
     def check_license(self, license_key: str) -> dict:
         """Validate a license key without logging in."""
-        return self._post("/license/check", {"secret_key": self.secret_key, "license_key": license_key})`,
+        return self._post("/license/check", {"secret_key": self.secret_key, "license_key": license_key})
+"""`,
 
 nodejs: `/**
  * NyxAuth Node.js SDK v2.0.0
@@ -840,7 +838,7 @@ class NyxAuth {
 
     async _post(endpoint, payload) {
         try {
-            const res = await axios.post(\`\${this.host}/api/client\${endpoint}\`, payload);
+            const res = await axios.post(this.host + '/api/client' + endpoint, payload);
             return res.data;
         } catch (err) {
             return err.response?.data || { error: err.message };
