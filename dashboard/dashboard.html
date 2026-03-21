@@ -185,77 +185,77 @@ body[class^="theme-"] .modal, body[class^="theme-"] .chat-container {
 }
 body[class^="theme-"] .sidebar { background: var(--bg) !important; border-right: 1px solid var(--border) !important; backdrop-filter: blur(24px) !important; }
 
-/* 🎄 Christmas — Aurora Emerald */
+/* 🎄 Christmas — Frostbite Emerald */
 body.theme-christmas {
-  --bg: rgba(0, 10, 5, 0.7); --surface: rgba(0, 30, 15, 0.25); --surface2: rgba(0, 50, 25, 0.35);
+  --bg: rgba(0, 8, 4, 0.85); --surface: rgba(0, 25, 15, 0.35); --surface2: rgba(0, 45, 25, 0.45);
   --primary: #10b981; --accent: #059669; --primary-dim: rgba(16,185,129,0.15);
   --primary-light: #6ee7b7; --primary-glow: rgba(16,185,129,0.4);
-  --border: rgba(16,185,129,0.25); --border2: rgba(16,185,129,0.5);
+  --border: rgba(16,185,129,0.3); --border2: rgba(16,185,129,0.6);
   --blue: #ef4444; --blue-dim: rgba(239,68,68,0.15);
-  background: radial-gradient(circle at 15% 50%, rgba(16,185,129,0.2), transparent 50%),
-              radial-gradient(circle at 85% 30%, rgba(239,68,68,0.15), transparent 50%), #010804;
+  background: radial-gradient(circle at 10% 40%, rgba(16,185,129,0.3), transparent 60%),
+              radial-gradient(ellipse at 80% 90%, rgba(239,68,68,0.2), transparent 70%), #010403;
 }
-@keyframes xmas-snow {
-  0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-  20% { opacity: 0.8; }
-  80% { opacity: 0.6; }
-  100% { transform: translateY(110vh) translateX(100px) rotate(360deg); opacity: 0; }
-}
-body.theme-christmas::before {
-  content: '❅'; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  font-size: 28px; color: rgba(255,255,255,0.6); text-shadow: 0 0 15px rgba(255,255,255,0.9);
-  animation: xmas-snow 12s linear infinite; letter-spacing: 12vw; white-space: nowrap; overflow: hidden;
+@keyframes xmas-frost { 0% { background-position: 0% 0%; } 100% { background-position: -100% 100%; } }
+body.theme-christmas::after {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.3; mix-blend-mode: screen;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,0.08) 10px, rgba(255,255,255,0.08) 20px);
+  background-size: 200% 200%; animation: xmas-frost 30s linear infinite;
 }
 
-/* 🎃 Halloween — Pumpkin Void */
+/* 🎃 Halloween — Haunted Ember */
 body.theme-halloween {
-  --bg: rgba(10, 0, 15, 0.8); --surface: rgba(40, 0, 50, 0.35); --surface2: rgba(70, 0, 80, 0.45);
+  --bg: rgba(10, 2, 0, 0.85); --surface: rgba(30, 5, 0, 0.35); --surface2: rgba(50, 10, 0, 0.45);
   --primary: #f97316; --accent: #ea580c; --primary-dim: rgba(249,115,22,0.15);
   --primary-light: #fdba74; --primary-glow: rgba(249,115,22,0.4);
   --border: rgba(249,115,22,0.3); --border2: rgba(249,115,22,0.6);
   --blue: #a855f7; --blue-dim: rgba(168,85,247,0.15);
-  background: radial-gradient(ellipse at 50% 120%, rgba(249,115,22,0.25), transparent 70%),
-              radial-gradient(ellipse at 0% 0%, rgba(168,85,247,0.2), transparent 50%), #060009;
+  background: radial-gradient(circle at 50% 100%, rgba(249,115,22,0.35), transparent 70%),
+              radial-gradient(circle at 0% 0%, rgba(168,85,247,0.25), transparent 60%), #060100;
 }
-@keyframes hween-float { 0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; } 50% { transform: translateY(-30px) scale(1.05); opacity: 0.5; } }
-body.theme-halloween::before {
-  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(circle at 80% 20%, rgba(249,115,22,0.25) 0%, transparent 40%);
-  animation: hween-float 7s ease-in-out infinite; filter: blur(30px);
+@keyframes hween-fog { 0% { background-position: 0% 100%; } 100% { background-position: 100% 0%; } }
+body.theme-halloween::after {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.35; mix-blend-mode: color-dodge;
+  background: repeating-linear-gradient(135deg, transparent, transparent 12px, rgba(249,115,22,0.1) 12px, rgba(249,115,22,0.1) 24px);
+  background-size: 200% 200%; animation: hween-fog 25s linear infinite;
 }
 
-/* 🌊 Ocean — Bioluminescent Abyss */
+/* 🌊 Ocean — Bioluminescent Abyss (Upgraded) */
 body.theme-ocean {
-  --bg: rgba(0, 5, 20, 0.85); --surface: rgba(0, 25, 70, 0.3); --surface2: rgba(0, 40, 90, 0.4);
+  --bg: rgba(0, 5, 20, 0.85); --surface: rgba(0, 25, 70, 0.35); --surface2: rgba(0, 40, 90, 0.45);
   --primary: #0ea5e9; --accent: #0284c7; --primary-dim: rgba(14,165,233,0.15);
   --primary-light: #7dd3fc; --primary-glow: rgba(14,165,233,0.4);
   --border: rgba(14,165,233,0.3); --border2: rgba(14,165,233,0.6);
   --blue: #38bdf8; --blue-dim: rgba(56,189,248,0.15);
-  background: radial-gradient(circle at 40% -20%, rgba(14,165,233,0.3), transparent 60%),
-              radial-gradient(circle at 60% 120%, rgba(2,132,199,0.4), transparent 70%), #00030a;
+  background: radial-gradient(circle at 40% -20%, rgba(14,165,233,0.35), transparent 70%),
+              radial-gradient(circle at 60% 120%, rgba(2,132,199,0.45), transparent 80%), #000208;
 }
 @keyframes ocean-current { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+body.theme-ocean::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.3; mix-blend-mode: overlay;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(255,255,255,0.06) 20px, rgba(255,255,255,0.06) 40px);
+  background-size: 200% 200%; animation: ocean-current 35s linear infinite reverse;
+}
 body.theme-ocean::after {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.4; mix-blend-mode: color-dodge;
-  background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(14,165,233,0.1) 15px, rgba(14,165,233,0.1) 30px);
+  background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(14,165,233,0.15) 15px, rgba(14,165,233,0.15) 30px);
   background-size: 200% 200%; animation: ocean-current 25s linear infinite;
 }
 
-/* 🩸 Blood Moon — Vampire Crimson */
+/* 🩸 Blood Moon — Crimson Matrix */
 body.theme-blood {
-  --bg: rgba(10, 0, 0, 0.85); --surface: rgba(50, 0, 0, 0.35); --surface2: rgba(70, 0, 0, 0.45);
-  --primary: #ef4444; --accent: #dc2626; --primary-dim: rgba(239,68,68,0.15);
+  --bg: rgba(8, 0, 0, 0.85); --surface: rgba(45, 0, 0, 0.35); --surface2: rgba(65, 0, 0, 0.45);
+  --primary: #ef4444; --accent: #b91c1c; --primary-dim: rgba(239,68,68,0.15);
   --primary-light: #fca5a5; --primary-glow: rgba(239,68,68,0.5);
   --border: rgba(239,68,68,0.3); --border2: rgba(239,68,68,0.6);
   --blue: #991b1b; --blue-dim: rgba(153,27,27,0.15);
-  background: radial-gradient(circle at 85% 15%, rgba(239,68,68,0.3), transparent 45%),
-              radial-gradient(ellipse at 15% 85%, rgba(185,28,28,0.2), transparent 50%), #080000;
+  background: radial-gradient(circle at 85% 15%, rgba(239,68,68,0.35), transparent 60%),
+              radial-gradient(ellipse at 15% 90%, rgba(185,28,28,0.3), transparent 70%), #050000;
 }
-@keyframes blood-pulse-new { 0%, 100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.15); filter: brightness(1.8); } }
-body.theme-blood::before {
-  content: ''; position: fixed; top: -10vh; right: -10vw; width: 50vw; height: 50vw; z-index: -1; pointer-events: none;
-  background: radial-gradient(circle, rgba(239,68,68,0.3) 0%, transparent 60%);
-  animation: blood-pulse-new 5s ease-in-out infinite; mix-blend-mode: screen; border-radius: 50%;
+@keyframes blood-mesh { 0% { background-position: 0% 0%; } 100% { background-position: 0% 100%; } }
+body.theme-blood::after {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.4; mix-blend-mode: color-dodge;
+  background: repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(239,68,68,0.12) 8px, rgba(239,68,68,0.12) 16px);
+  background-size: 100% 200%; animation: blood-mesh 15s linear infinite;
 }
 
 /* ==== AMBIENT GLASSMORPHIC GLOBAL LOADER ==== */
