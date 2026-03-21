@@ -633,7 +633,7 @@ async function initPage() {
     console.log('[BOGO Debug] Landing Config:', c, 'isBogo:', isBogo);
 
     if (isBogo) {
-      const b = document.createElement('div');
+      const b = document.getElementById('bogo-banner') || document.createElement('div');
       b.id = 'bogo-banner';
       b.style.cssText = 'background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;padding:12px;text-align:center;font-size:14px;font-weight:800;letter-spacing:0.5px;position:sticky;top:68px;z-index:999;box-shadow:0 4px 15px rgba(0,0,0,0.3);';
       b.innerHTML = '🚀 BOGO SALE ACTIVE: Buy 1 Month, Get 1 Month FREE! <span style="opacity:0.8;font-weight:400;margin-left:10px">Applied automatically at checkout</span>';
@@ -641,13 +641,22 @@ async function initPage() {
       
       document.querySelectorAll('.price-card').forEach(el => {
         if (el.textContent.includes('$0')) return;
-        if (el.querySelector('.bogo-ribbon')) return;
+        if (el.querySelector('.bogo-container')) return;
+        
+        // Use a sub-container with overflow:hidden so we don't need it on the card
+        const container = document.createElement('div');
+        container.className = 'bogo-container';
+        container.style.cssText = 'position:absolute; top:0; right:0; width:100px; height:100px; overflow:hidden; border-radius:0 20px 0 0; pointer-events:none; z-index:10;';
+        
         const bogo = document.createElement('div');
-        bogo.className = 'bogo-ribbon';
-        bogo.style.cssText = 'position:absolute;top:10px;right:-35px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;padding:4px 40px;transform:rotate(45deg);font-size:9px;font-weight:900;box-shadow:0 2px 10px rgba(0,0,0,0.5);z-index:10;text-transform:uppercase;letter-spacing:1px;border:1px solid rgba(255,255,255,0.2);';
+        bogo.style.cssText = 'position:absolute; top:12px; right:-32px; background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; padding:4px 40px; transform:rotate(45deg); font-size:9px; font-weight:900; box-shadow:0 2px 8px rgba(0,0,0,0.4); text-transform:uppercase; letter-spacing:1px; border:1px solid rgba(255,255,255,0.2);';
         bogo.textContent = 'BOGO';
-        el.style.overflow = 'hidden';
-        el.appendChild(bogo);
+        
+        container.appendChild(bogo);
+        el.appendChild(container);
+        
+        // Ensure card overflow is visible so the popBadge isn't cut
+        el.style.overflow = 'visible';
       });
     }
     if (c.discount_percent > 0) {
