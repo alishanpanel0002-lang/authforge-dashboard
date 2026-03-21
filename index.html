@@ -226,8 +226,11 @@ section { position: relative; z-index: 1; padding: 100px 64px; }
 .price-card.featured {
   border-color: var(--primary); 
   background: linear-gradient(180deg, var(--primary-dim) 0%, var(--surface) 50%);
-  box-shadow: 0 0 40px var(--primary-glow);
+  box-shadow: 0 0 50px var(--primary-glow), 0 0 100px rgba(124,58,237,0.1);
+  transform: scale(1.05);
+  z-index: 5;
 }
+.price-card.featured:hover { transform: scale(1.07) translateY(-4px); }
 .price-badge {
   position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
   background: linear-gradient(135deg, var(--primary), var(--accent));
@@ -641,7 +644,7 @@ async function initPage() {
         if (el.querySelector('.bogo-ribbon')) return;
         const bogo = document.createElement('div');
         bogo.className = 'bogo-ribbon';
-        bogo.style.cssText = 'position:absolute;top:20px;right:-30px;background:var(--red);color:#fff;padding:5px 40px;transform:rotate(45deg);font-size:10px;font-weight:900;box-shadow:0 2px 10px rgba(0,0,0,0.3);z-index:10;';
+        bogo.style.cssText = 'position:absolute;top:10px;right:-35px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;padding:4px 40px;transform:rotate(45deg);font-size:9px;font-weight:900;box-shadow:0 2px 10px rgba(0,0,0,0.5);z-index:10;text-transform:uppercase;letter-spacing:1px;border:1px solid rgba(255,255,255,0.2);';
         bogo.textContent = 'BOGO';
         el.style.overflow = 'hidden';
         el.appendChild(bogo);
