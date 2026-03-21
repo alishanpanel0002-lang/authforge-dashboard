@@ -267,8 +267,24 @@ body.theme-blood::after {
   box-shadow: 0 0 20px rgba(185,28,28,0.4);
 }
 
-/* Apply Themes to Components */
-body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--primary), var(--accent)) !important; box-shadow: 0 0 16px var(--primary-glow) !important; }
+/* ==== GLOBAL LOADER ==== */
+#nyx-loader {
+  position: fixed; inset: 0; z-index: 99999;
+  display: none; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+#nyx-loader.active { display: flex; }
+.nyx-spinner {
+  width: 36px; height: 36px; border-radius: 50%; position: relative;
+  background: conic-gradient(from 0deg, transparent 0%, var(--primary) 75%, transparent 100%);
+  animation: nyx-spin 0.8s linear infinite;
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+.nyx-spinner::after {
+  content: ''; position: absolute; inset: 4px; border-radius: 50%;
+  background: var(--bg);
+}
+@keyframes nyx-spin { to { transform: rotate(360deg); } }
 body[class^="theme-"] .nav-item.active { background: var(--primary-dim) !important; color: var(--primary-light) !important; }
 body[class^="theme-"] .btn-primary { background: var(--primary) !important; color: #fff !important; }
 body[class^="theme-"] .badge-blue { background: var(--primary-dim); color: var(--primary-light); }
@@ -276,9 +292,13 @@ body[class^="theme-"] .plan-badge { background: var(--primary-dim); color: var(-
 body[class^="theme-"] .toggle input:checked + .toggle-slider { background: var(--primary); border-color: var(--primary); }
 body[class^="theme-"] .plan-option.current { border-color: var(--primary); }
 body[class^="theme-"] .announcement-card { border-left-color: var(--primary); }
+/* Spinner picks up theme primary color via CSS vars */
+/* Apply Themes to Components */
+body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--primary), var(--accent)) !important; box-shadow: 0 0 16px var(--primary-glow) !important; }
 </style>
 </head>
 <body>
+<div id="nyx-loader"><div class="nyx-spinner"></div></div>
 <nav class="sidebar">
   <div class="logo">
     <div class="logo-icon">N</div>
@@ -569,10 +589,11 @@ body[class^="theme-"] .announcement-card { border-left-color: var(--primary); }
         <div class="settings-card-title">Dashboard Appearance & Theme</div>
         <div class="field"><label>Site Theme</label>
           <select id="adm-theme">
-            <option value="dark">Default Dark</option>
-            <option value="christmas">Christmas</option>
-            <option value="halloween">Halloween</option>
-            <option value="premium">Premium Blue</option>
+            <option value="dark">🌑 Default Dark</option>
+            <option value="christmas">🎄 Christmas</option>
+            <option value="halloween">🎃 Halloween</option>
+            <option value="ocean">🌊 Deep Ocean</option>
+            <option value="blood">🩸 Blood Moon</option>
           </select>
         </div>
         <div class="field"><label>Holiday/Sale Announcement</label><input type="text" id="adm-ann" placeholder="Merry Christmas! 50% OFF use code XMAS"></div>
@@ -848,6 +869,29 @@ function setMsg(id, text, type) { const el = document.getElementById(id); el.tex
 function toggleMaxHwid() { document.getElementById('max-hwid-field').style.display = document.getElementById('usr-hwid-lock').checked ? 'block' : 'none'; }
 function toggleManageHwid() { document.getElementById('m-max-hwid-field').style.display = document.getElementById('m-hwid-lock').checked ? 'block' : 'none'; }
 
+// ── Loading Spinner ───────────────────────────────────────────────────────────
+let _loadingCount = 0;
+function showLoader() { _loadingCount++; document.getElementById('nyx-loader').classList.add('active'); }
+function hideLoader() { _loadingCount = Math.max(0, _loadingCount - 1); if (_loadingCount === 0) document.getElementById('nyx-loader').classList.remove('active'); }
+
+// ── Theme System ──────────────────────────────────────────────────────────────
+function applyTheme(theme) {
+  const t = theme || '';
+  // Remove all existing theme classes
+  document.body.classList.remove('theme-christmas','theme-halloween','theme-ocean','theme-blood');
+  if (t && t !== 'dark') document.body.classList.add('theme-' + t);
+}
+
+async function initTheme() {
+  try {
+    const r = await fetch(API + '/api/public/config');
+    const d = await r.json();
+    const c = (d && d.config) || {};
+    applyTheme(c.theme);
+  } catch(e) {}
+}
+initTheme();
+
 function nav(p) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -875,43 +919,37 @@ function populateSelects(ids) {
   });
 }
 
-async function applyTheme() {
-  const r = await fetch(API + '/api/public/config');
-  const d = await r.json();
-  const c = d.config || {};
-  if (c.theme && c.theme !== 'dark') {
-    document.body.className = 'theme-' + c.theme;
-  } else {
-    document.body.className = '';
-  }
-}
-
 async function loadOverview() {
-  applyTheme();
-  await fetchApps(); populateSelects();
-  document.getElementById('s-apps').textContent = allApps.length;
-  let tl = 0, tu = 0, logins = 0;
-  for (const app of allApps) {
-    const lr = await fetch(API + '/api/licenses/' + app.id, { headers: H() });
-    const ld = await lr.json(); tl += (ld.licenses || []).length;
-    const ur = await fetch(API + '/api/users/' + app.id, { headers: H() });
-    const ud = await ur.json(); tu += (ud.users || []).length;
-  }
-  const ovr = await fetch(API + '/api/analytics/overview/' + devUser.id, { headers: H() });
-  const ovd = await ovr.json();
-  document.getElementById('s-lic').textContent = tl;
-  document.getElementById('s-usr').textContent = tu;
-  document.getElementById('s-logins').textContent = ovd.total_logins || 0;
-  document.getElementById('ov-apps').innerHTML = allApps.length
-    ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,24) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + (devUser.plan || 'starter') + '</span></td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>').join('')
-    : '<tr><td colspan="4" class="empty">No applications yet</td></tr>';
+  showLoader();
+  try {
+    await fetchApps(); populateSelects();
+    document.getElementById('s-apps').textContent = allApps.length;
+    let tl = 0, tu = 0, logins = 0;
+    for (const app of allApps) {
+      const lr = await fetch(API + '/api/licenses/' + app.id, { headers: H() });
+      const ld = await lr.json(); tl += (ld.licenses || []).length;
+      const ur = await fetch(API + '/api/users/' + app.id, { headers: H() });
+      const ud = await ur.json(); tu += (ud.users || []).length;
+    }
+    const ovr = await fetch(API + '/api/analytics/overview/' + devUser.id, { headers: H() });
+    const ovd = await ovr.json();
+    document.getElementById('s-lic').textContent = tl;
+    document.getElementById('s-usr').textContent = tu;
+    document.getElementById('s-logins').textContent = ovd.total_logins || 0;
+    document.getElementById('ov-apps').innerHTML = allApps.length
+      ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,24) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + (devUser.plan || 'starter') + '</span></td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>').join('')
+      : '<tr><td colspan="4" class="empty">No applications yet</td></tr>';
+  } finally { hideLoader(); }
 }
 
 async function loadApps() {
-  await fetchApps(); populateSelects();
-  document.getElementById('apps-tbody').innerHTML = allApps.length
-    ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,24) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td class="mono">' + fmtDate(a.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="goSettings(\'' + a.id + '\')">Settings</button><button class="btn btn-danger btn-sm" onclick="deleteApp(\'' + a.id + '\')">Delete</button></div></td></tr>').join('')
-    : '<tr><td colspan="4" class="empty">No applications yet</td></tr>';
+  showLoader();
+  try {
+    await fetchApps(); populateSelects();
+    document.getElementById('apps-tbody').innerHTML = allApps.length
+      ? allApps.map(a => '<tr><td><strong>' + a.name + '</strong></td><td><span class="mono">' + a.secret_key.substring(0,24) + '...</span> <button class="copy-btn" onclick="copy(\'' + a.secret_key + '\')">⎘</button></td><td class="mono">' + fmtDate(a.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="goSettings(\'' + a.id + '\')">Settings</button><button class="btn btn-danger btn-sm" onclick="deleteApp(\'' + a.id + '\')">Delete</button></div></td></tr>').join('')
+      : '<tr><td colspan="4" class="empty">No applications yet</td></tr>';
+  } finally { hideLoader(); }
 }
 
 async function createApp() {
@@ -929,19 +967,22 @@ async function deleteApp(id) {
 }
 
 async function loadLicenses() {
-  if (!allApps.length) await fetchApps(); populateSelects();
-  const filterApp = document.getElementById('lic-filter').value;
-  const apps = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
-  let all = [];
-  for (const app of apps) {
-    const r = await fetch(API + '/api/licenses/' + app.id, { headers: H() });
-    const d = await r.json();
-    (d.licenses || []).forEach(l => all.push(Object.assign({}, l, {appName: app.name})));
-  }
-  document.getElementById('lic-tbody').innerHTML = all.length ? all.map(l => {
-    const tier = l.license_tiers?.name ? '<span class="badge badge-purple">' + l.license_tiers.name + '</span>' : '<span style="color:var(--muted2);font-size:12px">—</span>';
-    return '<tr><td><span class="mono">' + l.license_key + '</span> <button class="copy-btn" onclick="copy(\'' + l.license_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + l.appName + '</span></td><td>' + tier + '</td><td>' + l.used_slots + '/' + l.max_users + '</td><td><span class="badge ' + (l.is_active ? 'badge-green' : 'badge-red') + '">' + (l.is_active ? 'Active' : 'Off') + '</span></td><td class="mono">' + fmtDate(l.expires_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="toggleLic(\'' + l.id + '\',' + (!l.is_active) + ')">' + (l.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteLic(\'' + l.id + '\')">Del</button></div></td></tr>';
-  }).join('') : '<tr><td colspan="7" class="empty">No licenses yet</td></tr>';
+  showLoader();
+  try {
+    if (!allApps.length) await fetchApps(); populateSelects();
+    const filterApp = document.getElementById('lic-filter').value;
+    const apps = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
+    let all = [];
+    for (const app of apps) {
+      const r = await fetch(API + '/api/licenses/' + app.id, { headers: H() });
+      const d = await r.json();
+      (d.licenses || []).forEach(l => all.push(Object.assign({}, l, {appName: app.name})));
+    }
+    document.getElementById('lic-tbody').innerHTML = all.length ? all.map(l => {
+      const tier = l.license_tiers?.name ? '<span class="badge badge-purple">' + l.license_tiers.name + '</span>' : '<span style="color:var(--muted2);font-size:12px">—</span>';
+      return '<tr><td><span class="mono">' + l.license_key + '</span> <button class="copy-btn" onclick="copy(\'' + l.license_key + '\')">⎘</button></td><td><span class="badge badge-blue">' + l.appName + '</span></td><td>' + tier + '</td><td>' + l.used_slots + '/' + l.max_users + '</td><td><span class="badge ' + (l.is_active ? 'badge-green' : 'badge-red') + '">' + (l.is_active ? 'Active' : 'Off') + '</span></td><td class="mono">' + fmtDate(l.expires_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="toggleLic(\'' + l.id + '\',' + (!l.is_active) + ')">' + (l.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteLic(\'' + l.id + '\')">Del</button></div></td></tr>';
+    }).join('') : '<tr><td colspan="7" class="empty">No licenses yet</td></tr>';
+  } finally { hideLoader(); }
 }
 
 function openCreateLicense() {
@@ -1001,22 +1042,25 @@ async function deleteLic(id) {
 }
 
 async function loadUsers() {
-  if (!allApps.length) await fetchApps(); populateSelects();
-  const filterApp = document.getElementById('usr-filter').value;
-  const apps = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
-  let all = [];
-  for (const app of apps) {
-    const r = await fetch(API + '/api/users/' + app.id, { headers: H() });
-    const d = await r.json();
-    (d.users || []).forEach(u => all.push(Object.assign({}, u, {appName: app.name})));
-  }
-  document.getElementById('usr-tbody').innerHTML = all.length ? all.map(u => {
-    const expired = isExpired(u.expires_at);
-    const status = u.is_banned ? '<span class="badge badge-red">Banned</span>' : expired ? '<span class="badge badge-amber">Expired</span>' : '<span class="badge badge-green">Active</span>';
-    const hwid = u.hwid_lock_enabled ? '<span class="badge badge-purple">' + u.max_hwids + ' dev</span>' : '<span style="color:var(--muted2);font-size:11px">Off</span>';
-    const tier = u.license_tiers?.name ? '<span class="badge badge-purple">' + u.license_tiers.name + '</span>' : '—';
-    return '<tr><td><strong>' + u.username + '</strong></td><td><span class="badge badge-blue">' + u.appName + '</span></td><td>' + tier + '</td><td class="mono">' + fmtDate(u.expires_at) + '</td><td>' + hwid + '</td><td>' + status + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openManage(\'' + u.id + '\',\'' + u.username + '\',' + u.is_banned + ',' + u.hwid_lock_enabled + ',' + u.max_hwids + ',\'' + (u.expires_at||'') + '\')">Manage</button><button class="btn btn-danger btn-sm" onclick="deleteUser(\'' + u.id + '\')">Del</button></div></td></tr>';
-  }).join('') : '<tr><td colspan="7" class="empty">No users yet</td></tr>';
+  showLoader();
+  try {
+    if (!allApps.length) await fetchApps(); populateSelects();
+    const filterApp = document.getElementById('usr-filter').value;
+    const apps = filterApp ? allApps.filter(a => a.id === filterApp) : allApps;
+    let all = [];
+    for (const app of apps) {
+      const r = await fetch(API + '/api/users/' + app.id, { headers: H() });
+      const d = await r.json();
+      (d.users || []).forEach(u => all.push(Object.assign({}, u, {appName: app.name})));
+    }
+    document.getElementById('usr-tbody').innerHTML = all.length ? all.map(u => {
+      const expired = isExpired(u.expires_at);
+      const status = u.is_banned ? '<span class="badge badge-red">Banned</span>' : expired ? '<span class="badge badge-amber">Expired</span>' : '<span class="badge badge-green">Active</span>';
+      const hwid = u.hwid_lock_enabled ? '<span class="badge badge-purple">' + u.max_hwids + ' dev</span>' : '<span style="color:var(--muted2);font-size:11px">Off</span>';
+      const tier = u.license_tiers?.name ? '<span class="badge badge-purple">' + u.license_tiers.name + '</span>' : '—';
+      return '<tr><td><strong>' + u.username + '</strong></td><td><span class="badge badge-blue">' + u.appName + '</span></td><td>' + tier + '</td><td class="mono">' + fmtDate(u.expires_at) + '</td><td>' + hwid + '</td><td>' + status + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openManage(\'' + u.id + '\',\'' + u.username + '\',' + u.is_banned + ',' + u.hwid_lock_enabled + ',' + u.max_hwids + ',\'' + (u.expires_at||'') + '\')">Manage</button><button class="btn btn-danger btn-sm" onclick="deleteUser(\'' + u.id + '\')">Del</button></div></td></tr>';
+    }).join('') : '<tr><td colspan="7" class="empty">No users yet</td></tr>';
+  } finally { hideLoader(); }
 }
 
 async function openCreateUser() {
@@ -1112,7 +1156,10 @@ async function deleteUser(id) {
 
 // ── Analytics ───────────────────────────────────────────────────────────────
 async function loadAnalyticsPage() {
-  if (!allApps.length) await fetchApps(); populateSelects(['ana-filter']);
+  showLoader();
+  try {
+    if (!allApps.length) await fetchApps(); populateSelects(['ana-filter']);
+  } finally { hideLoader(); }
 }
 
 async function loadAnalytics() {
@@ -1167,13 +1214,16 @@ async function loadAnalytics() {
 
 // ── Security ─────────────────────────────────────────────────────────────────
 async function loadSecurity() {
-  if (!allApps.length) await fetchApps(); populateSelects(['sec-app-filter']);
-  const r = await fetch(API + '/api/security/sessions', { headers: H() });
-  const d = await r.json();
-  const sessions = d.sessions || [];
-  document.getElementById('sessions-list').innerHTML = sessions.length
-    ? sessions.map(s => '<div class="session-item"><div><div style="font-size:12px;font-weight:500">' + (s.ip_address||'Unknown IP') + '</div><div style="font-size:11px;color:var(--muted)">' + fmtTime(s.last_seen) + '</div></div><button class="btn btn-danger btn-sm" onclick="revokeSession(\'' + s.id + '\')">Revoke</button></div>').join('')
-    : '<div style="color:var(--muted);font-size:12px">No active sessions</div>';
+  showLoader();
+  try {
+    if (!allApps.length) await fetchApps(); populateSelects(['sec-app-filter']);
+    const r = await fetch(API + '/api/security/sessions', { headers: H() });
+    const d = await r.json();
+    const sessions = d.sessions || [];
+    document.getElementById('sessions-list').innerHTML = sessions.length
+      ? sessions.map(s => '<div class="session-item"><div><div style="font-size:12px;font-weight:500">' + (s.ip_address||'Unknown IP') + '</div><div style="font-size:11px;color:var(--muted)">' + fmtTime(s.last_seen) + '</div></div><button class="btn btn-danger btn-sm" onclick="revokeSession(\'' + s.id + '\')">Revoke</button></div>').join('')
+      : '<div style="color:var(--muted);font-size:12px">No active sessions</div>';
+  } finally { hideLoader(); }
 }
 
 async function loadSuspicious() {
@@ -1204,8 +1254,11 @@ async function revokeAllSessions() {
 function goSettings(appId) { nav('settings'); setTimeout(() => { document.getElementById('settings-app-select').value = appId; loadSettings(); }, 100); }
 
 async function loadSettingsPage() {
-  if (!allApps.length) await fetchApps(); populateSelects(['settings-app-select']);
-  loadWebhooks();
+  showLoader();
+  try {
+    if (!allApps.length) await fetchApps(); populateSelects(['settings-app-select']);
+    loadWebhooks();
+  } finally { hideLoader(); }
 }
 
 async function loadSettings() {
@@ -1295,26 +1348,29 @@ async function saveErrorMessages() {
 
 // ── Account ──────────────────────────────────────────────────────────────────
 async function loadAccount() {
-  const r = await fetch(API + '/api/auth/me', { headers: H() });
-  const d = await r.json(); const dev = d.developer || {};
-  document.getElementById('acc-username').value = dev.username || '';
-  document.getElementById('acc-email').value = dev.email || '';
-  document.getElementById('acc-created').value = fmtDate(dev.created_at);
-  const unBox = document.getElementById('discord-un');
-  unBox.textContent = dev.discord_username ? 'Discord: ' + dev.discord_username : 'Discord (Not linked)';
-  document.getElementById('btn-discord-link').textContent = dev.discord_username ? 'Linked' : 'Link Account';
-  if (dev.discord_username) document.getElementById('btn-discord-link').disabled = true;
+  showLoader();
+  try {
+    const r = await fetch(API + '/api/auth/me', { headers: H() });
+    const d = await r.json(); const dev = d.developer || {};
+    document.getElementById('acc-username').value = dev.username || '';
+    document.getElementById('acc-email').value = dev.email || '';
+    document.getElementById('acc-created').value = fmtDate(dev.created_at);
+    const unBox = document.getElementById('discord-un');
+    unBox.textContent = dev.discord_username ? 'Discord: ' + dev.discord_username : 'Discord (Not linked)';
+    document.getElementById('btn-discord-link').textContent = dev.discord_username ? 'Linked' : 'Link Account';
+    if (dev.discord_username) document.getElementById('btn-discord-link').disabled = true;
 
-  const tfaStatus = document.getElementById('twofa-status');
-  const tfaActions = document.getElementById('twofa-actions');
-  if (dev.two_factor_enabled) {
-    tfaStatus.innerHTML = '<span class="badge badge-green">2FA Enabled</span>';
-    tfaActions.innerHTML = '<button class="btn btn-danger" onclick="disable2FA()">Disable 2FA</button>';
-    document.getElementById('twofa-setup').style.display = 'none';
-  } else {
-    tfaStatus.innerHTML = '<span class="badge badge-red">2FA Disabled</span>';
-    tfaActions.innerHTML = '<button class="btn btn-primary" onclick="setup2FA()">Setup 2FA</button>';
-  }
+    const tfaStatus = document.getElementById('twofa-status');
+    const tfaActions = document.getElementById('twofa-actions');
+    if (dev.two_factor_enabled) {
+      tfaStatus.innerHTML = '<span class="badge badge-green">2FA Enabled</span>';
+      tfaActions.innerHTML = '<button class="btn btn-danger" onclick="disable2FA()">Disable 2FA</button>';
+      document.getElementById('twofa-setup').style.display = 'none';
+    } else {
+      tfaStatus.innerHTML = '<span class="badge badge-red">2FA Disabled</span>';
+      tfaActions.innerHTML = '<button class="btn btn-primary" onclick="setup2FA()">Setup 2FA</button>';
+    }
+  } finally { hideLoader(); }
 }
 
 async function setup2FA() {
@@ -1342,37 +1398,40 @@ async function disable2FA() {
 
 // ── Billing ───────────────────────────────────────────────────────────────────
 async function loadBilling() {
-  const [br, cr] = await Promise.all([
-    fetch(API + '/api/stripe/billing', { headers: H() }),
-    fetch(API + '/api/public/config')
-  ]);
-  const bData = await br.json(); const b = bData.billing || {};
-  const cData = await cr.json(); const c = cData.config || {};
-  
-  const plan = b.plan || 'starter';
-  const planName = plan === 'starter' ? 'Phantom' : plan === 'pro' ? 'Spectre' : plan === 'business' ? 'Business Onyx' : 'Staff';
-  document.getElementById('current-plan-badge').textContent = planName;
-  document.getElementById('plan-details').textContent = b.plan_expires_at ? 'Renews ' + fmtDate(b.plan_expires_at) : (plan === 'starter' ? 'Free forever with limits.' : '');
-  const actions = document.getElementById('billing-actions');
-  if (b.stripe_customer_id && plan !== 'starter') {
-    actions.innerHTML = '<button class="btn btn-ghost" onclick="manageSubscription()">Manage subscription</button>';
-  }
-  document.querySelectorAll('.plan-option').forEach(el => el.classList.remove('current'));
-  const planEl = document.getElementById('plan-' + plan);
-  if (planEl) planEl.classList.add('current');
+  showLoader();
+  try {
+    const [br, cr] = await Promise.all([
+      fetch(API + '/api/stripe/billing', { headers: H() }),
+      fetch(API + '/api/public/config')
+    ]);
+    const bData = await br.json(); const b = bData.billing || {};
+    const cData = await cr.json(); const c = cData.config || {};
+    
+    const plan = b.plan || 'starter';
+    const planName = plan === 'starter' ? 'Phantom' : plan === 'pro' ? 'Spectre' : plan === 'business' ? 'Business Onyx' : 'Staff';
+    document.getElementById('current-plan-badge').textContent = planName;
+    document.getElementById('plan-details').textContent = b.plan_expires_at ? 'Renews ' + fmtDate(b.plan_expires_at) : (plan === 'starter' ? 'Free forever with limits.' : '');
+    const actions = document.getElementById('billing-actions');
+    if (b.stripe_customer_id && plan !== 'starter') {
+      actions.innerHTML = '<button class="btn btn-ghost" onclick="manageSubscription()">Manage subscription</button>';
+    }
+    document.querySelectorAll('.plan-option').forEach(el => el.classList.remove('current'));
+    const planEl = document.getElementById('plan-' + plan);
+    if (planEl) planEl.classList.add('current');
 
-  // Handle Discounts & Promos in Dashboard
-  if (c.discount_percent > 0) {
-    document.querySelectorAll('.plan-price').forEach(pv => {
-      if (pv.textContent.includes('$0')) return;
-      const old = pv.dataset.orig || pv.innerHTML;
-      if (!pv.dataset.orig) pv.dataset.orig = old;
-      const val = parseInt(old.match(/\$(\d+)/)[1]);
-      const discounted = (val * (1 - c.discount_percent / 100)).toFixed(2);
-      pv.innerHTML = '<span style="text-decoration:line-through; font-size:14px; opacity:0.5; margin-right:8px">$' + val + '</span> $' + discounted + ' <span>/ month</span>';
-      pv.style.color = 'var(--green)';
-    });
-  }
+    // Handle Discounts & Promos in Dashboard
+    if (c.discount_percent > 0) {
+      document.querySelectorAll('.plan-price').forEach(pv => {
+        if (pv.textContent.includes('$0')) return;
+        const old = pv.dataset.orig || pv.innerHTML;
+        if (!pv.dataset.orig) pv.dataset.orig = old;
+        const val = parseInt(old.match(/\$(\d+)/)[1]);
+        const discounted = (val * (1 - c.discount_percent / 100)).toFixed(2);
+        pv.innerHTML = '<span style="text-decoration:line-through; font-size:14px; opacity:0.5; margin-right:8px">$' + val + '</span> $' + discounted + ' <span>/ month</span>';
+        pv.style.color = 'var(--green)';
+      });
+    }
+  } finally { hideLoader(); }
 }
 
 async function upgradePlan(plan) {
@@ -1390,23 +1449,26 @@ async function manageSubscription() {
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
 async function loadAdmin() {
-  const r = await fetch(API + '/api/admin/stats', { headers: H() });
-  const d = await r.json();
-  document.getElementById('a-devs').textContent = d.developers;
-  document.getElementById('a-apps').textContent = d.apps;
-  document.getElementById('a-users').textContent = d.users;
-  document.getElementById('a-lics').textContent = d.licenses;
-  const dr = await fetch(API + '/api/admin/developers', { headers: H() });
-  const dd = await dr.json();
-  document.getElementById('admin-devs-tbody').innerHTML = (dd.developers || []).map(d =>
-    '<tr><td><strong>' + d.username + '</strong></td><td class="mono">' + d.email + '</td><td><span class="badge badge-blue">' + (d.plan||'starter') + '</span></td><td>' + (d.is_admin ? '<span class="badge badge-amber">Admin</span>' : '<span style="color:var(--muted2);font-size:12px">Dev</span>') + '</td><td class="mono">' + fmtDate(d.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openAdminDevModal(\''+d.id+'\',\''+d.username+'\',\''+(d.plan||'starter')+'\',\''+(d.plan_expires_at||'')+'\')">Plan</button><button class="btn btn-ghost btn-sm" onclick="toggleAdmin(\'' + d.id + '\',' + !d.is_admin + ')">' + (d.is_admin ? 'Demote' : 'Promote') + '</button><button class="btn btn-danger btn-sm" onclick="adminDeleteDev(\'' + d.id + '\')">Delete</button></div></td></tr>'
-  ).join('');
-  const ar = await fetch(API + '/api/admin/apps', { headers: H() });
-  const ad = await ar.json();
-  document.getElementById('admin-apps-tbody').innerHTML = (ad.apps || []).map(a =>
-    '<tr><td><strong>' + a.name + '</strong></td><td class="mono">' + (a.developers?.username||'—') + '</td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>'
-  ).join('');
-  loadAdminConfig();
+  showLoader();
+  try {
+    const r = await fetch(API + '/api/admin/stats', { headers: H() });
+    const d = await r.json();
+    document.getElementById('a-devs').textContent = d.developers;
+    document.getElementById('a-apps').textContent = d.apps;
+    document.getElementById('a-users').textContent = d.users;
+    document.getElementById('a-lics').textContent = d.licenses;
+    const dr = await fetch(API + '/api/admin/developers', { headers: H() });
+    const dd = await dr.json();
+    document.getElementById('admin-devs-tbody').innerHTML = (dd.developers || []).map(d =>
+      '<tr><td><strong>' + d.username + '</strong></td><td class="mono">' + d.email + '</td><td><span class="badge badge-blue">' + (d.plan||'starter') + '</span></td><td>' + (d.is_admin ? '<span class="badge badge-amber">Admin</span>' : '<span style="color:var(--muted2);font-size:12px">Dev</span>') + '</td><td class="mono">' + fmtDate(d.created_at) + '</td><td><div class="actions-cell"><button class="btn btn-ghost btn-sm" onclick="openAdminDevModal(\''+d.id+'\',\''+d.username+'\',\''+(d.plan||'starter')+'\',\''+(d.plan_expires_at||'')+'\')">Plan</button><button class="btn btn-ghost btn-sm" onclick="toggleAdmin(\'' + d.id + '\',' + !d.is_admin + ')">' + (d.is_admin ? 'Demote' : 'Promote') + '</button><button class="btn btn-danger btn-sm" onclick="adminDeleteDev(\'' + d.id + '\')">Delete</button></div></td></tr>'
+    ).join('');
+    const ar = await fetch(API + '/api/admin/apps', { headers: H() });
+    const ad = await ar.json();
+    document.getElementById('admin-apps-tbody').innerHTML = (ad.apps || []).map(a =>
+      '<tr><td><strong>' + a.name + '</strong></td><td class="mono">' + (a.developers?.username||'—') + '</td><td class="mono">' + fmtDate(a.created_at) + '</td></tr>'
+    ).join('');
+    loadAdminConfig();
+  } finally { hideLoader(); }
 }
 
 async function openAdminDevModal(id, username, plan, expiry) {
@@ -1562,9 +1624,12 @@ async function cancelInvite(id) {
 
 // ── New Team & Chat ──────────────────────────────────────────────────────────
 async function loadTeamPage() {
-  await loadTeam();
-  await loadAnnouncements();
-  await loadChat();
+  showLoader();
+  try {
+    await loadTeam();
+    await loadAnnouncements();
+    await loadChat();
+  } finally { hideLoader(); }
 }
 
 async function loadChat() {
@@ -1608,21 +1673,24 @@ async function postAnnouncement() {
 
 // ── Bots ──────────────────────────────────────────────────────────────────
 async function loadBots() {
-  const plan = devUser.plan || 'starter';
-  const warn = document.getElementById('bots-warn');
-  if (plan !== 'business') { 
-    warn.style.display = 'block'; 
-    document.getElementById('bot-list').innerHTML = ''; 
-    return; 
-  }
-  warn.style.display = 'none';
-  const r = await fetch(API + '/api/bots', { headers: H() });
-  const d = await r.json();
-  const bots = d.bots || [];
-  document.getElementById('bot-list').innerHTML = bots.map(b => {
-    const icon = b.platform === 'discord' ? '💬' : b.platform === 'telegram' ? '✈️' : b.platform === 'whatsapp' ? '📱' : '⚙️';
-    return '<div class="bot-card"><div class="bot-head"><div class="bot-icon" style="background:var(--blue-dim)">' + icon + '</div><div><div class="bot-title">' + b.platform.charAt(0).toUpperCase() + b.platform.slice(1) + ' Bot</div><div style="font-size:11px;color:var(--muted)">' + (b.bot_prefix ? 'Prefix: '+b.bot_prefix : 'Legacy') + '</div></div><div class="bot-status"><span class="badge ' + (b.is_active ? 'badge-green' : 'badge-red') + '">' + (b.is_active ? 'Active' : 'Off') + '</span></div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" style="flex:1" onclick="toggleBot(\''+b.id+'\','+(!b.is_active)+')">' + (b.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteBot(\''+b.id+'\')">Delete</button></div></div>';
-  }).join('');
+  showLoader();
+  try {
+    const plan = devUser.plan || 'starter';
+    const warn = document.getElementById('bots-warn');
+    if (plan !== 'business') { 
+      warn.style.display = 'block'; 
+      document.getElementById('bot-list').innerHTML = ''; 
+      return; 
+    }
+    warn.style.display = 'none';
+    const r = await fetch(API + '/api/bots', { headers: H() });
+    const d = await r.json();
+    const bots = d.bots || [];
+    document.getElementById('bot-list').innerHTML = bots.map(b => {
+      const icon = b.platform === 'discord' ? '💬' : b.platform === 'telegram' ? '✈️' : b.platform === 'whatsapp' ? '📱' : '⚙️';
+      return '<div class="bot-card"><div class="bot-head"><div class="bot-icon" style="background:var(--blue-dim)">' + icon + '</div><div><div class="bot-title">' + b.platform.charAt(0).toUpperCase() + b.platform.slice(1) + ' Bot</div><div style="font-size:11px;color:var(--muted)">' + (b.bot_prefix ? 'Prefix: '+b.bot_prefix : 'Legacy') + '</div></div><div class="bot-status"><span class="badge ' + (b.is_active ? 'badge-green' : 'badge-red') + '">' + (b.is_active ? 'Active' : 'Off') + '</span></div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" style="flex:1" onclick="toggleBot(\''+b.id+'\','+(!b.is_active)+')">' + (b.is_active ? 'Disable' : 'Enable') + '</button><button class="btn btn-danger btn-sm" onclick="deleteBot(\''+b.id+'\')">Delete</button></div></div>';
+    }).join('');
+  } finally { hideLoader(); }
 }
 
 async function addBot() {
