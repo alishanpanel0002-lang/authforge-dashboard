@@ -626,11 +626,26 @@ async function initPage() {
     const d = await r.json();
     const c = d.config || {};
     if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
-    if (c.bogo_active) {
+    const isBogo = !!c.bogo_active;
+    console.log('[BOGO Debug] Landing Config:', c, 'isBogo:', isBogo);
+
+    if (isBogo) {
       const b = document.createElement('div');
-      b.style.cssText = 'background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;padding:10px;text-align:center;font-size:13px;font-weight:700;letter-spacing:0.5px;';
-      b.textContent = '🎉 LIMITED TIME: Buy One Get One Free — Use code BOGO at checkout!';
-      document.body.prepend(b);
+      b.id = 'bogo-banner';
+      b.style.cssText = 'background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;padding:12px;text-align:center;font-size:14px;font-weight:800;letter-spacing:0.5px;position:sticky;top:68px;z-index:999;box-shadow:0 4px 15px rgba(0,0,0,0.3);';
+      b.innerHTML = '🚀 BOGO SALE ACTIVE: Buy 1 Month, Get 1 Month FREE! <span style="opacity:0.8;font-weight:400;margin-left:10px">Applied automatically at checkout</span>';
+      if (!document.getElementById('bogo-banner')) document.body.prepend(b);
+      
+      document.querySelectorAll('.price-card').forEach(el => {
+        if (el.textContent.includes('$0')) return;
+        if (el.querySelector('.bogo-ribbon')) return;
+        const bogo = document.createElement('div');
+        bogo.className = 'bogo-ribbon';
+        bogo.style.cssText = 'position:absolute;top:20px;right:-30px;background:var(--red);color:#fff;padding:5px 40px;transform:rotate(45deg);font-size:10px;font-weight:900;box-shadow:0 2px 10px rgba(0,0,0,0.3);z-index:10;';
+        bogo.textContent = 'BOGO';
+        el.style.overflow = 'hidden';
+        el.appendChild(bogo);
+      });
     }
     if (c.discount_percent > 0) {
       document.querySelectorAll('.price-amount').forEach(pv => {

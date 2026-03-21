@@ -1449,15 +1449,34 @@ async function loadBilling() {
     if (planEl) planEl.classList.add('current');
 
     // Handle Discounts & Promos in Dashboard
+    console.log('[BOGO Debug] Config:', c);
+    const isBogo = !!c.bogo_active;
+    
     if (c.discount_percent > 0) {
       document.querySelectorAll('.plan-price').forEach(pv => {
         if (pv.textContent.includes('$0')) return;
-        const old = pv.dataset.orig || pv.innerHTML;
-        if (!pv.dataset.orig) pv.dataset.orig = old;
-        const val = parseInt(old.match(/\$(\d+)/)[1]);
-        const discounted = (val * (1 - c.discount_percent / 100)).toFixed(2);
+        const old = pv.innerHTML;
+        const match = old.match(/\$(\d+)/);
+        if (!match) return;
+        const val = parseInt(match[1]);
+        const discounted = (val * (1 - c.discount_percent/100)).toFixed(2);
         pv.innerHTML = '<span style="text-decoration:line-through; font-size:14px; opacity:0.5; margin-right:8px">$' + val + '</span> $' + discounted + ' <span>/ month</span>';
         pv.style.color = 'var(--green)';
+      });
+    }
+
+    if (isBogo) {
+      console.log('[BOGO Debug] Applying BOGO badges...');
+      document.querySelectorAll('.plan-option').forEach(el => {
+        if (el.id === 'plan-starter') return;
+        if (!el.querySelector('.bogo-badge')) {
+          const badge = document.createElement('div');
+          badge.className = 'bogo-badge';
+          badge.innerHTML = 'BOGO SALE';
+          badge.style.cssText = 'position:absolute; top:10px; right:10px; background:var(--primary); color:#fff; font-size:9px; font-weight:800; padding:2px 8px; border-radius:10px; letter-spacing:0.5px; animation: pulse 2s infinite; z-index:10;';
+          el.style.position = 'relative';
+          el.appendChild(badge);
+        }
       });
     }
   } finally { hideLoader(); }
