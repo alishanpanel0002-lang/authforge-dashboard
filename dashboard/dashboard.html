@@ -267,24 +267,41 @@ body.theme-blood::after {
   box-shadow: 0 0 20px rgba(185,28,28,0.4);
 }
 
-/* ==== GLOBAL LOADER ==== */
+/* ==== AMBIENT GLASSMORPHIC GLOBAL LOADER ==== */
 #nyx-loader {
   position: fixed; inset: 0; z-index: 99999;
   display: none; align-items: center; justify-content: center;
   pointer-events: none;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.3s;
 }
 #nyx-loader.active { display: flex; }
-.nyx-spinner {
-  width: 36px; height: 36px; border-radius: 50%; position: relative;
-  background: conic-gradient(from 0deg, transparent 0%, var(--primary) 75%, transparent 100%);
-  animation: nyx-spin 0.8s linear infinite;
-  box-shadow: 0 0 20px var(--primary-glow);
+.nyx-loader-content {
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
 }
-.nyx-spinner::after {
-  content: ''; position: absolute; inset: 4px; border-radius: 50%;
-  background: var(--bg);
+.nyx-logo-pulse {
+  font-size: 36px; font-weight: 800; font-family: 'Inter', sans-serif;
+  color: #fff; width: 72px; height: 72px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 0 20px var(--primary-glow), inset 0 0 10px rgba(255,255,255,0.4);
+  animation: logo-pulse 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
-@keyframes nyx-spin { to { transform: rotate(360deg); } }
+@keyframes logo-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 20px var(--primary-glow); }
+  50% { transform: scale(1.15); box-shadow: 0 0 50px var(--primary); }
+  100% { transform: scale(1); box-shadow: 0 0 20px var(--primary-glow); }
+}
+.nyx-loader-text {
+  font-size: 12px; letter-spacing: 0.2em; color: var(--primary-light);
+  font-weight: 600; text-transform: uppercase;
+  animation: text-pulse 1.5s ease-in-out infinite;
+  text-shadow: 0 0 8px var(--primary-glow);
+}
+@keyframes text-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; filter: brightness(1.2); } }
 body[class^="theme-"] .nav-item.active { background: var(--primary-dim) !important; color: var(--primary-light) !important; }
 body[class^="theme-"] .btn-primary { background: var(--primary) !important; color: #fff !important; }
 body[class^="theme-"] .badge-blue { background: var(--primary-dim); color: var(--primary-light); }
@@ -298,7 +315,12 @@ body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--pri
 </style>
 </head>
 <body>
-<div id="nyx-loader"><div class="nyx-spinner"></div></div>
+<div id="nyx-loader">
+  <div class="nyx-loader-content">
+    <div class="nyx-logo-pulse">N</div>
+    <div class="nyx-loader-text">Syncing NyxAuth...</div>
+  </div>
+</div>
 <nav class="sidebar">
   <div class="logo">
     <div class="logo-icon">N</div>
@@ -1518,7 +1540,7 @@ async function saveAdminConfig() {
   const r = await fetch(API + '/api/admin/config', { method:'PATCH', headers:H(), body: JSON.stringify(body) });
   if (r.ok) {
     setMsg('adm-msg', 'Global config saved!', 'ok');
-    applyTheme();
+    applyTheme(document.getElementById('adm-theme').value);
   }
 }
 
