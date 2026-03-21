@@ -173,26 +173,109 @@ tbody tr:hover td { background: var(--surface2); }
 .bot-title { font-size: 14px; font-weight: 600; }
 .bot-status { margin-left: auto; font-size: 11px; }
 
-/* Themes Engine */
-body.theme-christmas { --primary: #16a34a; --accent: #22c55e; --primary-dim: rgba(22,163,74,0.12); --blue: #dc2626; --blue-dim: rgba(220,38,38,0.12); background: radial-gradient(circle at top right, #0a1a0a, #02020a) fixed; }
-body.theme-christmas::after { content: '❄️'; position: fixed; top: -50px; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 24px; animation: snow 10s linear infinite; opacity: 0.3; word-spacing: 120px; }
+/* ==== THEMES ENGINE ==== */
 
-body.theme-halloween { --primary: #ea580c; --accent: #f97316; --primary-dim: rgba(234,88,12,0.12); --blue: #a855f7; --blue-dim: rgba(168,85,247,0.12); background: radial-gradient(circle at top left, #160a00, #02020a) fixed; }
-body.theme-halloween::after { content: '👻 🎃'; position: fixed; top: 10%; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 36px; animation: float 6s ease-in-out infinite; opacity: 0.08; display: flex; justify-content: space-around; }
+/* Christmas — Emerald forest night */
+body.theme-christmas {
+  --primary: #16a34a; --accent: #22c55e;
+  --primary-dim: rgba(22,163,74,0.12); --primary-light: #86efac;
+  --primary-glow: rgba(22,163,74,0.25);
+  --border: rgba(22,163,74,0.18); --border2: rgba(22,163,74,0.35);
+  --blue: #dc2626; --blue-dim: rgba(220,38,38,0.12);
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(22,163,74,0.18) 0%, transparent 65%),
+              radial-gradient(ellipse 40% 40% at 90% 90%, rgba(220,38,38,0.08) 0%, transparent 60%), #010d04;
+}
+body.theme-christmas .sidebar { background: rgba(1,13,4,0.92) !important; }
+body.theme-christmas .main { background: transparent !important; }
+@keyframes xmas-snow {
+  0%   { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(110vh) translateX(50px) rotate(360deg); opacity: 0; }
+}
+body.theme-christmas::after {
+  content: '❅  ❄  ✦  ❅  ❄  ✦  ❅  ❄  ✦  ❅';
+  position: fixed; top: -20px; left: 0; width: 100%; pointer-events: none; z-index: 9999;
+  font-size: 18px; color: rgba(134,239,172,0.5); letter-spacing: 60px;
+  animation: xmas-snow 14s linear infinite; white-space: nowrap; overflow: hidden;
+}
 
-body.theme-ocean { --primary: #0284c7; --accent: #0ea5e9; --primary-dim: rgba(2,132,199,0.12); --blue: #0ea5e9; --blue-dim: rgba(14,165,233,0.12); background: radial-gradient(circle at bottom right, #000e1a, #02020a) fixed; }
-body.theme-blood { --primary: #b91c1c; --accent: #dc2626; --primary-dim: rgba(185,28,28,0.12); --blue: #7f1d1d; --blue-dim: rgba(127,29,29,0.12); background: radial-gradient(circle at center, #160000, #02020a) fixed; }
+/* Halloween — Deep void purple & amber */
+body.theme-halloween {
+  --primary: #c2410c; --accent: #ea580c;
+  --primary-dim: rgba(194,65,12,0.12); --primary-light: #fed7aa;
+  --primary-glow: rgba(194,65,12,0.25);
+  --border: rgba(194,65,12,0.18); --border2: rgba(194,65,12,0.35);
+  --blue: #a855f7; --blue-dim: rgba(168,85,247,0.12);
+  background: radial-gradient(ellipse 70% 55% at 20% 10%, rgba(88,28,135,0.25) 0%, transparent 65%),
+              radial-gradient(ellipse 50% 40% at 80% 80%, rgba(194,65,12,0.12) 0%, transparent 55%), #050007;
+}
+body.theme-halloween .sidebar { background: rgba(5,0,7,0.92) !important; }
+body.theme-halloween .main { background: transparent !important; }
+@keyframes hween-flicker { 0%, 100% { opacity: 0.06; } 30% { opacity: 0.12; } 60% { opacity: 0.04; } }
+body.theme-halloween::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle 200px at 15% 75%, rgba(147,51,234,0.08) 0%, transparent 100%),
+              radial-gradient(circle 150px at 85% 20%, rgba(194,65,12,0.06) 0%, transparent 100%);
+  animation: hween-flicker 4s ease-in-out infinite;
+}
 
-@keyframes snow { from { transform: translateY(0); } to { transform: translateY(110vh); } }
-@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-40px) rotate(8deg); } }
+/* Ocean — Deep abyss blue */
+body.theme-ocean {
+  --primary: #0284c7; --accent: #0ea5e9;
+  --primary-dim: rgba(2,132,199,0.12); --primary-light: #7dd3fc;
+  --primary-glow: rgba(2,132,199,0.25);
+  --border: rgba(2,132,199,0.18); --border2: rgba(2,132,199,0.35);
+  --blue: #0ea5e9; --blue-dim: rgba(14,165,233,0.12);
+  background: radial-gradient(ellipse 80% 60% at 50% 110%, rgba(2,132,199,0.25) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 40% at 10% 50%, rgba(14,165,233,0.06) 0%, transparent 70%), #000814;
+}
+body.theme-ocean .sidebar { background: rgba(0,8,20,0.92) !important; }
+body.theme-ocean .main { background: transparent !important; }
+@keyframes ocean-ripple { 0%, 100% { opacity: 0.04; } 50% { opacity: 0.09; } }
+body.theme-ocean::before {
+  content: '';
+  position: fixed; bottom: 0; left: 0; right: 0; height: 40%; pointer-events: none; z-index: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(14,165,233,0.04) 20px, rgba(14,165,233,0.04) 22px);
+  animation: ocean-ripple 5s ease-in-out infinite;
+}
+
+/* Blood — Dark crimson abyss */
+body.theme-blood {
+  --primary: #b91c1c; --accent: #dc2626;
+  --primary-dim: rgba(185,28,28,0.12); --primary-light: #fca5a5;
+  --primary-glow: rgba(185,28,28,0.25);
+  --border: rgba(185,28,28,0.18); --border2: rgba(185,28,28,0.35);
+  --blue: #991b1b; --blue-dim: rgba(153,27,27,0.12);
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(185,28,28,0.2) 0%, transparent 60%),
+              radial-gradient(ellipse 40% 30% at 80% 100%, rgba(127,29,29,0.1) 0%, transparent 60%), #050000;
+}
+body.theme-blood .sidebar { background: rgba(5,0,0,0.92) !important; }
+body.theme-blood .main { background: transparent !important; }
+@keyframes blood-pulse { 0%, 100% { opacity: 0; } 50% { opacity: 0.06; } }
+body.theme-blood::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(185,28,28,0.06), transparent 70%);
+  animation: blood-pulse 3s ease-in-out infinite;
+}
+body.theme-blood::after {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; height: 5px; z-index: 9999; pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0px, transparent 36px, rgba(185,28,28,0.85) 36px, rgba(185,28,28,0.85) 40px);
+  box-shadow: 0 0 20px rgba(185,28,28,0.4);
+}
 
 /* Apply Themes to Components */
-body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--primary), var(--accent)) !important; }
-body[class^="theme-"] .nav-item.active { background: var(--primary-dim); color: var(--primary); }
+body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--primary), var(--accent)) !important; box-shadow: 0 0 16px var(--primary-glow) !important; }
+body[class^="theme-"] .nav-item.active { background: var(--primary-dim) !important; color: var(--primary-light) !important; }
 body[class^="theme-"] .btn-primary { background: var(--primary) !important; color: #fff !important; }
-body[class^="theme-"] .badge-blue { background: var(--primary-dim); color: var(--primary); }
-body[class^="theme-"] .plan-badge { background: var(--primary-dim); color: var(--primary); }
+body[class^="theme-"] .badge-blue { background: var(--primary-dim); color: var(--primary-light); }
+body[class^="theme-"] .plan-badge { background: var(--primary-dim); color: var(--primary-light); border-color: var(--border2); }
 body[class^="theme-"] .toggle input:checked + .toggle-slider { background: var(--primary); border-color: var(--primary); }
+body[class^="theme-"] .plan-option.current { border-color: var(--primary); }
+body[class^="theme-"] .announcement-card { border-left-color: var(--primary); }
 </style>
 </head>
 <body>

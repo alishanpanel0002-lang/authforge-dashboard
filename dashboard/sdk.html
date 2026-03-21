@@ -3,91 +3,324 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShadowAuth — Sentinel SDKs</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>NyxAuth — SDK & Developer Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #050508; --surface: #0a0a0f; --surface2: #121217;
-  --border: rgba(220,38,38,0.1); --border2: rgba(220,38,38,0.2);
-  --text: #ffffff; --muted: #a1a1aa; --muted2: #52525b;
-  --red: #dc2626; --red-dim: rgba(220,38,38,0.1);
-  --blue: #dc2626; --blue-dim: rgba(220,38,38,0.12);
+  --bg: #02020a; --surface: #07071a; --surface2: #0d0d24;
+  --border: rgba(109,40,217,0.15); --border2: rgba(109,40,217,0.3);
+  --text: #f0f0ff; --muted: #8888aa; --muted2: #44445a;
+  --primary: #7c3aed; --primary-dim: rgba(124,58,237,0.12);
+  --primary-light: #a78bfa; --primary-glow: rgba(124,58,237,0.25);
+  --accent: #8b5cf6;
   --green: #10b981; --green-dim: rgba(16,185,129,0.1);
-  --purple: #ef4444; --purple-dim: rgba(239,68,68,0.1);
   --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
-  --font: 'Outfit', sans-serif; --r: 10px;
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+  --blue: #7c3aed; --blue-dim: rgba(124,58,237,0.12);
+  --font: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace; --r: 10px;
 }
+
+/* ==== THEMES ==== */
+
+/* Christmas — Emerald forest night */
+body.theme-christmas {
+  --primary: #16a34a; --accent: #22c55e;
+  --primary-dim: rgba(22,163,74,0.12); --primary-light: #86efac;
+  --primary-glow: rgba(22,163,74,0.25);
+  --border: rgba(22,163,74,0.18); --border2: rgba(22,163,74,0.35);
+  --blue: #dc2626;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(22,163,74,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 90% 90%, rgba(220,38,38,0.08) 0%, transparent 60%),
+    #010d04;
+}
+body.theme-christmas .sidebar { background: rgba(1,13,4,0.85) !important; }
+body.theme-christmas .main { background: transparent !important; }
+@keyframes xmas-snow {
+  0%   { transform: translateY(-10px) translateX(0px) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(110vh) translateX(60px) rotate(360deg); opacity: 0; }
+}
+body.theme-christmas::after {
+  content: '❅ ❄ ✦ ❅ ❄ ✦ ❅ ❄ ✦ ❅ ❄ ✦ ❅';
+  position: fixed; top: -30px; left: 0; width: 100%; letter-spacing: 80px;
+  pointer-events: none; z-index: 9999; font-size: 18px; color: rgba(134,239,172,0.5);
+  animation: xmas-snow 14s linear infinite; white-space: nowrap; overflow: hidden;
+}
+
+/* Halloween — Deep void purple */
+body.theme-halloween {
+  --primary: #c2410c; --accent: #ea580c;
+  --primary-dim: rgba(194,65,12,0.12); --primary-light: #fed7aa;
+  --primary-glow: rgba(194,65,12,0.25);
+  --border: rgba(194,65,12,0.18); --border2: rgba(194,65,12,0.35);
+  --blue: #a855f7;
+  background:
+    radial-gradient(ellipse 70% 55% at 20% 10%, rgba(88,28,135,0.25) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(194,65,12,0.12) 0%, transparent 55%),
+    #050007;
+}
+body.theme-halloween .sidebar { background: rgba(5,0,7,0.85) !important; }
+body.theme-halloween .main { background: transparent !important; }
+@keyframes hween-flicker { 0%, 100% { opacity: 0.06; } 30% { opacity: 0.12; } 60% { opacity: 0.04; } }
+body.theme-halloween::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(circle 200px at 15% 75%, rgba(147,51,234,0.08) 0%, transparent 100%),
+    radial-gradient(circle 150px at 85% 20%, rgba(194,65,12,0.06) 0%, transparent 100%);
+  animation: hween-flicker 4s ease-in-out infinite;
+}
+body.theme-halloween::after {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(147,51,234,0.3), transparent),
+    radial-gradient(1px 1px at 30% 70%, rgba(194,65,12,0.3), transparent),
+    radial-gradient(1px 1px at 60% 30%, rgba(147,51,234,0.2), transparent),
+    radial-gradient(1px 1px at 80% 80%, rgba(194,65,12,0.2), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(147,51,234,0.25), transparent),
+    radial-gradient(1px 1px at 90% 10%, rgba(194,65,12,0.25), transparent);
+  background-size: 200px 200px;
+}
+
+/* Ocean — Deep abyss blue */
+body.theme-ocean {
+  --primary: #0284c7; --accent: #0ea5e9;
+  --primary-dim: rgba(2,132,199,0.12); --primary-light: #7dd3fc;
+  --primary-glow: rgba(2,132,199,0.25);
+  --border: rgba(2,132,199,0.18); --border2: rgba(2,132,199,0.35);
+  --blue: #0ea5e9;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 110%, rgba(2,132,199,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 50%, rgba(14,165,233,0.06) 0%, transparent 70%),
+    #000814;
+}
+body.theme-ocean .sidebar { background: rgba(0,8,20,0.85) !important; }
+body.theme-ocean .main { background: transparent !important; }
+@keyframes ocean-ripple {
+  0%   { transform: scaleX(1) scaleY(1); opacity: 0.04; }
+  50%  { transform: scaleX(1.05) scaleY(1.02); opacity: 0.08; }
+  100% { transform: scaleX(1) scaleY(1); opacity: 0.04; }
+}
+body.theme-ocean::before {
+  content: '';
+  position: fixed; bottom: 0; left: 0; right: 0; height: 40%;
+  pointer-events: none; z-index: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 20px,
+    rgba(14,165,233,0.04) 20px, rgba(14,165,233,0.04) 22px
+  );
+  animation: ocean-ripple 5s ease-in-out infinite;
+}
+@keyframes bubble-rise {
+  0%   { transform: translateY(0) scale(1); opacity: 0.4; }
+  100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
+}
+body.theme-ocean::after {
+  content: '○ ○ ○ ○ ○';
+  position: fixed; bottom: 0; left: 20%; letter-spacing: 100px;
+  pointer-events: none; z-index: 0; font-size: 10px;
+  color: rgba(125,211,252,0.25); animation: bubble-rise 10s linear infinite;
+}
+
+/* Blood — Dark crimson abyss */
+body.theme-blood {
+  --primary: #b91c1c; --accent: #dc2626;
+  --primary-dim: rgba(185,28,28,0.12); --primary-light: #fca5a5;
+  --primary-glow: rgba(185,28,28,0.25);
+  --border: rgba(185,28,28,0.18); --border2: rgba(185,28,28,0.35);
+  --blue: #991b1b;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(185,28,28,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 100%, rgba(127,29,29,0.1) 0%, transparent 60%),
+    #050000;
+}
+body.theme-blood .sidebar { background: rgba(5,0,0,0.88) !important; }
+body.theme-blood .main { background: transparent !important; }
+@keyframes blood-pulse { 0%, 100% { opacity: 0; } 50% { opacity: 0.06; } }
+body.theme-blood::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(185,28,28,0.06), transparent 70%);
+  animation: blood-pulse 3s ease-in-out infinite;
+}
+@keyframes drip {
+  0%   { transform: scaleY(0); opacity: 0.7; transform-origin: top; }
+  80%  { transform: scaleY(1); opacity: 0.5; }
+  100% { transform: scaleY(1) translateY(40px); opacity: 0; }
+}
+body.theme-blood::after {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; height: 6px; z-index: 9999; pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px, transparent 40px,
+    rgba(185,28,28,0.8) 40px, rgba(185,28,28,0.8) 44px
+  );
+  box-shadow: 0 0 20px rgba(185,28,28,0.5);
+}
+
+/* Apply Themes to Components */
+body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--primary), var(--accent)) !important; box-shadow: 0 0 16px var(--primary-glow) !important; }
+body[class^="theme-"] .nav-item.active { background: var(--primary-dim) !important; color: var(--primary-light) !important; }
+body[class^="theme-"] .nav-item:hover { background: var(--primary-dim) !important; }
+body[class^="theme-"] .btn-download { border-color: var(--primary) !important; color: var(--primary-light) !important; }
+body[class^="theme-"] .btn-download:hover { background: var(--primary) !important; color: #fff !important; border-color: var(--primary) !important; }
+body[class^="theme-"] .lang-tab.active { background: var(--primary) !important; color: #fff !important; }
+body[class^="theme-"] .sdk-card { border-color: var(--border) !important; }
+body[class^="theme-"] .sdk-card:hover { border-color: var(--primary) !important; }
+body[class^="theme-"] .endpoint-path { color: var(--primary-light) !important; }
+body[class^="theme-"] .method { background: var(--primary-dim) !important; color: var(--primary-light) !important; }
+
+/* ==== LAYOUT ==== */
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
-.sidebar { width: 216px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; }
-.logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin-bottom: 24px; }
-.logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; }
-.logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
-.nav-label { font-size: 11px; color: var(--muted2); padding: 0 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
-.nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.1s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
+
+.sidebar {
+  width: 220px; border-right: 1px solid var(--border); padding: 16px 12px;
+  display: flex; flex-direction: column; position: fixed; height: 100vh;
+  overflow-y: auto; background: var(--bg); z-index: 100;
+  transition: background 0.3s;
+}
+.logo { display: flex; align-items: center; gap: 9px; padding: 4px 8px; margin-bottom: 24px; }
+.logo-icon {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0;
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+.logo-text { font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
+.logo-text span { color: var(--primary-light); }
+
+.nav-group { margin-bottom: 16px; }
+.nav-label { font-size: 11px; color: var(--muted2); padding: 0 8px; margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+  border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--muted);
+  transition: all 0.15s; border: none; background: none; width: 100%;
+  text-align: left; text-decoration: none;
+}
 .nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--surface2); color: var(--text); }
-.nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+.nav-item.active { background: var(--primary-dim); color: var(--primary-light); border: 1px solid var(--border2); }
+.nav-icon { width: 15px; height: 15px; opacity: 0.6; flex-shrink: 0; }
+.nav-item.active .nav-icon { opacity: 1; }
+
 .sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px; }
 .user-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 4px; }
-.avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary-dim); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; color: var(--primary-light); overflow: hidden; }
 .user-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sign-out { width: 100%; padding: 6px 8px; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 13px; text-align: left; border-radius: 6px; cursor: pointer; }
-.sign-out:hover { background: var(--surface2); color: #ef4444; }
-.main { margin-left: 216px; flex: 1; padding: 40px; max-width: 900px; }
-.page-head { margin-bottom: 8px; }
-.page-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-.page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; margin-bottom: 32px; }
+.sign-out { width: 100%; padding: 6px 8px; background: none; border: none; color: var(--muted); font-family: var(--font); font-size: 13px; text-align: left; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+.sign-out:hover { background: var(--red-dim); color: var(--red); }
+
+.main { margin-left: 220px; flex: 1; padding: 36px 48px; max-width: 960px; position: relative; z-index: 1; }
+.page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+.page-sub { font-size: 14px; color: var(--muted); margin-bottom: 36px; line-height: 1.6; }
 
 /* SDK Cards */
-.sdk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
-.sdk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px; transition: border-color 0.15s; }
-.sdk-card:hover { border-color: var(--border2); }
+.sdk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 48px; }
+.sdk-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px; display: flex; flex-direction: column;
+  gap: 16px; transition: all 0.2s;
+}
+.sdk-card:hover { border-color: var(--primary); transform: translateY(-3px); }
 .sdk-header { display: flex; align-items: flex-start; gap: 12px; }
-.sdk-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-.sdk-icon.csharp { background: rgba(168,85,247,0.15); }
-.sdk-icon.cpp { background: rgba(59,130,246,0.15); }
-.sdk-icon.python { background: rgba(245,158,11,0.15); }
-.sdk-name { font-size: 14px; font-weight: 600; }
-.sdk-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
-.sdk-meta { display: flex; gap: 8px; flex-wrap: wrap; }
-.pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); }
-.btn-download { width: 100%; padding: 8px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: var(--surface2); color: var(--text); transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-download:hover { background: var(--text); color: #000; border-color: var(--text); }
+.sdk-icon {
+  width: 40px; height: 40px; border-radius: 10px; display: flex;
+  align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.sdk-icon.csharp { background: rgba(167,139,250,0.1); }
+.sdk-icon.cpp    { background: rgba(59,130,246,0.1); }
+.sdk-icon.python { background: rgba(245,158,11,0.1); }
+.sdk-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.sdk-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.sdk-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); font-family: var(--mono); }
+.btn-download {
+  width: 100%; padding: 9px; border-radius: 8px; font-family: var(--font);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--surface2); color: var(--primary-light);
+  transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-download:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-1px); }
 
-/* Docs section */
-.docs-section { margin-bottom: 32px; }
-.docs-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.lang-tabs { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; margin-bottom: 0; width: fit-content; }
-.lang-tab { padding: 5px 14px; border: none; background: none; color: var(--muted); font-family: var(--font); font-size: 12px; font-weight: 500; border-radius: 5px; cursor: pointer; transition: all 0.1s; }
-.lang-tab.active { background: var(--surface2); color: var(--text); }
-.code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 8px; }
-.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border); }
-.code-label { font-size: 11px; color: var(--muted); font-family: monospace; }
-.copy-code-btn { font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: var(--font); }
-.copy-code-btn:hover { background: var(--surface2); color: var(--text); }
-pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.7; color: #c9d1d9; }
-.kw { color: #ff7b72; }
-.str { color: #a5d6ff; }
-.cm { color: #8b949e; font-style: italic; }
-.fn { color: #d2a8ff; }
-.var { color: #ffa657; }
-.cls { color: #ffa657; }
+/* Docs */
+.docs-section { margin-bottom: 44px; }
+.docs-title {
+  font-size: 15px; font-weight: 700; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px; color: var(--text);
+  border-bottom: 1px solid var(--border); padding-bottom: 12px;
+}
+.docs-title svg { color: var(--primary-light); }
 
-/* Endpoint reference */
-.endpoint-table { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; width: 100%; border-collapse: collapse; }
-.endpoint-table th { font-size: 11px; color: var(--muted); font-weight: 400; padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-.endpoint-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
-.endpoint-table tr:last-child td { border-bottom: none; }
-.method { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; font-family: monospace; background: var(--green-dim); color: var(--green); }
-.endpoint-path { font-family: monospace; font-size: 12px; color: var(--blue); }
-.param-list { font-size: 11px; color: var(--muted); font-family: monospace; line-height: 1.8; }
+.lang-tabs {
+  display: inline-flex; gap: 3px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 14px;
+}
+.lang-tab {
+  padding: 6px 16px; border: none; background: none; color: var(--muted);
+  font-family: var(--font); font-size: 12px; font-weight: 600;
+  border-radius: 7px; cursor: pointer; transition: all 0.15s;
+}
+.lang-tab.active { background: var(--primary); color: #fff; box-shadow: 0 2px 10px var(--primary-glow); }
+.lang-tab:not(.active):hover { background: var(--surface); color: var(--text); }
+
+.code-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.code-filename { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.copy-btn-code {
+  font-size: 11px; color: var(--muted); background: none; border: 1px solid var(--border);
+  cursor: pointer; padding: 3px 10px; border-radius: 6px; font-family: var(--font);
+  transition: all 0.15s;
+}
+.copy-btn-code:hover { background: var(--primary-dim); color: var(--primary-light); border-color: var(--border2); }
+pre { padding: 20px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.8; color: #c9d1d9; }
+
+/* Code Syntax */
+.kw  { color: #c4b5fd; font-weight: 600; }
+.str { color: #a5f3fc; }
+.cm  { color: #555577; font-style: italic; }
+.fn  { color: #f0abfc; }
+.var { color: #fde68a; }
+.cls { color: #86efac; }
+.nn  { color: #a78bfa; }
+
+/* API Table */
+.api-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+}
+.api-table th { font-size: 11px; color: var(--muted); font-weight: 500; padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.api-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.api-table tr:last-child td { border-bottom: none; }
+.api-table tr:hover td { background: var(--surface2); }
+.method-badge { font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px; font-family: var(--mono); background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.endpoint-path { font-family: var(--mono); font-size: 12px; color: var(--primary-light); }
+.param-code { font-size: 11px; color: var(--muted); font-family: var(--mono); line-height: 2; }
 </style>
 </head>
 <body>
+
 <nav class="sidebar">
-  <div class="logo"><div class="logo-dot" style="background:var(--red); border-radius: 2px;"></div><span class="logo-text">Shadow<span style="color:var(--red)">Auth</span></span></div>
-  <div style="margin-bottom:20px">
+  <div class="logo">
+    <div class="logo-icon">N</div>
+    <span class="logo-text">Nyx<span>Auth</span></span>
+  </div>
+  <div class="nav-group">
     <div class="nav-label">Platform</div>
     <a class="nav-item" href="dashboard.html">
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
@@ -108,29 +341,27 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
 </nav>
 
 <main class="main">
-  <div class="page-head">
-    <div class="page-title">SDK & Documentation</div>
-    <div class="page-sub">Download the SDK for your language and integrate AuthForge into your application in minutes.</div>
-  </div>
+  <div class="page-title">SDK & Documentation</div>
+  <p class="page-sub">Integrate NyxAuth into your application in minutes. Download a header-only, dependency-light SDK for your language and follow the quick-start guide below.</p>
 
-  <!-- SDK Download Cards -->
+  <!-- SDK Cards -->
   <div class="sdk-grid">
     <div class="sdk-card">
       <div class="sdk-header">
         <div class="sdk-icon csharp">⬡</div>
         <div>
           <div class="sdk-name">C# SDK</div>
-          <div class="sdk-desc">For .NET, WinForms, WPF, and console applications</div>
+          <div class="sdk-desc">For .NET, WinForms, WPF, and console apps</div>
         </div>
       </div>
-      <div class="sdk-meta">
+      <div class="sdk-pills">
         <span class="pill">.NET 4.7+</span>
         <span class="pill">Newtonsoft.Json</span>
         <span class="pill">v2.0</span>
       </div>
-      <button class="btn-download" onclick="downloadCSharp()">
+      <button class="btn-download" onclick="downloadSDK('csharp')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><path d="M2 13h12"/></svg>
-        Download AuthForge.cs
+        Download NyxAuth.cs
       </button>
     </div>
 
@@ -139,17 +370,17 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
         <div class="sdk-icon cpp">⬡</div>
         <div>
           <div class="sdk-name">C++ SDK</div>
-          <div class="sdk-desc">For native Windows, Linux, and cross-platform apps</div>
+          <div class="sdk-desc">For native Windows, Linux, and cross-platform</div>
         </div>
       </div>
-      <div class="sdk-meta">
+      <div class="sdk-pills">
         <span class="pill">C++17</span>
         <span class="pill">libcurl</span>
         <span class="pill">nlohmann/json</span>
       </div>
-      <button class="btn-download" onclick="downloadCPP()">
+      <button class="btn-download" onclick="downloadSDK('cpp')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><path d="M2 13h12"/></svg>
-        Download authforge.hpp
+        Download nyxauth.hpp
       </button>
     </div>
 
@@ -161,19 +392,19 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
           <div class="sdk-desc">For scripts, bots, desktop tools, and automation</div>
         </div>
       </div>
-      <div class="sdk-meta">
+      <div class="sdk-pills">
         <span class="pill">Python 3.7+</span>
         <span class="pill">requests</span>
-        <span class="pill">v1.0</span>
+        <span class="pill">v2.0</span>
       </div>
-      <button class="btn-download" onclick="downloadPython()">
+      <button class="btn-download" onclick="downloadSDK('python')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><path d="M2 13h12"/></svg>
-        Download authforge.py
+        Download nyxauth.py
       </button>
     </div>
   </div>
 
-  <!-- Code Examples -->
+  <!-- Quick Start -->
   <div class="docs-section">
     <div class="docs-title">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l-3 2 3 2M12 6l3 2-3 2M9 3l-2 10"/></svg>
@@ -186,92 +417,95 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
     </div>
 
     <div class="code-block" id="code-csharp">
-      <div class="code-header"><span class="code-label">Program.cs</span><button class="copy-code-btn" onclick="copyCode('csharp')">Copy</button></div>
-      <pre><span class="cm">// 1. Add AuthForge.cs to your project
+      <div class="code-header">
+        <span class="code-filename">Program.cs</span>
+        <button class="copy-btn-code" onclick="copyCode('csharp')">Copy</button>
+      </div>
+      <pre><span class="cm">// 1. Add NyxAuth.cs to your project
 // 2. Install Newtonsoft.Json via NuGet
 // 3. Replace with your app's secret key</span>
 
-<span class="kw">using</span> AuthForgeSDK;
+<span class="kw">using</span> <span class="nn">NyxAuthSDK</span>;
 
-<span class="kw">var</span> <span class="var">af</span> = <span class="kw">new</span> <span class="cls">AuthForge</span>(<span class="str">"YOUR_SECRET_KEY"</span>);
+<span class="kw">var</span> <span class="var">nyx</span> = <span class="kw">new</span> <span class="cls">NyxAuth</span>(<span class="str">"YOUR_SECRET_KEY"</span>);
 
 <span class="cm">// Login with username + password</span>
-<span class="kw">var</span> <span class="var">login</span> = <span class="kw">await</span> <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>);
-<span class="kw">if</span> (<span class="var">login</span>.Success)
+<span class="kw">var</span> <span class="var">result</span> = <span class="kw">await</span> <span class="var">nyx</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>);
+<span class="kw">if</span> (<span class="var">result</span>.Success)
 {
-    Console.<span class="fn">WriteLine</span>(<span class="str">"Welcome, "</span> + <span class="var">login</span>.Data[<span class="str">"username"</span>]);
+    Console.<span class="fn">WriteLine</span>(<span class="str">"Welcome, "</span> + <span class="var">result</span>.Data[<span class="str">"username"</span>]);
     <span class="cm">// Grant access to your app</span>
 }
 <span class="kw">else</span>
 {
-    Console.<span class="fn">WriteLine</span>(<span class="str">"Error: "</span> + <span class="var">login</span>.Error);
-    <span class="cm">// Block access</span>
+    Console.<span class="fn">WriteLine</span>(<span class="str">"Error: "</span> + <span class="var">result</span>.Error);
 }
 
-<span class="cm">// Login with HWID lock enabled</span>
+<span class="cm">// Login with HWID locking</span>
 <span class="kw">string</span> <span class="var">hwid</span> = Environment.<span class="fn">GetEnvironmentVariable</span>(<span class="str">"COMPUTERNAME"</span>);
-<span class="kw">var</span> <span class="var">loginHwid</span> = <span class="kw">await</span> <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, <span class="var">hwid</span>);
+<span class="kw">var</span> <span class="var">locked</span> = <span class="kw">await</span> <span class="var">nyx</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, <span class="var">hwid</span>);
 
-<span class="cm">// Validate a license key only (no username needed)</span>
-<span class="kw">var</span> <span class="var">check</span> = <span class="kw">await</span> <span class="var">af</span>.<span class="fn">CheckLicense</span>(<span class="str">"LICENSE-KEY"</span>);
-<span class="kw">if</span> (<span class="var">check</span>.Success) Console.<span class="fn">WriteLine</span>(<span class="str">"License valid!"</span>);</pre>
+<span class="cm">// Validate a license key (no username)</span>
+<span class="kw">var</span> <span class="var">lic</span> = <span class="kw">await</span> <span class="var">nyx</span>.<span class="fn">CheckLicense</span>(<span class="str">"NYX-XXXX-XXXX-XXXX"</span>);
+<span class="kw">if</span> (<span class="var">lic</span>.Success) Console.<span class="fn">WriteLine</span>(<span class="str">"License valid!"</span>);</pre>
     </div>
 
     <div class="code-block" id="code-cpp" style="display:none">
-      <div class="code-header"><span class="code-label">main.cpp</span><button class="copy-code-btn" onclick="copyCode('cpp')">Copy</button></div>
-      <pre><span class="cm">// 1. Add authforge.hpp to your project
-// 2. Install libcurl and nlohmann/json
+      <div class="code-header">
+        <span class="code-filename">main.cpp</span>
+        <button class="copy-btn-code" onclick="copyCode('cpp')">Copy</button>
+      </div>
+      <pre><span class="cm">// 1. Add nyxauth.hpp to your project
+// 2. Link with libcurl and nlohmann/json
 // 3. Replace with your app's secret key</span>
 
-<span class="kw">#include</span> <span class="str">"authforge.hpp"</span>
+<span class="kw">#include</span> <span class="str">"nyxauth.hpp"</span>
 
 <span class="kw">int</span> <span class="fn">main</span>() {
-    <span class="cls">AuthForge</span> <span class="var">af</span>(<span class="str">"YOUR_SECRET_KEY"</span>);
+    <span class="cls">NyxAuthSDK::NyxAuth</span> <span class="var">nyx</span>(<span class="str">"YOUR_SECRET_KEY"</span>);
 
     <span class="cm">// Login with username + password</span>
-    <span class="kw">auto</span> <span class="var">login</span> = <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>);
-    <span class="kw">if</span> (<span class="var">login</span>.success) {
-        std::cout << <span class="str">"Welcome, "</span> << <span class="var">login</span>.message << std::endl;
-    } <span class="kw">else</span> {
-        std::cout << <span class="str">"Error: "</span> << <span class="var">login</span>.error << std::endl;
+    <span class="kw">auto</span> <span class="var">result</span> = <span class="var">nyx</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>);
+    <span class="kw">if</span> (<span class="var">result</span>.success) {
+        std::cout << <span class="str">"Welcome!"</span> << std::endl;
     }
 
-    <span class="cm">// Login with HWID</span>
-    <span class="kw">auto</span> <span class="var">loginHwid</span> = <span class="var">af</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, <span class="fn">GetHWID</span>());
+    <span class="cm">// Login with HWID lock</span>
+    <span class="kw">auto</span> <span class="var">locked</span> = <span class="var">nyx</span>.<span class="fn">Login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, <span class="fn">GetHWID</span>());
 
-    <span class="cm">// Check a license key</span>
-    <span class="kw">auto</span> <span class="var">check</span> = <span class="var">af</span>.<span class="fn">CheckLicense</span>(<span class="str">"LICENSE-KEY"</span>);
-    <span class="kw">if</span> (<span class="var">check</span>.success) std::cout << <span class="str">"License valid!"</span> << std::endl;
+    <span class="cm">// Validate a license key</span>
+    <span class="kw">auto</span> <span class="var">lic</span> = <span class="var">nyx</span>.<span class="fn">CheckLicense</span>(<span class="str">"NYX-XXXX-XXXX-XXXX"</span>);
+    <span class="kw">if</span> (<span class="var">lic</span>.success) std::cout << <span class="str">"License valid!"</span> << std::endl;
 
     <span class="kw">return</span> <span class="str">0</span>;
 }</pre>
     </div>
 
     <div class="code-block" id="code-python" style="display:none">
-      <div class="code-header"><span class="code-label">main.py</span><button class="copy-code-btn" onclick="copyCode('python')">Copy</button></div>
-      <pre><span class="cm"># 1. Add authforge.py to your project
+      <div class="code-header">
+        <span class="code-filename">main.py</span>
+        <button class="copy-btn-code" onclick="copyCode('python')">Copy</button>
+      </div>
+      <pre><span class="cm"># 1. Add nyxauth.py to your project
 # 2. pip install requests
 # 3. Replace with your app's secret key</span>
 
-<span class="kw">from</span> authforge <span class="kw">import</span> <span class="cls">AuthForge</span>
+<span class="kw">from</span> nyxauth <span class="kw">import</span> <span class="cls">NyxAuth</span>
 
-<span class="var">af</span> = <span class="cls">AuthForge</span>(<span class="str">"YOUR_SECRET_KEY"</span>)
+<span class="var">nyx</span> = <span class="cls">NyxAuth</span>(<span class="str">"YOUR_SECRET_KEY"</span>)
 
 <span class="cm"># Login with username + password</span>
-<span class="var">login</span> = <span class="var">af</span>.<span class="fn">login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>)
-<span class="kw">if</span> <span class="var">login</span>[<span class="str">"success"</span>]:
-    <span class="fn">print</span>(<span class="str">f"Welcome, {login['user']['username']}"</span>)
-<span class="kw">else</span>:
-    <span class="fn">print</span>(<span class="str">f"Error: {login['message']}"</span>)
+<span class="var">result</span> = <span class="var">nyx</span>.<span class="fn">login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>)
+<span class="kw">if</span> <span class="var">result</span>[<span class="str">"success"</span>]:
+    <span class="fn">print</span>(<span class="str">f"Welcome, {result['user']['username']}"</span>)
 
-<span class="cm"># Login with HWID</span>
+<span class="cm"># Login with HWID lock</span>
 <span class="kw">import</span> platform
-<span class="var">hwid</span> = platform.<span class="fn">node</span>()
-<span class="var">login</span> = <span class="var">af</span>.<span class="fn">login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, hwid=<span class="var">hwid</span>)
+<span class="var">result</span> = <span class="var">nyx</span>.<span class="fn">login</span>(<span class="str">"username"</span>, <span class="str">"password"</span>, hwid=platform.<span class="fn">node</span>())
 
-<span class="cm"># Check a license key</span>
-<span class="var">check</span> = <span class="var">af</span>.<span class="fn">check_license</span>(<span class="str">"LICENSE-KEY"</span>)
-<span class="kw">if</span> <span class="var">check</span>[<span class="str">"success"</span>]: <span class="fn">print</span>(<span class="str">"License valid!"</span>)</pre>
+<span class="cm"># Validate a license key</span>
+<span class="var">lic</span> = <span class="var">nyx</span>.<span class="fn">check_license</span>(<span class="str">"NYX-XXXX-XXXX-XXXX"</span>)
+<span class="kw">if</span> <span class="var">lic</span>[<span class="str">"success"</span>]: <span class="fn">print</span>(<span class="str">"License valid!"</span>)</pre>
     </div>
   </div>
 
@@ -281,32 +515,34 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6h6M5 9h4"/></svg>
       API Endpoint Reference
     </div>
-    <table class="endpoint-table">
-      <thead><tr><th>Method</th><th>Endpoint</th><th>Required Fields</th><th>Description</th></tr></thead>
+    <table class="api-table">
+      <thead>
+        <tr><th>Method</th><th>Endpoint</th><th>Required Fields</th><th>Description</th></tr>
+      </thead>
       <tbody>
         <tr>
-          <td><span class="method">POST</span></td>
+          <td><span class="method-badge">POST</span></td>
           <td><span class="endpoint-path">/api/client/register</span></td>
-          <td><span class="param-list">secret_key<br>username<br>password<br>license_key</span></td>
-          <td style="font-size:12px;color:var(--muted)">Register a new end user. Requires a valid license key with available slots.</td>
+          <td><span class="param-code">secret_key<br>username<br>password<br>license_key</span></td>
+          <td style="font-size:12px;color:var(--muted)">Register a new end-user. Requires a valid license key with available user slots.</td>
         </tr>
         <tr>
-          <td><span class="method">POST</span></td>
+          <td><span class="method-badge">POST</span></td>
           <td><span class="endpoint-path">/api/client/login</span></td>
-          <td><span class="param-list">secret_key<br>username<br>password<br>hwid (optional)</span></td>
-          <td style="font-size:12px;color:var(--muted)">Authenticate a user. Pass hwid if HWID lock is enabled for the account.</td>
+          <td><span class="param-code">secret_key<br>username<br>password<br>hwid <i style="opacity:.5">(optional)</i></span></td>
+          <td style="font-size:12px;color:var(--muted)">Authenticate a user. Include <code>hwid</code> if HWID lock is enabled on the account.</td>
         </tr>
         <tr>
-          <td><span class="method">POST</span></td>
+          <td><span class="method-badge">POST</span></td>
           <td><span class="endpoint-path">/api/client/license/login</span></td>
-          <td><span class="param-list">secret_key<br>license_key</span></td>
-          <td style="font-size:12px;color:var(--muted)">Login using just a license key — no username or password needed.</td>
+          <td><span class="param-code">secret_key<br>license_key<br>hwid <i style="opacity:.5">(optional)</i></span></td>
+          <td style="font-size:12px;color:var(--muted)">Login using just a license key — no username or password required.</td>
         </tr>
         <tr>
-          <td><span class="method">POST</span></td>
+          <td><span class="method-badge">POST</span></td>
           <td><span class="endpoint-path">/api/client/license/check</span></td>
-          <td><span class="param-list">secret_key<br>license_key</span></td>
-          <td style="font-size:12px;color:var(--muted)">Validate a license key without logging in. Returns status, expiry, and slot info.</td>
+          <td><span class="param-code">secret_key<br>license_key</span></td>
+          <td style="font-size:12px;color:var(--muted)">Validate a license key without logging in. Returns status, expiry, and slot usage.</td>
         </tr>
       </tbody>
     </table>
@@ -317,36 +553,52 @@ pre { padding: 16px; overflow-x: auto; font-family: 'SF Mono', 'Fira Code', mono
 const API = 'https://authforge-backend-production.up.railway.app';
 let user = JSON.parse(localStorage.getItem('af_user') || '{}');
 if (!localStorage.getItem('af_token')) location.href = 'index.html';
+
 document.getElementById('un').textContent = user.username || '';
-document.getElementById('av').textContent = (user.username || '?')[0].toUpperCase();
+const avEl = document.getElementById('av');
+if (user.avatar_url) {
+  avEl.innerHTML = `<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+} else {
+  avEl.textContent = (user.username || '?')[0].toUpperCase();
+}
+
+// Apply global theme
+fetch(API + '/api/public/config').then(r => r.json()).then(d => {
+  const c = (d && d.config) || {};
+  if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
+}).catch(() => {});
+
 function logout() { localStorage.clear(); location.href = 'index.html'; }
 
 function switchLang(lang) {
-  ['csharp','cpp','python'].forEach(l => {
+  ['csharp', 'cpp', 'python'].forEach(l => {
     document.getElementById('code-' + l).style.display = l === lang ? 'block' : 'none';
   });
-  document.querySelectorAll('.lang-tab').forEach((t,i) => {
-    t.classList.toggle('active', ['csharp','cpp','python'][i] === lang);
+  document.querySelectorAll('.lang-tab').forEach((t, i) => {
+    t.classList.toggle('active', ['csharp', 'cpp', 'python'][i] === lang);
   });
 }
 
 function copyCode(lang) {
   const pre = document.querySelector('#code-' + lang + ' pre');
   navigator.clipboard.writeText(pre.innerText);
+  const btn = document.querySelector(`#code-${lang} .copy-btn-code`);
+  const orig = btn.textContent;
+  btn.textContent = '✓ Copied';
+  setTimeout(() => btn.textContent = orig, 2000);
 }
 
-// ── C# SDK content ───────────────
-const csharpSDK = `/*
- * ShadowAuth C# SDK
- * Version: 2.0.0
- * Website: https://shadowauth-dashboard.vercel.app
+// ── C# SDK ─────────────────────────────────────────────────────────────────
+const sdks = {
+csharp: `/*
+ * NyxAuth C# SDK v2.0.0
+ * https://authforge-dashboard.vercel.app
  *
  * HOW TO USE:
  * 1. Add this file to your C# project
  * 2. Install Newtonsoft.Json via NuGet:
  *    Install-Package Newtonsoft.Json
  * 3. Initialize with your app's secret key
- * 4. Call Login, Register, LicenseLogin, or CheckLicense
  */
 
 using System;
@@ -356,9 +608,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace ShadowAuthSDK
+namespace NyxAuthSDK
 {
-    public class ShadowAuthResponse
+    public class NyxAuthResponse
     {
         public bool Success { get; set; }
         public string Message { get; set; }
@@ -366,44 +618,44 @@ namespace ShadowAuthSDK
         public JObject Data { get; set; }
     }
 
-    public class ShadowAuth
+    public class NyxAuth
     {
         private static readonly HttpClient _http = new HttpClient();
         private readonly string _secretKey;
-        private const string API_URL = "https://shadowauth-backend-production.up.railway.app/api/client";
+        private const string API_URL = "https://authforge-backend-production.up.railway.app/api/client";
 
-        public ShadowAuth(string secretKey)
+        public NyxAuth(string secretKey)
         {
             if (string.IsNullOrWhiteSpace(secretKey))
                 throw new ArgumentException("Secret key cannot be empty.");
             _secretKey = secretKey;
         }
 
-        public async Task<ShadowAuthResponse> Login(string username, string password, string hwid = null)
+        public async Task<NyxAuthResponse> Login(string username, string password, string hwid = null)
         {
             var payload = new { secret_key = _secretKey, username, password, hwid };
             return await Post("/login", payload);
         }
 
-        public async Task<ShadowAuthResponse> Register(string username, string password, string licenseKey, string email = null)
+        public async Task<NyxAuthResponse> Register(string username, string password, string licenseKey, string email = null)
         {
             var payload = new { secret_key = _secretKey, username, password, license_key = licenseKey, email };
             return await Post("/register", payload);
         }
 
-        public async Task<ShadowAuthResponse> LicenseLogin(string licenseKey, string hwid = null)
+        public async Task<NyxAuthResponse> LicenseLogin(string licenseKey, string hwid = null)
         {
             var payload = new { secret_key = _secretKey, license_key = licenseKey, hwid };
             return await Post("/license/login", payload);
         }
 
-        public async Task<ShadowAuthResponse> CheckLicense(string licenseKey)
+        public async Task<NyxAuthResponse> CheckLicense(string licenseKey)
         {
             var payload = new { secret_key = _secretKey, license_key = licenseKey };
             return await Post("/license/check", payload);
         }
 
-        private async Task<ShadowAuthResponse> Post(string endpoint, object payload)
+        private async Task<NyxAuthResponse> Post(string endpoint, object payload)
         {
             try
             {
@@ -412,33 +664,29 @@ namespace ShadowAuthSDK
                 var response = await _http.PostAsync(API_URL + endpoint, content);
                 var body = await response.Content.ReadAsStringAsync();
                 var root = JObject.Parse(body);
-
                 bool success = root["success"] != null && root["success"].Value<bool>();
                 string message = root["message"] != null ? root["message"].Value<string>() : "";
-                string error = root["error"]   != null ? root["error"].Value<string>()   : "";
-
+                string error = root["error"] != null ? root["error"].Value<string>() : "";
                 JObject data = null;
-                if (root["user"]    != null) data = root["user"].Value<JObject>();
+                if (root["user"] != null) data = root["user"].Value<JObject>();
                 else if (root["license"] != null) data = root["license"].Value<JObject>();
-
-                return new ShadowAuthResponse { Success = success, Message = message, Error = error, Data = data };
+                return new NyxAuthResponse { Success = success, Message = message, Error = error, Data = data };
             }
             catch (Exception ex)
             {
-                return new ShadowAuthResponse { Success = false, Error = ex.Message };
+                return new NyxAuthResponse { Success = false, Error = ex.Message };
             }
         }
     }
-}`;
+}`,
 
-// ── C++ SDK content ──────────────────────────────────────────────────────────
-const cppSDK = `/*
- * ShadowAuth C++ SDK v2.0.0
- * https://shadowauth-dashboard.vercel.app
+cpp: `/*
+ * NyxAuth C++ SDK v2.0.0
+ * https://authforge-dashboard.vercel.app
  *
  * SETUP:
- * 1. Add this file to your project
- * 2. Link with libcurl and use nlohmann/json
+ * 1. Add nyxauth.hpp to your project
+ * 2. Link with libcurl and nlohmann/json
  */
 
 #pragma once
@@ -449,10 +697,10 @@ const cppSDK = `/*
 
 using json = nlohmann::json;
 
-namespace ShadowAuthSDK {
-    const std::string API_URL = "https://shadowauth-backend-production.up.railway.app/api/client";
+namespace NyxAuthSDK {
+    const std::string API_URL = "https://authforge-backend-production.up.railway.app/api/client";
 
-    struct ShadowAuthResponse {
+    struct NyxAuthResponse {
         bool success = false;
         std::string message;
         std::string error;
@@ -464,11 +712,11 @@ namespace ShadowAuthSDK {
         return size * nmemb;
     }
 
-    class ShadowAuth {
+    class NyxAuth {
     private:
         std::string secretKey;
-        ShadowAuthResponse Post(const std::string& endpoint, const json& payload) {
-            ShadowAuthResponse response;
+        NyxAuthResponse Post(const std::string& endpoint, const json& payload) {
+            NyxAuthResponse response;
             CURL* curl = curl_easy_init();
             if (!curl) { response.error = "CURL init failed"; return response; }
             std::string body = payload.dump();
@@ -487,53 +735,51 @@ namespace ShadowAuthSDK {
                 auto root = json::parse(resp);
                 response.success = root.value("success", false);
                 response.message = root.value("message", "");
-                response.error = root.value("error", "");
+                response.error   = root.value("error", "");
                 if (root.contains("user")) response.data = root["user"];
                 else if (root.contains("license")) response.data = root["license"];
-            } catch(...) { response.error = "Parse error"; }
+            } catch(...) { response.error = "JSON parse error"; }
             return response;
         }
     public:
-        ShadowAuth(const std::string& key) : secretKey(key) {}
-        ShadowAuthResponse Login(const std::string& u, const std::string& p, const std::string& h = "") {
+        NyxAuth(const std::string& key) : secretKey(key) {}
+        NyxAuthResponse Login(const std::string& u, const std::string& p, const std::string& h = "") {
             json payload = {{"secret_key", secretKey}, {"username", u}, {"password", p}};
-            if(!h.empty()) payload["hwid"] = h;
+            if (!h.empty()) payload["hwid"] = h;
             return Post("/login", payload);
         }
-        ShadowAuthResponse Register(const std::string& u, const std::string& p, const std::string& l, const std::string& e = "") {
+        NyxAuthResponse Register(const std::string& u, const std::string& p, const std::string& l, const std::string& e = "") {
             json payload = {{"secret_key", secretKey}, {"username", u}, {"password", p}, {"license_key", l}};
-            if(!e.empty()) payload["email"] = e;
+            if (!e.empty()) payload["email"] = e;
             return Post("/register", payload);
         }
-        ShadowAuthResponse CheckLicense(const std::string& l) {
+        NyxAuthResponse CheckLicense(const std::string& l) {
             return Post("/license/check", {{"secret_key", secretKey}, {"license_key", l}});
         }
     };
-}`;
+}`,
 
-// ── Python SDK content ───────────────────────────────────────────────────────
-const pythonSDK = `"""
-ShadowAuth Python SDK v2.0.0
-https://shadowauth-dashboard.vercel.app
+python: `"""
+NyxAuth Python SDK v2.0.0
+https://authforge-dashboard.vercel.app
 
 SETUP:
-    1. Add this file to your Python project
-    2. Install requests:
-       pip install requests
+    1. Add nyxauth.py to your Python project
+    2. pip install requests
 
 USAGE:
-    from shadowauth import ShadowAuth
-    sa = ShadowAuth("YOUR_SECRET_KEY")
-    result = sa.login("username", "password")
+    from nyxauth import NyxAuth
+    nyx = NyxAuth("YOUR_SECRET_KEY")
+    result = nyx.login("username", "password")
     if result["success"]:
         print("Welcome!")
 """
 
 import requests
 
-API_URL = "https://shadowauth-backend-production.up.railway.app/api/client"
+API_URL = "https://authforge-backend-production.up.railway.app/api/client"
 
-class ShadowAuth:
+class NyxAuth:
     def __init__(self, secret_key: str):
         if not secret_key:
             raise ValueError("Secret key cannot be empty")
@@ -544,7 +790,7 @@ class ShadowAuth:
             r = requests.post(API_URL + endpoint, json=payload, timeout=10)
             return r.json()
         except requests.exceptions.ConnectionError:
-            return {"success": False, "message": "Cannot connect to ShadowAuth servers"}
+            return {"success": False, "message": "Cannot connect to NyxAuth servers"}
         except Exception as e:
             return {"success": False, "message": str(e)}
 
@@ -571,23 +817,15 @@ class ShadowAuth:
 
     def check_license(self, license_key: str) -> dict:
         """Validate a license key without logging in."""
-        return self._post("/license/check", {"secret_key": self.secret_key, "license_key": license_key})`;
+        return self._post("/license/check", {"secret_key": self.secret_key, "license_key": license_key})`
+};
 
-function downloadCSharp() {
-  download('ShadowAuth.cs', csharpSDK);
-}
-function downloadCPP() {
-  download('shadowauth.hpp', cppSDK);
-}
-function downloadPython() {
-  download('shadowauth.py', pythonSDK);
-}
-
-function download(filename, content) {
-  const blob = new Blob([content], { type: 'text/plain' });
+function downloadSDK(lang) {
+  const names = { csharp: 'NyxAuth.cs', cpp: 'nyxauth.hpp', python: 'nyxauth.py' };
+  const blob = new Blob([sdks[lang]], { type: 'text/plain' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = filename;
+  a.download = names[lang];
   a.click();
   URL.revokeObjectURL(a.href);
 }
