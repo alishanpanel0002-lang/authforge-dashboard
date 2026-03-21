@@ -917,6 +917,17 @@ async function initTheme() {
     const d = await r.json();
     const c = (d && d.config) || {};
     applyTheme(c.theme);
+    if (c.homepage_announcement) {
+      if (document.getElementById('p-overview')) {
+        const ann = document.createElement('div');
+        ann.className = 'announcement-banner';
+        ann.style.cssText = 'background:var(--primary); color:#fff; padding:12px; border-radius:var(--r); font-size:13px; font-weight:700; margin-bottom:20px; text-align:center; box-shadow:0 0 20px var(--primary-glow);';
+        ann.textContent = '📣 ' + c.homepage_announcement;
+        const ov = document.getElementById('p-overview');
+        if (ov.firstChild) ov.insertBefore(ann, ov.firstChild);
+        else ov.appendChild(ann);
+      }
+    }
   } catch(e) {}
 }
 initTheme();
