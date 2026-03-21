@@ -3,73 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShadowAuth — Intelligence Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>NyxAuth — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #050508; --surface: #0a0a0f; --surface2: #121217;
-  --border: rgba(220,38,38,0.1); --border2: rgba(220,38,38,0.2);
-  --text: #ffffff; --muted: #a1a1aa; --muted2: #52525b;
-  --red: #dc2626; --red-dim: rgba(220,38,38,0.1);
-  --blue: #dc2626; --blue-dim: rgba(220,38,38,0.12);
+  --bg: #02020a; --surface: #07071a; --surface2: #0d0d24;
+  --border: rgba(109,40,217,0.18); --border2: rgba(109,40,217,0.35);
+  --text: #f0f0ff; --muted: #8888aa; --muted2: #44445a;
+  --primary: #7c3aed; --primary-dim: rgba(124,58,237,0.12);
+  --primary-light: #a78bfa; --primary-glow: rgba(124,58,237,0.25);
+  --accent: #8b5cf6;
   --green: #10b981; --green-dim: rgba(16,185,129,0.1);
-  --purple: #ef4444; --purple-dim: rgba(239,68,68,0.1);
-  --font: 'Outfit', sans-serif; --r: 10px;
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+  --font: 'Inter', sans-serif; --r: 10px;
 }
-body.theme-christmas { --red: #16a34a; --blue: #dc2626; }
-body.theme-halloween { --red: #f97316; --blue: #a855f7; }
-body.theme-ocean { --red: #0ea5e9; --blue: #0ea5e9; }
-body.theme-blood { --red: #991b1b; --blue: #ef4444; }
-body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-.wrap { width: 100%; max-width: 360px; padding: 24px; }
-.logo { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; justify-content: center; }
-.logo-dot { width: 20px; height: 20px; border-radius: 5px; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; }
-.logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
-h1 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
-.sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
-.social-btns { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.btn-social { width: 100%; padding: 9px 14px; border-radius: var(--r); font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; }
-.btn-social:hover { background: rgba(255,255,255,0.05); }
+body.theme-christmas { --primary: #16a34a; --accent: #22c55e; --primary-dim: rgba(22,163,74,0.12); --primary-light: #86efac; --border: rgba(22,163,74,0.18); --border2: rgba(22,163,74,0.35); --primary-glow: rgba(22,163,74,0.25); }
+body.theme-halloween { --primary: #ea580c; --accent: #f97316; --primary-dim: rgba(234,88,12,0.12); --primary-light: #fdba74; --border: rgba(234,88,12,0.18); --border2: rgba(234,88,12,0.35); --primary-glow: rgba(234,88,12,0.25); }
+body.theme-ocean { --primary: #0284c7; --accent: #0ea5e9; --primary-dim: rgba(2,132,199,0.12); --primary-light: #7dd3fc; --border: rgba(2,132,199,0.18); --border2: rgba(2,132,199,0.35); --primary-glow: rgba(2,132,199,0.25); }
+body.theme-blood { --primary: #b91c1c; --accent: #dc2626; --primary-dim: rgba(185,28,28,0.12); --primary-light: #fca5a5; --border: rgba(185,28,28,0.18); --border2: rgba(185,28,28,0.35); --primary-glow: rgba(185,28,28,0.25); }
+
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font);
+  font-size: 14px; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background-image: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(124,58,237,0.15) 0%, transparent 70%);
+}
+.page-wrap { width: 100%; max-width: 380px; padding: 20px; }
+
+.logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; justify-content: center; }
+.logo-icon {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 900; color: #fff;
+  box-shadow: 0 0 16px var(--primary-glow);
+}
+.logo-text { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; }
+.logo-text span { color: var(--primary-light); }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.card-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.card-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+.social-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.btn-social {
+  width: 100%; padding: 10px 14px; border-radius: var(--r);
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text); display: flex; align-items: center; justify-content: center;
+  gap: 10px; transition: all 0.15s;
+}
+.btn-social:hover { background: var(--primary-dim); border-color: var(--primary); }
 .btn-social.discord { border-color: rgba(88,101,242,0.4); }
-.btn-social.discord:hover { background: rgba(88,101,242,0.08); }
-.divider { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
-.divider-line { flex: 1; height: 1px; background: var(--border); }
-.divider-text { font-size: 12px; color: var(--muted); }
-.tabs { display: flex; gap: 2px; background: var(--bg); border-radius: 6px; padding: 3px; margin-bottom: 20px; }
-.tab { flex: 1; padding: 6px; border: none; background: none; color: var(--muted); font-family: var(--font); font-size: 13px; font-weight: 500; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
-.tab.active { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-.field { margin-bottom: 12px; }
-.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
-.field input { width: 100%; padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 13px; outline: none; transition: border-color 0.15s; }
-.field input:focus { border-color: var(--border2); }
-.field input::placeholder { color: #444; }
-.btn { width: 100%; padding: 8px; border-radius: var(--r); font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: opacity 0.15s; }
-.btn-primary { background: var(--red); color: #fff; margin-top: 4px; border: none; font-weight: 700; transition: all 0.2s; }
-.btn-primary:hover { background: #ef4444; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.2); }
-.btn-outline { background: none; border: 1px solid var(--border2); color: var(--muted); margin-top: 8px; }
-.alert { display: none; padding: 8px 12px; border-radius: var(--r); font-size: 12px; margin-top: 10px; }
-.alert.err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
-.alert.ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
-.alert.info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #93c5fd; }
+.btn-social.discord:hover { background: rgba(88,101,242,0.1); border-color: rgba(88,101,242,0.7); }
+
+.or-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.or-line { flex: 1; height: 1px; background: var(--border); }
+.or-text { font-size: 12px; color: var(--muted); }
+
+.tabs { display: flex; gap: 0; background: var(--surface2); border-radius: 8px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border); }
+.tab {
+  flex: 1; padding: 7px; border: none; background: none;
+  color: var(--muted); font-family: var(--font); font-size: 13px;
+  font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.15s;
+}
+.tab.active { background: var(--primary); color: #fff; }
+
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+.field input {
+  width: 100%; padding: 9px 12px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: var(--r);
+  color: var(--text); font-family: var(--font); font-size: 13px; outline: none;
+  transition: border-color 0.15s; color-scheme: dark;
+}
+.field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-dim); }
+.field input::placeholder { color: var(--muted2); }
+
+.btn-primary {
+  width: 100%; padding: 10px; border-radius: var(--r); font-family: var(--font);
+  font-size: 13px; font-weight: 700; cursor: pointer; border: none;
+  background: var(--primary); color: #fff; transition: all 0.2s;
+  box-shadow: 0 4px 16px var(--primary-glow);
+}
+.btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+.btn-ghost {
+  width: 100%; padding: 10px; border-radius: var(--r); font-family: var(--font);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border2); background: none; color: var(--muted);
+  transition: all 0.15s; margin-top: 8px;
+}
+.btn-ghost:hover { color: var(--text); background: var(--primary-dim); }
+
+.alert { display: none; padding: 9px 12px; border-radius: var(--r); font-size: 12px; margin-top: 10px; }
+.alert.err { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+.alert.ok { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+.alert.info { background: var(--primary-dim); border: 1px solid var(--border2); color: var(--primary-light); }
 .form-section { display: none; }
 .form-section.active { display: block; }
-.verify-box { text-align: center; padding: 16px 0; }
-.verify-box .icon { font-size: 36px; margin-bottom: 12px; }
-.verify-box h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-.verify-box p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+.verify-box { text-align: center; padding: 12px 0; }
+.verify-icon { font-size: 40px; margin-bottom: 12px; }
+.verify-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.verify-box p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+.twofa-code-input {
+  text-align: center; font-size: 26px; letter-spacing: 12px; padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.back-link { display: flex; align-items: center; justify-content: center; gap: 4px; color: var(--muted); font-size: 12px; margin-top: 16px; cursor: pointer; }
+.back-link:hover { color: var(--text); }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="logo"><div class="logo-dot" style="background:var(--red); border-radius: 2px;"></div><span class="logo-text">Shadow<span style="color:var(--red)">Auth</span></span></div>
-  <div class="card">
-    <h1>Welcome back</h1>
-    <p class="sub">Sign in to your developer account</p>
+<div class="page-wrap">
+  <div class="logo">
+    <div class="logo-icon">N</div>
+    <div class="logo-text">Nyx<span>Auth</span></div>
+  </div>
 
-    <!-- Social buttons -->
-    <div class="social-btns">
+  <div class="card">
+    <div class="card-title">Welcome back</div>
+    <p class="card-sub">Sign in to your developer account</p>
+
+    <div class="social-row">
       <button class="btn-social" onclick="googleSignIn()">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
@@ -80,58 +142,57 @@ h1 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
       </button>
     </div>
 
-    <div class="divider"><div class="divider-line"></div><span class="divider-text">or</span><div class="divider-line"></div></div>
+    <div class="or-divider"><div class="or-line"></div><span class="or-text">or continue with email</span><div class="or-line"></div></div>
 
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('login')">Login</button>
+      <button class="tab active" onclick="switchTab('login')">Sign In</button>
       <button class="tab" onclick="switchTab('register')">Register</button>
     </div>
 
     <!-- Login -->
     <div class="form-section active" id="s-login">
-      <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="dev@example.com"></div>
+      <div class="field"><label>Email Address</label><input type="email" id="l-email" placeholder="you@example.com"></div>
       <div class="field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="btn btn-primary" onclick="doLogin()">Sign in →</button>
+      <button class="btn-primary" onclick="doLogin()">Sign In →</button>
       <div class="alert" id="l-msg"></div>
     </div>
 
     <!-- 2FA -->
     <div class="form-section" id="s-2fa">
-      <div style="text-align:center;margin-bottom:16px">
-        <div style="font-size:28px;margin-bottom:8px">🔐</div>
-        <div style="font-size:14px;font-weight:500">Two-Factor Authentication</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">Enter the 6-digit code from your authenticator app</div>
+      <div class="verify-box">
+        <div class="verify-icon">🔐</div>
+        <h3>Two-Factor Auth</h3>
+        <p>Enter the 6-digit code from your authenticator app</p>
       </div>
-      <div class="field"><input type="text" id="totp-code" placeholder="000000" maxlength="6" style="text-align:center;font-size:22px;letter-spacing:10px;padding:10px" onkeydown="if(event.key==='Enter')submit2FA()"></div>
-      <button class="btn btn-primary" onclick="submit2FA()">Verify →</button>
-      <button class="btn btn-outline" onclick="cancel2FA()">← Back</button>
+      <div class="field" style="margin-top:16px"><input type="text" id="totp-code" placeholder="000000" maxlength="6" class="twofa-code-input" onkeydown="if(event.key==='Enter')submit2FA()"></div>
+      <button class="btn-primary" onclick="submit2FA()">Verify & Sign In</button>
+      <button class="btn-ghost" onclick="cancel2FA()">← Back to Login</button>
       <div class="alert" id="twofa-msg"></div>
     </div>
 
-    <!-- Email verification prompt -->
+    <!-- Verify Email -->
     <div class="form-section" id="s-verify">
       <div class="verify-box">
-        <div class="icon">📧</div>
-        <h3>Check your email</h3>
-        <p>We sent a verification link to <strong id="verify-email-display"></strong>. Click the link to activate your account.</p>
+        <div class="verify-icon">📧</div>
+        <h3>Check your inbox</h3>
+        <p>We sent a verification link to <strong id="verify-email-display"></strong>. Click it to activate your account.</p>
       </div>
-      <button class="btn btn-primary" onclick="resendVerification()" style="margin-top:16px">Resend verification email</button>
-      <button class="btn btn-outline" onclick="cancel2FA()">← Back to login</button>
+      <button class="btn-primary" onclick="resendVerification()" style="margin-top:20px">Resend Verification Email</button>
+      <button class="btn-ghost" onclick="cancel2FA()">← Back to Login</button>
       <div class="alert" id="verify-msg"></div>
     </div>
 
     <!-- Register -->
     <div class="form-section" id="s-register">
       <div class="field"><label>Username</label><input type="text" id="r-user" placeholder="yourname"></div>
-      <div class="field"><label>Email</label><input type="email" id="r-email" placeholder="dev@example.com"></div>
-      <div class="field"><label>Password</label><input type="password" id="r-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()"></div>
-      <button class="btn btn-primary" onclick="doRegister()">Create account →</button>
+      <div class="field"><label>Email Address</label><input type="email" id="r-email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="r-pass" placeholder="Min. 8 characters" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="btn-primary" onclick="doRegister()">Create Account →</button>
       <div class="alert" id="r-msg"></div>
     </div>
   </div>
 </div>
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script>
 const API = 'https://authforge-backend-production.up.railway.app';
 const GOOGLE_CLIENT_ID = '623169749958-vc8l8hd9upjpp62fr9js8u68i7u6je5p.apps.googleusercontent.com';
@@ -140,36 +201,35 @@ let pendingEmail = '', pendingPassword = '', unverifiedEmail = '';
 
 if (localStorage.getItem('af_token')) location.href = 'dashboard.html';
 
-function msg(id, text, type) { const el = document.getElementById(id); el.textContent = text; el.className = 'alert ' + type; el.style.display = 'block'; }
-
+function msg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text; el.className = 'alert ' + type; el.style.display = 'block';
+}
 function showSection(id) {
   document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', (t==='login'&&i===0)||(t==='register'&&i===1)));
+  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', (t === 'login' && i === 0) || (t === 'register' && i === 1)));
   showSection(t === 'login' ? 's-login' : 's-register');
 }
 
-// Google
 function googleSignIn() {
-  const params = new URLSearchParams({ client_id: GOOGLE_CLIENT_ID, redirect_uri: window.location.origin + window.location.pathname, response_type: 'code', scope: 'openid email profile', access_type: 'offline', prompt: 'select_account', state: 'google_oauth' });
-  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+  const p = new URLSearchParams({ client_id: GOOGLE_CLIENT_ID, redirect_uri: window.location.origin + window.location.pathname, response_type: 'code', scope: 'openid email profile', access_type: 'offline', prompt: 'select_account', state: 'google_oauth' });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + p;
 }
-
-// Discord
 function discordSignIn() {
-  const params = new URLSearchParams({ client_id: DISCORD_CLIENT_ID, redirect_uri: window.location.origin + window.location.pathname, response_type: 'code', scope: 'identify email', state: 'discord_oauth' });
-  window.location.href = 'https://discord.com/api/oauth2/authorize?' + params.toString();
+  const p = new URLSearchParams({ client_id: DISCORD_CLIENT_ID, redirect_uri: window.location.origin + window.location.pathname, response_type: 'code', scope: 'identify email', state: 'discord_oauth' });
+  window.location.href = 'https://discord.com/api/oauth2/authorize?' + p;
 }
 
-// Handle OAuth callbacks
 async function applyTheme() {
-  const r = await fetch(API + '/api/public/config');
-  const d = await r.json();
-  const c = d.config || {};
-  if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
+  try {
+    const r = await fetch(API + '/api/public/config');
+    const d = await r.json();
+    const c = d.config || {};
+    if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
+  } catch(e) {}
 }
 applyTheme();
 
@@ -187,66 +247,62 @@ async function handleOAuthCallback() {
       const d = await r.json();
       showSection('s-login');
       msg('l-msg', r.ok ? '✅ ' + d.message : d.error, r.ok ? 'ok' : 'err');
-    } catch { msg('l-msg','Verification failed','err'); }
+    } catch { msg('l-msg', 'Verification failed', 'err'); }
     return;
   }
-
   if (teamInvite) {
     history.replaceState({}, '', window.location.pathname);
     try {
-      const r = await fetch(API + '/api/team/accept/' + teamInvite, { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('af_token')} });
+      const r = await fetch(API + '/api/team/accept/' + teamInvite, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('af_token') } });
       const d = await r.json();
-      if (r.ok) { location.href = 'dashboard.html'; }
+      if (r.ok) location.href = 'dashboard.html';
       else msg('l-msg', d.error, 'err');
-    } catch { msg('l-msg','Failed to accept invite','err'); }
+    } catch { msg('l-msg', 'Failed to accept invite', 'err'); }
     return;
   }
-
   if (!code) return;
   history.replaceState({}, '', window.location.pathname);
-
   if (state === 'google_oauth') {
     try {
-      const r = await fetch(API + '/api/auth/google-code', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({code, redirect_uri: window.location.origin + window.location.pathname}) });
+      const r = await fetch(API + '/api/auth/google-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, redirect_uri: window.location.origin + window.location.pathname }) });
       const d = await r.json();
-      if (!r.ok) { showSection('s-login'); return msg('l-msg', d.error||'Google login failed','err'); }
+      if (!r.ok) { showSection('s-login'); return msg('l-msg', d.error || 'Google login failed', 'err'); }
       saveAndRedirect(d);
-    } catch { showSection('s-login'); msg('l-msg','Cannot connect to server','err'); }
+    } catch { showSection('s-login'); msg('l-msg', 'Cannot connect to server', 'err'); }
   }
-
   if (state === 'discord_oauth') {
     try {
-      const r = await fetch(API + '/api/auth/discord-code', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({code, redirect_uri: window.location.origin + window.location.pathname}) });
+      const r = await fetch(API + '/api/auth/discord-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, redirect_uri: window.location.origin + window.location.pathname }) });
       const d = await r.json();
-      if (!r.ok) { showSection('s-login'); return msg('l-msg', d.error||'Discord login failed','err'); }
+      if (!r.ok) { showSection('s-login'); return msg('l-msg', d.error || 'Discord login failed', 'err'); }
       saveAndRedirect(d);
-    } catch { showSection('s-login'); msg('l-msg','Cannot connect to server','err'); }
+    } catch { showSection('s-login'); msg('l-msg', 'Cannot connect to server', 'err'); }
   }
 }
 
 async function doLogin() {
   const email = document.getElementById('l-email').value;
   const password = document.getElementById('l-pass').value;
-  if (!email || !password) return msg('l-msg','All fields required','err');
+  if (!email || !password) return msg('l-msg', 'All fields required', 'err');
   try {
-    const r = await fetch(API + '/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
+    const r = await fetch(API + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
     const d = await r.json();
     if (d.requires_2fa) { pendingEmail = email; pendingPassword = password; showSection('s-2fa'); return; }
     if (d.requires_verification) { unverifiedEmail = d.email || email; document.getElementById('verify-email-display').textContent = unverifiedEmail; showSection('s-verify'); return; }
     if (!r.ok) return msg('l-msg', d.error, 'err');
     saveAndRedirect(d);
-  } catch { msg('l-msg','Cannot connect to server','err'); }
+  } catch { msg('l-msg', 'Cannot connect to server', 'err'); }
 }
 
 async function submit2FA() {
   const totp_code = document.getElementById('totp-code').value;
-  if (!totp_code) return msg('twofa-msg','Enter the 6-digit code','err');
+  if (!totp_code) return msg('twofa-msg', 'Enter the 6-digit code', 'err');
   try {
-    const r = await fetch(API + '/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email: pendingEmail, password: pendingPassword, totp_code}) });
+    const r = await fetch(API + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: pendingEmail, password: pendingPassword, totp_code }) });
     const d = await r.json();
     if (!r.ok) return msg('twofa-msg', d.error, 'err');
     saveAndRedirect(d);
-  } catch { msg('twofa-msg','Cannot connect to server','err'); }
+  } catch { msg('twofa-msg', 'Cannot connect', 'err'); }
 }
 
 function cancel2FA() { showSection('s-login'); document.getElementById('totp-code').value = ''; pendingEmail = ''; pendingPassword = ''; }
@@ -254,27 +310,26 @@ function cancel2FA() { showSection('s-login'); document.getElementById('totp-cod
 async function resendVerification() {
   if (!unverifiedEmail) return;
   try {
-    const r = await fetch(API + '/api/auth/resend-verification', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email: unverifiedEmail}) });
+    const r = await fetch(API + '/api/auth/resend-verification', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: unverifiedEmail }) });
     const d = await r.json();
     msg('verify-msg', r.ok ? d.message : d.error, r.ok ? 'ok' : 'err');
-  } catch { msg('verify-msg','Cannot connect to server','err'); }
+  } catch { msg('verify-msg', 'Cannot connect', 'err'); }
 }
 
 async function doRegister() {
   const username = document.getElementById('r-user').value;
   const email = document.getElementById('r-email').value;
   const password = document.getElementById('r-pass').value;
-  if (!username || !email || !password) return msg('r-msg','All fields required','err');
+  if (!username || !email || !password) return msg('r-msg', 'All fields required', 'err');
   try {
-    const r = await fetch(API + '/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, email, password}) });
+    const r = await fetch(API + '/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
     const d = await r.json();
     if (!r.ok) return msg('r-msg', d.error, 'err');
-    // Show verification prompt
     unverifiedEmail = email;
     document.getElementById('verify-email-display').textContent = email;
     showSection('s-verify');
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  } catch { msg('r-msg','Cannot connect to server','err'); }
+  } catch { msg('r-msg', 'Cannot connect to server', 'err'); }
 }
 
 function saveAndRedirect(d) {

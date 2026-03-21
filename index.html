@@ -3,170 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShadowAuth — The Ultimate Authentication Guardian</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>NyxAuth — Enterprise Authentication for Developers</title>
+<meta name="description" content="NyxAuth is the ultimate authentication platform for desktop developers. Hardware locking, license management, bot integrations, and real-time analytics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #030305; --surface: #0a0a0f; --border: rgba(220,38,38,0.1); --border2: rgba(220,38,38,0.2);
-  --text: #ffffff; --muted: #a1a1aa; --red: #dc2626; --red-dark: #7f1d1d; --accent: #ef4444;
-  --green: #10b981; --amber: #f59e0b; --font: 'Outfit', sans-serif; --mono: 'JetBrains Mono', monospace;
+  --bg: #02020a; --surface: #07071a; --surface2: #0d0d24;
+  --border: rgba(109,40,217,0.15); --border2: rgba(109,40,217,0.3);
+  --text: #f0f0ff; --muted: #8888aa; --muted2: #44445a;
+  --primary: #7c3aed; --primary-dim: rgba(124,58,237,0.12);
+  --primary-light: #a78bfa; --primary-glow: rgba(124,58,237,0.25);
+  --accent: #8b5cf6; --accent2: #6d28d9;
+  --green: #10b981; --green-dim: rgba(16,185,129,0.1);
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+  --font: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
 }
-body.theme-christmas { --red: #16a34a; --accent: #22c55e; }
-body.theme-halloween { --red: #f97316; --accent: #fb923c; }
-body.theme-ocean { --red: #0ea5e9; --accent: #38bdf8; }
-body.theme-blood { --red: #991b1b; --accent: #ef4444; }
+
+/* Global Themes */
+body.theme-christmas { --primary: #16a34a; --accent: #22c55e; --primary-dim: rgba(22,163,74,0.12); --primary-light: #86efac; --border: rgba(22,163,74,0.15); --border2: rgba(22,163,74,0.3); }
+body.theme-halloween { --primary: #ea580c; --accent: #f97316; --primary-dim: rgba(234,88,12,0.12); --primary-light: #fdba74; --border: rgba(234,88,12,0.15); --border2: rgba(234,88,12,0.3); }
+body.theme-ocean { --primary: #0284c7; --accent: #0ea5e9; --primary-dim: rgba(2,132,199,0.12); --primary-light: #7dd3fc; --border: rgba(2,132,199,0.15); --border2: rgba(2,132,199,0.3); }
+body.theme-blood { --primary: #b91c1c; --accent: #dc2626; --primary-dim: rgba(185,28,28,0.12); --primary-light: #fca5a5; --border: rgba(185,28,28,0.15); --border2: rgba(185,28,28,0.3); }
+
 html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 60px; height: 72px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(3,3,5,0.8); backdrop-filter: blur(20px); }
-.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; text-decoration: none; color: var(--text); }
-.nav-logo span { color: var(--red); }
-.nav-links { display: flex; align-items: center; gap: 40px; }
-.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.2s; position: relative; }
-.nav-links a:hover { color: var(--red); }
-.nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--red); transition: width 0.2s; }
-.nav-links a:hover::after { width: 100%; }
-.nav-cta { display: flex; align-items: center; gap: 16px; }
-.btn-ghost-sm { padding: 8px 18px; border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-.btn-ghost-sm:hover { background: rgba(220,38,38,0.05); border-color: var(--red); }
-.btn-primary-sm { padding: 8px 20px; border-radius: 8px; background: var(--red); color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220,38,38,0.2); }
-.btn-primary-sm:hover { background: var(--accent); transform: translateY(-1px); }
 
-.hero { padding: 180px 60px 100px; text-align: center; position: relative; }
-.hero-glow { position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1000px; height: 600px; background: radial-gradient(circle, rgba(220,38,38,0.15) 0%, transparent 70%); pointer-events: none; }
-.hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 30px; border: 1px solid var(--border2); background: rgba(220,38,38,0.05); color: var(--red); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 32px; }
-h1 { font-size: clamp(48px, 8vw, 84px); font-weight: 900; letter-spacing: -3px; line-height: 1; margin-bottom: 24px; color: #fff; }
-.metal-red { background: linear-gradient(135deg, #fff 0%, #dc2626 50%, #7f1d1d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.hero-sub { font-size: 20px; color: var(--muted); max-width: 640px; margin: 0 auto 48px; line-height: 1.6; font-weight: 400; }
-.hero-cta { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
-.btn-big { padding: 16px 36px; border-radius: 12px; font-size: 16px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; transition: all 0.3s; font-family: var(--font); display: flex; align-items: center; gap: 8px; }
-.btn-red { background: var(--red); color: #fff; box-shadow: 0 8px 24px rgba(220,38,38,0.3); }
-.btn-red:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(220,38,38,0.4); }
-.btn-dark { background: #111; border: 1px solid var(--border2); color: #fff; }
-.btn-dark:hover { background: #1a1a1a; border-color: var(--red); }
+/* Mesh Background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.2) 0%, transparent 60%),
+              radial-gradient(ellipse 40% 40% at 80% 80%, rgba(109,40,217,0.08) 0%, transparent 60%);
+}
 
-.code-window { max-width: 720px; margin: 80px auto 0; background: #08080c; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: left; }
-.code-header { background: #0f0f15; padding: 14px 20px; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-.code-dots { display: flex; gap: 8px; }
-.dot { width: 12px; height: 12px; border-radius: 50%; }
-.dot-red { background: #ff5f56; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #27c93f; }
-.code-tabs { display: flex; background: #000; border-radius: 8px; padding: 4px; }
-.code-tab { padding: 6px 16px; font-size: 12px; font-weight: 600; color: #555; background: none; border: none; cursor: pointer; border-radius: 6px; transition: all 0.2s; }
-.code-tab.active { background: #1a1a1a; color: #fff; }
-.code-content { padding: 24px; font-family: var(--mono); font-size: 14px; line-height: 1.8; color: #d1d1d1; }
-.kw { color: #dc2626; font-weight: 600; } .fn { color: #f87171; } .str { color: #fda4af; } .cm { color: #52525b; }
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 0 64px; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(2,2,10,0.7); backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+  text-decoration: none; color: var(--text);
+}
+.logo-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #fff;
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+.nav-logo-name { color: var(--text); }
+.nav-logo-name span { color: var(--primary-light); }
+.nav-links { display: flex; align-items: center; gap: 36px; }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta { display: flex; align-items: center; gap: 12px; }
+.btn-sm-ghost {
+  padding: 7px 16px; border: 1px solid var(--border2); border-radius: 8px;
+  color: var(--text); font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: all 0.2s; font-family: var(--font);
+}
+.btn-sm-ghost:hover { background: var(--primary-dim); border-color: var(--primary); }
+.btn-sm-primary {
+  padding: 7px 18px; border-radius: 8px; background: var(--primary);
+  color: #fff; font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: all 0.2s; box-shadow: 0 0 20px var(--primary-glow);
+}
+.btn-sm-primary:hover { background: var(--accent); transform: translateY(-1px); }
 
-section { padding: 120px 60px; }
-.section-header { text-align: center; margin-bottom: 80px; }
-.badge { display: inline-block; padding: 4px 12px; border-radius: 30px; background: rgba(220,38,38,0.1); color: var(--red); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
-.title { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px; }
-.subtitle { color: var(--muted); font-size: 18px; max-width: 600px; margin: 0 auto; }
+/* Hero */
+.hero { position: relative; padding: 168px 64px 80px; text-align: center; z-index: 1; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px; border-radius: 30px;
+  border: 1px solid var(--border2); background: var(--primary-dim);
+  color: var(--primary-light); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 28px;
+}
+.hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary-light); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 {
+  font-size: clamp(48px, 7vw, 80px); font-weight: 900;
+  letter-spacing: -3px; line-height: 1.02; margin-bottom: 24px;
+  color: #fff;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 50%, #4c1d95 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+  font-size: 18px; color: var(--muted); max-width: 600px;
+  margin: 0 auto 48px; font-weight: 400; line-height: 1.7;
+}
+.hero-cta { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 64px; }
+.btn-hero-primary {
+  padding: 14px 32px; border-radius: 12px; background: var(--primary);
+  color: #fff; font-size: 15px; font-weight: 700; text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 8px 30px var(--primary-glow); transition: all 0.3s; border: none; cursor: pointer; font-family: var(--font);
+}
+.btn-hero-primary:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 40px var(--primary-glow); }
+.btn-hero-ghost {
+  padding: 14px 32px; border-radius: 12px; border: 1px solid var(--border2);
+  color: var(--text); font-size: 15px; font-weight: 600; text-decoration: none;
+  transition: all 0.2s; background: var(--surface);
+}
+.btn-hero-ghost:hover { border-color: var(--primary); background: var(--primary-dim); }
 
-.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.feature-card { background: var(--surface); padding: 40px; border-radius: 20px; border: 1px solid var(--border); transition: all 0.3s; }
-.feature-card:hover { border-color: var(--red); transform: translateY(-5px); }
-.icon-box { width: 56px; height: 56px; border-radius: 14px; background: rgba(220,38,38,0.1); color: var(--red); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 24px; border: 1px solid var(--border); }
-.feature-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
-.feature-text { color: var(--muted); font-size: 14px; line-height: 1.6; }
+/* Stats Bar */
+.stats-bar {
+  display: flex; align-items: center; justify-content: center; gap: 48px;
+  padding: 24px; border: 1px solid var(--border); border-radius: 16px;
+  background: var(--surface); max-width: 700px; margin: 0 auto 80px;
+}
+.stat-item { text-align: center; }
+.stat-val { font-size: 28px; font-weight: 800; color: var(--primary-light); letter-spacing: -1px; }
+.stat-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.stat-divider { width: 1px; height: 40px; background: var(--border); }
 
-.pricing-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
-.price-card { background: var(--surface); border-radius: 24px; padding: 40px; border: 1px solid var(--border); position: relative; transition: all 0.3s; }
-.price-card.hot { border-color: var(--red); background: linear-gradient(180deg, rgba(220,38,38,0.05) 0%, var(--surface) 100%); }
-.price-card.hot::before { content: 'HOT'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--red); color: #fff; padding: 4px 16px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
-.price-name { font-size: 16px; font-weight: 600; color: var(--muted); margin-bottom: 16px; }
-.price-val { font-size: 56px; font-weight: 900; letter-spacing: -3px; margin-bottom: 8px; }
-.price-val span { font-size: 16px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
-.price-features { list-style: none; margin: 32px 0; display: grid; gap: 14px; }
-.price-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #ddd; }
-.price-features li svg { color: var(--red); flex-shrink: 0; }
-.btn-price { width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; transition: 0.3s; text-decoration: none; text-align: center; display: block; }
-.btn-price-red { background: var(--red); color: #fff; } .btn-price-red:hover { background: var(--accent); }
-.btn-price-outline { border: 1px solid var(--border2); color: #fff; } .btn-price-outline:hover { border-color: var(--red); background: rgba(220,38,38,0.05); }
+/* Code Window */
+.code-window {
+  max-width: 680px; margin: 0 auto;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); text-align: left;
+}
+.code-header {
+  background: var(--surface2); padding: 12px 18px; border-radius: 16px 16px 0 0;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.dots { display: flex; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }.dot-y { background: #febc2e; }.dot-g { background: #28c840; }
+.code-tabs { display: flex; gap: 4px; }
+.code-tab {
+  padding: 4px 12px; font-size: 12px; font-weight: 600; color: var(--muted);
+  background: none; border: 1px solid transparent; border-radius: 6px;
+  cursor: pointer; transition: all 0.15s; font-family: var(--font);
+}
+.code-tab.active { background: var(--primary-dim); color: var(--primary-light); border-color: var(--border2); }
+.code-body { padding: 22px 24px; font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #c8c8e8; }
+.kw { color: var(--primary-light); font-weight: 600; }
+.fn { color: #a5b4fc; }
+.str { color: #c4b5fd; }
+.cm { color: var(--muted2); }
+.cn { color: #f0abfc; }
 
-#vision-mission { background: #050508; border-top: 1px solid var(--border); overflow: hidden; }
+/* Sections */
+section { position: relative; z-index: 1; padding: 100px 64px; }
+.section-label { display: inline-block; padding: 4px 12px; border-radius: 30px; background: var(--primary-dim); color: var(--primary-light); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; border: 1px solid var(--border2); }
+.section-title { font-size: 44px; font-weight: 900; letter-spacing: -2px; margin-bottom: 16px; }
+.section-sub { color: var(--muted); font-size: 17px; max-width: 560px; line-height: 1.7; }
+.section-header { text-align: center; margin-bottom: 72px; }
+.section-header .section-sub { margin: 0 auto; }
+
+/* Features */
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.feature-card {
+  background: var(--surface); padding: 32px; border-radius: 16px;
+  border: 1px solid var(--border); transition: all 0.3s; position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: ''; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
+  border-radius: 16px; background: linear-gradient(135deg, var(--primary-dim), transparent);
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.feature-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+.feature-card:hover::before { opacity: 1; }
+.feat-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: var(--primary-dim); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  margin-bottom: 20px;
+}
+.feat-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+.feat-text { color: var(--muted); font-size: 14px; line-height: 1.7; }
+
+/* Vision */
+#vision-mission { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-.vision-content { text-align: left; }
-.vision-image { background: linear-gradient(45deg, #111, #222); border-radius: 30px; height: 400px; border: 1px solid var(--border); position: relative; }
-.vision-image::after { content: '🛡️'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; opacity: 0.5; }
+.vision-content .section-title { margin-bottom: 20px; }
+.vision-text { font-size: 16px; color: #ccc; margin-bottom: 20px; line-height: 1.8; }
+.vision-values { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+.vision-value-label { color: var(--primary-light); font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+.vision-value-text { font-size: 13px; color: var(--muted); }
+.vision-graphic {
+  background: linear-gradient(135deg, var(--surface2), var(--surface));
+  border-radius: 24px; height: 420px; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 80px;
+  position: relative; overflow: hidden;
+}
+.vision-graphic::before {
+  content: ''; position: absolute; inset: -20%;
+  background: radial-gradient(circle at 50% 50%, var(--primary-glow), transparent 60%);
+}
 
-footer { background: #020204; border-top: 1px solid var(--border); padding: 80px 60px 40px; }
-.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
-.footer-info p { color: var(--muted); font-size: 14px; margin-top: 16px; max-width: 300px; }
-.footer-col h4 { margin-bottom: 24px; font-size: 15px; font-weight: 700; color: #fff; }
-.footer-col a { display: block; margin-bottom: 12px; color: var(--muted); text-decoration: none; font-size: 14px; transition: 0.2s; }
-.footer-col a:hover { color: var(--red); }
-.footer-bottom { padding-top: 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 13px; }
+/* Pricing */
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1000px; margin: 0 auto; }
+.price-card {
+  background: var(--surface); border-radius: 20px; padding: 36px;
+  border: 1px solid var(--border); position: relative; transition: all 0.3s;
+}
+.price-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+.price-card.featured {
+  border-color: var(--primary); 
+  background: linear-gradient(180deg, var(--primary-dim) 0%, var(--surface) 50%);
+  box-shadow: 0 0 40px var(--primary-glow);
+}
+.price-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff; padding: 4px 18px; border-radius: 20px;
+  font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  white-space: nowrap;
+}
+.price-tier-name { font-size: 14px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.price-amount { font-size: 52px; font-weight: 900; letter-spacing: -3px; margin-bottom: 4px; }
+.price-amount span { font-size: 15px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.price-desc { font-size: 12px; color: var(--muted); margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.price-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+.price-features li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text); }
+.price-features li::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: var(--primary-dim); border: 1px solid var(--primary); flex-shrink: 0; background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 2.5L4 7.5L2 5.5' stroke='%238b5cf6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; }
+.btn-plan {
+  width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px;
+  transition: all 0.2s; text-decoration: none; text-align: center; display: block;
+  cursor: pointer; border: none; font-family: var(--font);
+}
+.btn-plan-outline { border: 1px solid var(--border2); color: var(--text); background: none; }
+.btn-plan-outline:hover { border-color: var(--primary); background: var(--primary-dim); }
+.btn-plan-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 20px var(--primary-glow); }
+.btn-plan-primary:hover { background: var(--accent); transform: translateY(-1px); }
 
-/* FAQ & Reviews */
-.faq-grid { display: grid; gap: 16px; max-width: 800px; margin: 0 auto; }
-.faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: left; transition: all 0.2s; }
-.faq-item:hover { border-color: var(--red); }
-.faq-q { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--red); }
-.faq-a { font-size: 14px; color: var(--muted); }
+/* Team */
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 960px; margin: 0 auto; }
+.team-card { text-align: center; padding: 28px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; transition: all 0.3s; }
+.team-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+.team-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--primary-dim); margin: 0 auto 14px; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 28px; overflow: hidden; }
+.team-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.team-role { font-size: 11px; color: var(--primary-light); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
 
-.review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
-.review-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; text-align: left; }
-.review-text { font-style: italic; color: #ddd; margin-bottom: 20px; font-size: 14px; }
+/* Reviews */
+.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1000px; margin: 0 auto; }
+.review-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+.review-stars { color: #f59e0b; font-size: 14px; margin-bottom: 14px; }
+.review-text { font-size: 14px; color: #ccc; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
 .review-user { display: flex; align-items: center; gap: 12px; }
-.review-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--red-dark); }
-.review-info div:first-child { font-weight: 700; font-size: 14px; }
-.review-info div:last-child { font-size: 12px; color: var(--muted); }
+.review-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary-dim); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: var(--primary-light); }
+.review-name { font-weight: 600; font-size: 13px; }
+.review-handle { font-size: 11px; color: var(--muted); }
 
-.sentinel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1000px; margin: 60px auto 0; }
-.sentinel-card { text-align: center; }
-.sentinel-img { width: 100px; height: 100px; border-radius: 50%; background: #111; margin: 0 auto 16px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 32px; transition: transform 0.3s; }
-.sentinel-card:hover .sentinel-img { transform: scale(1.1); border-color: var(--red); }
-.sentinel-name { font-weight: 700; font-size: 16px; }
-.sentinel-role { font-size: 12px; color: var(--red); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+/* FAQ */
+.faq-grid { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; cursor: pointer; transition: border-color 0.2s; }
+.faq-item:hover { border-color: var(--primary); }
+.faq-q { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--primary-light); }
+.faq-a { font-size: 13px; color: var(--muted); line-height: 1.7; }
 
-@media (max-width: 968px) {
+/* Footer */
+footer { position: relative; z-index: 1; background: var(--surface); border-top: 1px solid var(--border); padding: 72px 64px 36px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 56px; }
+.footer-brand p { color: var(--muted); font-size: 13px; margin-top: 14px; max-width: 260px; line-height: 1.7; }
+.footer-col h4 { color: var(--text); font-size: 14px; font-weight: 700; margin-bottom: 20px; }
+.footer-col a { display: block; margin-bottom: 10px; color: var(--muted); font-size: 13px; text-decoration: none; transition: color 0.2s; }
+.footer-col a:hover { color: var(--primary-light); }
+.footer-bottom { padding-top: 28px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.footer-bottom p { color: var(--muted); font-size: 12px; }
+
+@media (max-width: 1024px) {
   nav { padding: 0 24px; } .nav-links { display: none; }
-  section { padding: 80px 24px; } .features, .pricing-container, .vision-grid, .review-grid, .sentinel-grid { grid-template-columns: 1fr; }
-  .footer-top { grid-template-columns: 1fr 1fr; }
+  section { padding: 72px 24px; }
+  .features-grid, .pricing-grid, .vision-grid, .reviews-grid, .team-grid { grid-template-columns: 1fr; }
+  .stats-bar { flex-direction: column; gap: 20px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hero h1 { font-size: 44px; }
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="#">Shadow<span>Auth</span></a>
+  <a class="nav-logo" href="#">
+    <div class="logo-icon">N</div>
+    <span class="nav-logo-name">Nyx<span>Auth</span></span>
+  </a>
   <div class="nav-links">
     <a href="#features">Features</a>
-    <a href="#vision-mission">Vision & Mission</a>
-    <a href="#sdks">SDKs</a>
+    <a href="#vision-mission">Mission</a>
     <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
   </div>
   <div class="nav-cta">
-    <a class="btn-ghost-sm" href="dashboard/index.html">Login</a>
-    <a class="btn-primary-sm" href="dashboard/index.html">Guard Now</a>
+    <a class="btn-sm-ghost" href="dashboard/index.html">Login</a>
+    <a class="btn-sm-primary" href="dashboard/index.html">Get Started →</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-badge"><span class="hero-badge-dot"></span> Next-Gen Protection for Your Software</div>
-  <h1>Secure Your Code with <br><span class="metal-red">ShadowAuth</span></h1>
-  <p class="hero-sub">The ultimate authentication layer for desktop developers. Protect your assets with hardware locking, real-time license management, and powerful integrations.</p>
+  <div class="hero-badge"><span class="hero-badge-dot"></span> Next-Gen Authentication Platform</div>
+  <h1>The Auth Layer<br>Your Code <span class="gradient-text">Deserves</span></h1>
+  <p class="hero-sub">NyxAuth gives desktop developers enterprise-grade authentication — hardware locking, license management, real-time analytics, and bot integrations. In one platform.</p>
   <div class="hero-cta">
-    <a class="btn-big btn-red" href="dashboard/index.html">Create Security Layer <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-    <a class="btn-big btn-dark" href="#vision-mission">Our Mission</a>
+    <a class="btn-hero-primary" href="dashboard/index.html">
+      Start for Free
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a class="btn-hero-ghost" href="#features">Explore Features</a>
   </div>
-  
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val">100%</div><div class="stat-label">Free Tier</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><div class="stat-val">&lt;5ms</div><div class="stat-label">Auth Latency</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><div class="stat-val">3 SDKs</div><div class="stat-label">Languages</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><div class="stat-val">∞</div><div class="stat-label">License Keys</div></div>
+  </div>
+
   <div class="code-window">
     <div class="code-header">
-      <div class="code-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+      <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
       <div class="code-tabs">
         <button class="code-tab active" data-lang="cpp">C++</button>
         <button class="code-tab" data-lang="cs">C#</button>
         <button class="code-tab" data-lang="py">Python</button>
       </div>
+      <span style="font-size:11px; color:var(--muted2);">nyxauth.hpp</span>
     </div>
-    <div class="code-content" id="code-box">
-      <span class="cm">// ShadowAuth C++ Integration</span><br>
-      <span class="kw">#include</span> <span class="str">"shadowauth.hpp"</span><br><br>
-      <span class="kw">auto</span> guard = <span class="fn">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>);<br>
-      <span class="kw">if</span> (guard.<span class="fn">Login</span>(user, pass).success) {<br>
-      &nbsp;&nbsp;<span class="fn">ExecuteSecureLogic</span>();<br>
+    <div class="code-body" id="code-box">
+      <span class="cm">// NyxAuth C++ Integration</span><br>
+      <span class="kw">#include</span> <span class="str">"nyxauth.hpp"</span><br><br>
+      <span class="kw">auto</span> auth = <span class="cn">NyxAuth</span>(<span class="str">"APP_SECRET"</span>);<br>
+      <span class="kw">auto</span> session = auth.<span class="fn">Login</span>(username, password);<br><br>
+      <span class="kw">if</span> (session.success) {<br>
+      &nbsp;&nbsp;session.<span class="fn">BindHWID</span>(); <span class="cm">// Lock to hardware</span><br>
+      &nbsp;&nbsp;<span class="fn">LaunchApplication</span>();<br>
       }
     </div>
   </div>
@@ -174,40 +353,54 @@ footer { background: #020204; border-top: 1px solid var(--border); padding: 80px
 
 <section id="features">
   <div class="section-header">
-    <div class="badge">Advanced Features</div>
-    <div class="title">Enterprise Protection</div>
-    <div class="subtitle">ShadowAuth was built by developers who understand software protection. No loopholes. Only solid defense.</div>
+    <div class="section-label">Platform Features</div>
+    <div class="section-title">Everything You Need to<br>Ship Secure Software</div>
+    <p class="section-sub">Built from the ground up for desktop developers who refuse to compromise on protection.</p>
   </div>
-  <div class="features">
+  <div class="features-grid">
     <div class="feature-card">
-      <div class="icon-box">🛡️</div>
-      <div class="feature-title">Hardware Locking</div>
-      <div class="feature-text">Bind users to specific machines. Prevent account sharing with our proprietary HWID fingerprinting technology.</div>
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Hardware Locking</div>
+      <div class="feat-text">Bind users to specific machines with multi-vector HWID fingerprinting. Disk IDs, motherboard serials, network adapters — all in one check.</div>
     </div>
     <div class="feature-card">
-      <div class="icon-box">👥</div>
-      <div class="feature-title">Team Collaboration</div>
-      <div class="feature-text">Add your staff members with custom roles and permissions. Manage your application as a collective team.</div>
+      <div class="feat-icon">🔑</div>
+      <div class="feat-title">License Management</div>
+      <div class="feat-text">Generate single or bulk license keys with custom expiry, tier assignments, and per-key user limits. Export any time.</div>
     </div>
     <div class="feature-card">
-      <div class="icon-box">🤖</div>
-      <div class="feature-title">Bot Integrations</div>
-      <div class="feature-text">Connect Discord, Telegram, or WhatsApp bots to monitor log-ins, license redemptions, and suspicious activity.</div>
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">Real-time Analytics</div>
+      <div class="feat-text">Track every login, failed attempt, HWID reset, and geo-location event in your dashboard with live charts.</div>
     </div>
     <div class="feature-card">
-      <div class="icon-box">📊</div>
-      <div class="feature-title">Analytics Engine</div>
-      <div class="feature-text">Visualise your user growth and retention. Track every login attempt and device reset in real-time.</div>
+      <div class="feat-icon">🤖</div>
+      <div class="feat-title">Bot Integrations</div>
+      <div class="feat-text">Connect private Discord, Telegram, or WhatsApp bots to your account. Get instant alerts for security events. Business plan only.</div>
     </div>
     <div class="feature-card">
-      <div class="icon-box">⚡</div>
-      <div class="feature-title">Instant Setup</div>
-      <div class="feature-text">Go live in minutes. Our SDKs are header-only and dependency-free for maximum compatibility.</div>
+      <div class="feat-icon">👥</div>
+      <div class="feat-title">Team Management</div>
+      <div class="feat-text">Invite team members with granular role-based access. Set per-member permissions, run a team chat, and post announcements.</div>
     </div>
     <div class="feature-card">
-      <div class="icon-box">🔑</div>
-      <div class="feature-title">Key Management</div>
-      <div class="feature-text">Generate bulk license keys with custom expiry, plan limits, and automated Discord role synchronization.</div>
+      <div class="feat-icon">🛡️</div>
+      <div class="feat-title">Security Webhooks</div>
+      <div class="feat-text">Fire real-time HTTPS webhooks to your own infrastructure on login, ban, HWID reset, and suspicious activity events.</div>
+    </div>
+  </div>
+</section>
+
+<section id="sdks" style="padding-top:0">
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 48px; text-align:center;">
+    <div class="section-label">SDK Support</div>
+    <div class="section-title" style="margin-bottom:12px;">Plug in any Language</div>
+    <p style="color: var(--muted); margin-bottom: 36px;">Official header-only, dependency-free SDKs available for the most popular desktop development languages.</p>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
+      <div style="padding: 12px 24px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; font-family: var(--mono); font-size: 14px; color: var(--primary-light);">C++ &nbsp;/&nbsp; WinHTTP</div>
+      <div style="padding: 12px 24px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; font-family: var(--mono); font-size: 14px; color: var(--primary-light);">C# &nbsp;/&nbsp; HttpClient</div>
+      <div style="padding: 12px 24px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; font-family: var(--mono); font-size: 14px; color: var(--primary-light);">Python &nbsp;/&nbsp; requests</div>
+      <a href="dashboard/sdk.html" style="padding: 12px 24px; background: var(--primary-dim); border: 1px solid var(--primary); border-radius: 10px; font-size: 14px; color: var(--primary-light); text-decoration: none; font-weight: 600;">View SDK Docs →</a>
     </div>
   </div>
 </section>
@@ -215,108 +408,128 @@ footer { background: #020204; border-top: 1px solid var(--border); padding: 80px
 <section id="vision-mission">
   <div class="vision-grid">
     <div class="vision-content">
-      <div class="badge">Vision & Mission</div>
-      <div class="title">Security for All</div>
-      <p style="font-size: 18px; color: #ccc; margin-bottom: 24px;">Our mission is to democratize high-level authentication. For too long, robust software protection was only available to large enterprises. <strong>ShadowAuth</strong> was founded to provide indie developers and small teams with the same level of security.</p>
-      <p style="color: var(--muted); margin-bottom: 32px;">We are committed to providing a <strong>free, robust tier</strong> for developers worldwide, ensuring that your location or financial status doesn't prevent you from shielding your hard-earned code.</p>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="section-label">Vision & Mission</div>
+      <div class="section-title">Security for Every<br>Developer</div>
+      <p class="vision-text">Our mission is to democratize high-level authentication. For too long, robust software protection was reserved for large enterprises. <strong>NyxAuth</strong> was founded to change that.</p>
+      <p class="vision-text" style="color: var(--muted)">We offer a <strong style="color: var(--primary-light)">free, robust tier</strong> for developers worldwide — because your financial situation should never stop you from protecting your hard work.</p>
+      <div class="vision-values">
         <div>
-          <div style="color:var(--red); font-weight:700; font-size: 18px; margin-bottom:8px;">Zero Lock-in</div>
-          <div style="font-size:13px; color:var(--muted)">Export your users and data anytime. Your business is yours.</div>
+          <div class="vision-value-label">Zero Lock-in</div>
+          <div class="vision-value-text">Export your data anytime. We never hold you hostage.</div>
         </div>
         <div>
-          <div style="color:var(--red); font-weight:700; font-size: 18px; margin-bottom:8px;">Global Focus</div>
-          <div style="font-size:13px; color:var(--muted)">Priced for international accessibility. No gatekeeping.</div>
+          <div class="vision-value-label">Global Access</div>
+          <div class="vision-value-text">Priced for international developers. No gatekeeping.</div>
+        </div>
+        <div>
+          <div class="vision-value-label">Open Roadmap</div>
+          <div class="vision-value-text">Vote on next features directly in our Discord.</div>
+        </div>
+        <div>
+          <div class="vision-value-label">Privacy First</div>
+          <div class="vision-value-text">Your data is never sold. Ever. That's a promise.</div>
         </div>
       </div>
     </div>
-    <div class="vision-image"></div>
+    <div class="vision-graphic">🌙</div>
   </div>
 </section>
 
 <section id="pricing">
   <div class="section-header">
-    <div class="badge">Pricing Plans</div>
-    <div class="title">Scale with ShadowAuth</div>
-    <div class="subtitle">Choose a tier that fits your growth. Upgrade as your empire expands.</div>
+    <div class="section-label">Pricing</div>
+    <div class="section-title">Scale with NyxAuth</div>
+    <p class="section-sub">Start free. Upgrade when you're ready. No contracts, ever.</p>
   </div>
-  <div class="pricing-container">
+  <div class="pricing-grid">
     <div class="price-card">
-      <div class="price-name">Phantom (Free)</div>
-      <div class="price-val">$0<span>/mo</span></div>
-      <div class="price-features">
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 1 Application</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 50 Active Users</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Custom HWID Fingerprint</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Community Discord</li>
-      </div>
-      <a href="dashboard/index.html" class="btn-price btn-price-outline">Enlist Free</a>
+      <div class="price-tier-name">Phantom</div>
+      <div class="price-amount">$0 <span>/ mo</span></div>
+      <div class="price-desc">Free forever. Perfect for indie side projects.</div>
+      <ul class="price-features">
+        <li>1 Application</li>
+        <li>50 Active Users</li>
+        <li>20 License Keys</li>
+        <li>HWID Fingerprinting</li>
+        <li>Community Discord</li>
+      </ul>
+      <a href="dashboard/index.html" class="btn-plan btn-plan-outline">Get Started Free</a>
     </div>
-    <div class="price-card hot">
-      <div class="price-name">Spectre (Pro)</div>
-      <div class="price-val">$2<span>/mo</span></div>
-      <div class="price-features">
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 10 Applications</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> 10,000 Active Users</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Unlimited Licenses</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Priority Watchdog</li>
-      </div>
-      <a href="dashboard/index.html" class="btn-price btn-price-red">Ascend to Pro</a>
+    <div class="price-card featured">
+      <div class="price-badge">Most Popular</div>
+      <div class="price-tier-name">Spectre</div>
+      <div class="price-amount">$2 <span>/ mo</span></div>
+      <div class="price-desc">For growing projects with real users.</div>
+      <ul class="price-features">
+        <li>10 Applications</li>
+        <li>10,000 Active Users</li>
+        <li>Unlimited Licenses</li>
+        <li>Priority Support</li>
+        <li>Full Analytics Suite</li>
+        <li>Security Webhooks</li>
+      </ul>
+      <a href="dashboard/index.html" class="btn-plan btn-plan-primary">Upgrade to Spectre</a>
     </div>
     <div class="price-card">
-      <div class="price-name">Business Onyx</div>
-      <div class="price-val">$5<span>/mo</span></div>
-      <div class="price-features">
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Unlimited Everything</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Team Management</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Bot Integration Suite</li>
-        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg> Direct API Support</li>
-      </div>
-      <a href="dashboard/index.html" class="btn-price btn-price-outline">Business Entry</a>
+      <div class="price-tier-name">Business Onyx</div>
+      <div class="price-amount">$5 <span>/ mo</span></div>
+      <div class="price-desc">For teams building production software.</div>
+      <ul class="price-features">
+        <li>Unlimited Everything</li>
+        <li>Team Management + Roles</li>
+        <li>Bot Integration Suite</li>
+        <li>Custom Discord Bots</li>
+        <li>Direct API Support</li>
+        <li>Team Chat</li>
+      </ul>
+      <a href="dashboard/index.html" class="btn-plan btn-plan-outline">Enter Onyx Tier</a>
     </div>
   </div>
 </section>
 
 <section id="sentinels">
   <div class="section-header">
-    <div class="badge">Core Team</div>
-    <div class="title">Meet the Sentinels</div>
-    <div class="subtitle">The architects behind the ShadowAuth security engine.</div>
+    <div class="section-label">Core Team</div>
+    <div class="section-title">Meet the Architects</div>
+    <p class="section-sub">The people behind the NyxAuth security engine.</p>
   </div>
-  <div class="sentinel-grid" id="sentinel-grid">
-    <div class="sentinel-card"><div class="sentinel-img">👹</div><div class="sentinel-name">Shadow-1</div><div class="sentinel-role">Lead Architect</div></div>
-    <div class="sentinel-card"><div class="sentinel-img">⚔️</div><div class="sentinel-name">Ghost-X</div><div class="sentinel-role">Security Ops</div></div>
-    <div class="sentinel-card"><div class="sentinel-img">🩸</div><div class="sentinel-name">Viper</div><div class="sentinel-role">SDK Developer</div></div>
-    <div class="sentinel-card"><div class="sentinel-img">🐺</div><div class="sentinel-name">Wolfbane</div><div class="sentinel-role">Backend Engineer</div></div>
+  <div class="team-grid" id="sentinel-grid">
+    <div class="team-card"><div class="team-avatar">🌙</div><div class="team-name">Nyx-1</div><div class="team-role">Lead Architect</div></div>
+    <div class="team-card"><div class="team-avatar">⚡</div><div class="team-name">Ghost-X</div><div class="team-role">Security Ops</div></div>
+    <div class="team-card"><div class="team-avatar">🔮</div><div class="team-name">Viper</div><div class="team-role">SDK Developer</div></div>
+    <div class="team-card"><div class="team-avatar">🐺</div><div class="team-name">Wolfbane</div><div class="team-role">Backend Engineer</div></div>
   </div>
 </section>
 
 <section id="reviews">
   <div class="section-header">
-    <div class="badge">Testimonials</div>
-    <div class="title">Trusted by Guardians</div>
-    <div class="subtitle">See what developers are saying about our shielding technology.</div>
+    <div class="section-label">Testimonials</div>
+    <div class="section-title">Trusted by Developers</div>
+    <p class="section-sub">See what developers are saying about NyxAuth.</p>
   </div>
-  <div class="review-grid">
+  <div class="reviews-grid">
     <div class="review-card">
-      <p class="review-text">"ShadowAuth's HWID locking is the best I've used. No more fake hardware reports and account sharing."</p>
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"NyxAuth's HWID locking is ironclad. No more hardware spoofing and account sharing from our user base."</p>
       <div class="review-user">
-        <div class="review-avatar"></div>
-        <div class="review-info"><div>Alex_Dev</div><div>Desktop Software Creator</div></div>
+        <div class="review-avatar">A</div>
+        <div><div class="review-name">Alex_Dev</div><div class="review-handle">Desktop Software Creator</div></div>
       </div>
     </div>
     <div class="review-card">
+      <div class="review-stars">★★★★★</div>
       <p class="review-text">"The Business Onyx plan's direct API support helped us migrate 5,000 users in a single afternoon."</p>
       <div class="review-user">
-        <div class="review-avatar"></div>
-        <div class="review-info"><div>Sintax-X</div><div>Enterprise Security Lead</div></div>
+        <div class="review-avatar">S</div>
+        <div><div class="review-name">Sintax-X</div><div class="review-handle">Enterprise Security Lead</div></div>
       </div>
     </div>
     <div class="review-card">
-      <p class="review-text">"Aggressive aesthetic, ironclad security. It's exactly what my software needed to stand out."</p>
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Clean aesthetic, ironclad security. NyxAuth gave my C++ application the professional edge it needed."</p>
       <div class="review-user">
-        <div class="review-avatar"></div>
-        <div class="review-info"><div>NitroCoder</div><div>C++ Indie Dev</div></div>
+        <div class="review-avatar">N</div>
+        <div><div class="review-name">NitroCoder</div><div class="review-handle">C++ Indie Developer</div></div>
       </div>
     </div>
   </div>
@@ -324,61 +537,69 @@ footer { background: #020204; border-top: 1px solid var(--border); padding: 80px
 
 <section id="faq">
   <div class="section-header">
-    <div class="badge">Common Questions</div>
-    <div class="title">F.A.Q</div>
+    <div class="section-label">FAQ</div>
+    <div class="section-title">Common Questions</div>
   </div>
   <div class="faq-grid">
     <div class="faq-item">
       <div class="faq-q">Is the HWID fingerprinting bypass-proof?</div>
-      <div class="faq-a">We use multi-vector hardware analysis including disk IDs, motherboard serials, and network adaptations. While no system is 100% bypass-proof, ShadowAuth is one of the most resilient layers in the market.</div>
+      <div class="faq-a">We use multi-vector hardware analysis including disk IDs, motherboard serials, and network adapters. While no system is 100% bypass-proof, NyxAuth is one of the most resilient layers available.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q">Can I self-host the bots?</div>
-      <div class="faq-a">Yes. Business Onyx users can provide their own API keys for Discord and Telegram to host their own private bot instances linked to our engine.</div>
+      <div class="faq-q">Can I self-host my Discord bot?</div>
+      <div class="faq-a">Yes. Business Onyx users can provide their own bot tokens to host private bot instances linked to the NyxAuth engine on your own server.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q">Do you support custom domains?</div>
-      <div class="faq-a">Custom domains for dashboard and API endpoints are available for Business Onyx subscribers.</div>
+      <div class="faq-q">Is the free tier really free forever?</div>
+      <div class="faq-a">Yes. The Phantom tier is free with no time limit. You can build and deploy real projects on it. Upgrade only when you need more capacity.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I cancel my subscription anytime?</div>
+      <div class="faq-a">Absolutely. Cancel anytime from your billing portal. No hidden fees, no cancellation charges. Your account reverts to the free Phantom tier.</div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="footer-top">
-    <div class="footer-info">
-      <a class="nav-logo" href="#">Shadow<span>Auth</span></a>
-      <p>Providing ironclad security with sleek simplicity. Built for the modern desktop developer.</p>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="nav-logo" href="#" style="margin-bottom: 12px; display: flex;">
+        <div class="logo-icon" style="margin-right: 10px;">N</div>
+        <span class="nav-logo-name">Nyx<span>Auth</span></span>
+      </a>
+      <p>Enterprise authentication for desktop developers. Secure, fast, and free to start.</p>
     </div>
     <div class="footer-col">
       <h4>Platform</h4>
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
-      <a href="dashboard/sdk.html">SDKs</a>
+      <a href="dashboard/sdk.html">SDK Docs</a>
     </div>
     <div class="footer-col">
       <h4>Company</h4>
-      <a href="#vision-mission">Our Vision</a>
+      <a href="#vision-mission">Our Mission</a>
       <a href="#">Privacy Policy</a>
       <a href="#">Terms of Use</a>
     </div>
     <div class="footer-col">
-      <h4>Help</h4>
-      <a href="#">Documentation</a>
-      <a href="#">Discord Support</a>
+      <h4>Support</h4>
+      <a href="dashboard/sdk.html">Documentation</a>
+      <a href="#">Discord Community</a>
       <a href="#">Contact Us</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2026 ShadowAuth Security. Powered by AuthForge Engine.</div>
-    <div>Crafted for Ironclad Code.</div>
+    <p>© 2026 NyxAuth. All rights reserved.</p>
+    <p style="color: var(--muted2);">Built for developers who care about their code.</p>
   </div>
 </footer>
 
 <script>
+const API = 'https://authforge-backend-production.up.railway.app';
 const codeData = {
-  cpp: `<span class="cm">// ShadowAuth C++ Integration</span><br><span class="kw">#include</span> <span class="str">"shadowauth.hpp"</span><br><br><span class="kw">auto</span> guard = <span class="fn">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>);<br><span class="kw">if</span> (guard.<span class="fn">Login</span>(user, pass).success) {<br>&nbsp;&nbsp;<span class="fn">ExecuteSecureLogic</span>();<br>}`,
-  cs: `<span class="cm">// ShadowAuth C# Integration</span><br><span class="kw">using</span> ShadowAuthSDK;<br><br><span class="kw">var</span> guard = <span class="kw">new</span> <span class="cls">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>);<br><span class="kw">var</span> res = <span class="kw">await</span> guard.<span class="fn">Login</span>(user, pass);<br><span class="kw">if</span> (res.Success) {<br>&nbsp;&nbsp;<span class="fn">GrantAccess</span>();<br>}`,
-  py: `<span class="cm"># ShadowAuth Python Integration</span><br><span class="kw">from</span> shadowauth <span class="kw">import</span> ShadowAuth<br><br>guard = <span class="fn">ShadowAuth</span>(<span class="str">"APP_SECRET"</span>)<br><span class="kw">if</span> guard.<span class="fn">login</span>(user, pass)[<span class="str">"success"</span>]:<br>&nbsp;&nbsp;<span class="fn">grant_access</span>()`
+  cpp: `<span class="cm">// NyxAuth C++ Integration</span><br><span class="kw">#include</span> <span class="str">"nyxauth.hpp"</span><br><br><span class="kw">auto</span> auth = <span class="cn">NyxAuth</span>(<span class="str">"APP_SECRET"</span>);<br><span class="kw">auto</span> session = auth.<span class="fn">Login</span>(username, password);<br><br><span class="kw">if</span> (session.success) {<br>&nbsp;&nbsp;session.<span class="fn">BindHWID</span>(); <span class="cm">// Lock to hardware</span><br>&nbsp;&nbsp;<span class="fn">LaunchApplication</span>();<br>}`,
+  cs: `<span class="cm">// NyxAuth C# Integration</span><br><span class="kw">using</span> NyxAuthSDK;<br><br><span class="kw">var</span> auth = <span class="kw">new</span> <span class="cn">NyxAuth</span>(<span class="str">"APP_SECRET"</span>);<br><span class="kw">var</span> session = <span class="kw">await</span> auth.<span class="fn">LoginAsync</span>(username, password);<br><br><span class="kw">if</span> (session.Success) {<br>&nbsp;&nbsp;<span class="kw">await</span> session.<span class="fn">BindHWIDAsync</span>();<br>&nbsp;&nbsp;<span class="fn">LaunchApplication</span>();<br>}`,
+  py: `<span class="cm"># NyxAuth Python Integration</span><br><span class="kw">from</span> nyxauth <span class="kw">import</span> NyxAuth<br><br>auth = <span class="cn">NyxAuth</span>(<span class="str">"APP_SECRET"</span>)<br>session = auth.<span class="fn">login</span>(username, password)<br><br><span class="kw">if</span> session[<span class="str">"success"</span>]:<br>&nbsp;&nbsp;auth.<span class="fn">bind_hwid</span>(session)<br>&nbsp;&nbsp;<span class="fn">launch_application</span>()`
 };
 
 document.querySelectorAll('.code-tab').forEach(tab => {
@@ -389,55 +610,48 @@ document.querySelectorAll('.code-tab').forEach(tab => {
   };
 });
 
-const API = 'https://authforge-backend-production.up.railway.app';
-
 async function initPage() {
-  const r = await fetch(API + '/api/public/config');
-  const d = await r.json();
-  const c = d.config || {};
-  if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
-  
-  // Apply Promo
-  if (c.bogo_active) {
-    document.querySelectorAll('.pricing-container').forEach(p => {
+  try {
+    const r = await fetch(API + '/api/public/config');
+    const d = await r.json();
+    const c = d.config || {};
+    if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
+    if (c.bogo_active) {
       const b = document.createElement('div');
-      b.className = 'hero-badge'; b.style.marginBottom = '20px';
-      b.innerHTML = '<span class="hero-badge-dot" style="background:var(--green)"></span> LIMITED: BOGO Active — BUY ONE GET ONE FREE!';
-      p.parentNode.insertBefore(b, p);
-    });
-  }
-  if (c.discount_percent > 0) {
-    document.querySelectorAll('.price-val').forEach(pv => {
-      if (pv.textContent.includes('$0')) return;
-      const old = pv.innerHTML;
-      pv.innerHTML = '<span style="text-decoration:line-through; font-size:14px; opacity:0.5; margin-right:8px">' + old.split('<span>')[0] + '</span>' + old;
-      pv.style.color = 'var(--green)';
-    });
-  }
-  if (c.homepage_announcement) {
-    const ann = document.createElement('div');
-    ann.style.background = 'var(--red)'; ann.style.color = '#fff'; ann.style.padding = '10px'; ann.style.textAlign = 'center'; ann.style.fontSize = '13px'; ann.style.fontWeight = '700';
-    ann.textContent = c.homepage_announcement;
-    document.body.prepend(ann);
-  }
-  
-  // Load Sentinels (Team)
-  const tr = await fetch(API + '/api/public/team');
-  const td = await tr.json();
-  const container = document.getElementById('sentinel-grid');
-  if (td.admins) {
-    container.innerHTML = [...td.admins, ...td.developers].map(m => {
-      const avatar = m.avatar_url ? `<img src="${m.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : (m.username[0].toUpperCase());
-      return `<div class="sentinel-card">
-        <div class="sentinel-img">${avatar}</div>
-        <div class="sentinel-name">${m.username}</div>
-        <div class="sentinel-role">${m.is_admin ? 'Admin' : (m.plan === 'business' ? 'Elite Partner' : 'Developer')}</div>
-      </div>`;
-    }).join('');
-  }
+      b.style.cssText = 'background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;padding:10px;text-align:center;font-size:13px;font-weight:700;letter-spacing:0.5px;';
+      b.textContent = '🎉 LIMITED TIME: Buy One Get One Free — Use code BOGO at checkout!';
+      document.body.prepend(b);
+    }
+    if (c.discount_percent > 0) {
+      document.querySelectorAll('.price-amount').forEach(pv => {
+        if (pv.textContent.includes('$0')) return;
+        const match = pv.innerHTML.match(/\$(\d+)/);
+        if (!match) return;
+        const orig = parseInt(match[1]);
+        const disc = (orig * (1 - c.discount_percent / 100)).toFixed(2);
+        pv.innerHTML = `<span style="text-decoration:line-through;font-size:18px;opacity:0.4;margin-right:6px">$${orig}</span>$${disc} <span>/ mo</span>`;
+        pv.style.color = 'var(--green)';
+      });
+    }
+    if (c.homepage_announcement) {
+      const ann = document.createElement('div');
+      ann.style.cssText = 'background:var(--primary);color:#fff;padding:10px;text-align:center;font-size:13px;font-weight:700;';
+      ann.textContent = c.homepage_announcement;
+      document.body.prepend(ann);
+    }
+
+    const tr = await fetch(API + '/api/public/team');
+    const td = await tr.json();
+    const grid = document.getElementById('sentinel-grid');
+    if (td.admins && [...td.admins, ...td.developers].length > 0) {
+      grid.innerHTML = [...td.admins, ...td.developers].map(m => {
+        const av = m.avatar_url ? `<img src="${m.avatar_url}" style="width:100%;height:100%;object-fit:cover;">` : m.username[0].toUpperCase();
+        return `<div class="team-card"><div class="team-avatar" style="${m.avatar_url ? 'padding:0' : ''}">${av}</div><div class="team-name">${m.username}</div><div class="team-role">${m.is_admin ? 'Admin' : (m.plan === 'business' ? 'Elite Partner' : 'Developer')}</div></div>`;
+      }).join('');
+    }
+  } catch(e) { console.warn('Config load failed', e); }
 }
 initPage();
 </script>
-
 </body>
 </html>

@@ -3,28 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShadowAuth — Security Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>NyxAuth — Security Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #050508; --surface: #0a0a0f; --surface2: #121217;
-  --border: rgba(220,38,38,0.1); --border2: rgba(220,38,38,0.2);
-  --text: #ffffff; --muted: #a1a1aa; --muted2: #52525b;
-  --red: #dc2626; --red-dim: rgba(220,38,38,0.1);
-  --blue: #dc2626; --blue-dim: rgba(220,38,38,0.12); /* Mapping blue to red for rebrand compatibility */
+  --bg: #02020a; --surface: #07071a; --surface2: #0d0d24;
+  --border: rgba(109,40,217,0.15); --border2: rgba(109,40,217,0.3);
+  --text: #f0f0ff; --muted: #8888aa; --muted2: #44445a;
+  --primary: #7c3aed; --primary-dim: rgba(124,58,237,0.12);
+  --primary-light: #a78bfa; --primary-glow: rgba(124,58,237,0.25);
+  --accent: #8b5cf6;
+  /* Legacy compat */
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+  --blue: #7c3aed; --blue-dim: rgba(124,58,237,0.12);
   --green: #10b981; --green-dim: rgba(16,185,129,0.1);
   --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
-  --purple: #ef4444; --purple-dim: rgba(239,68,68,0.1);
-  --font: 'Outfit', sans-serif; --r: 10px;
+  --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.12);
+  --font: 'Inter', sans-serif; --r: 10px;
 }
 body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; display: flex; min-height: 100vh; }
 .sidebar { width: 220px; border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; background: var(--bg); }
 body[class^="theme-"] .sidebar { background: transparent; backdrop-filter: blur(10px); }
-.logo { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin-bottom: 24px; }
-.logo-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 4px; flex-shrink: 0; }
-.logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; }
+.logo { display: flex; align-items: center; gap: 9px; padding: 4px 8px; margin-bottom: 24px; }
+.logo-icon { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0; }
+.logo-text { font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
+.logo-text span { color: var(--primary-light); }
 .nav-group { margin-bottom: 16px; }
 .nav-label { font-size: 11px; color: var(--muted2); padding: 0 8px; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
 .nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.1s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
@@ -33,9 +39,9 @@ body[class^="theme-"] .sidebar { background: transparent; backdrop-filter: blur(
 .nav-item.admin-item { color: var(--amber); }
 .nav-item.admin-item:hover, .nav-item.admin-item.active { background: var(--amber-dim); color: var(--amber); }
 .nav-icon { width: 15px; height: 15px; opacity: 0.6; flex-shrink: 0; }
-.plan-badge { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: var(--blue-dim); color: var(--blue); font-weight: 600; margin-left: auto; }
-.plan-badge.pro { background: var(--purple-dim); color: var(--purple); }
-.plan-badge.business { background: var(--amber-dim); color: var(--amber); }
+.plan-badge { font-size: 10px; padding: 1px 6px; border-radius: 20px; background: var(--primary-dim); color: var(--primary-light); font-weight: 600; margin-left: auto; border: 1px solid var(--border2); }
+.plan-badge.pro { background: var(--amber-dim); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+.plan-badge.business { background: var(--purple-dim); color: var(--purple); border-color: rgba(167,139,250,0.3); }
 .sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px; }
 .user-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 4px; }
 .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; overflow: hidden; }
@@ -69,8 +75,8 @@ tbody tr:hover td { background: var(--surface2); }
 .badge-amber { background: var(--amber-dim); color: var(--amber); }
 .badge-purple { background: var(--purple-dim); color: var(--purple); }
 .btn { padding: 6px 13px; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.1s; border: 1px solid transparent; }
-.btn-primary { background: var(--text); color: #000; }
-.btn-primary:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: #fff; border: none; }
+.btn-primary:hover { background: var(--accent); }
 .btn-ghost { background: none; color: var(--muted); border-color: var(--border2); }
 .btn-ghost:hover { color: var(--text); background: var(--surface2); }
 .btn-danger { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.2); }
@@ -168,31 +174,33 @@ tbody tr:hover td { background: var(--surface2); }
 .bot-status { margin-left: auto; font-size: 11px; }
 
 /* Themes Engine */
-body.theme-christmas { --red: #16a34a; --accent: #22c55e; --red-dim: rgba(22,163,74,0.12); --blue: #dc2626; background: radial-gradient(circle at top right, #0a2e1a, #050508) fixed; }
-body.theme-christmas::before { content: ''; position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/snow.png'); opacity: 0.1; pointer-events: none; z-index: 1; }
+body.theme-christmas { --primary: #16a34a; --accent: #22c55e; --primary-dim: rgba(22,163,74,0.12); --blue: #dc2626; --blue-dim: rgba(220,38,38,0.12); background: radial-gradient(circle at top right, #0a1a0a, #02020a) fixed; }
 body.theme-christmas::after { content: '❄️'; position: fixed; top: -50px; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 24px; animation: snow 10s linear infinite; opacity: 0.3; word-spacing: 120px; }
 
-body.theme-halloween { --red: #f97316; --accent: #fb923c; --red-dim: rgba(249,115,22,0.12); --blue: #a855f7; background: radial-gradient(circle at top left, #1a0a2e, #050508) fixed; }
-body.theme-halloween::before { content: ''; position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); opacity: 0.05; pointer-events: none; z-index: 1; }
-body.theme-halloween::after { content: '👻 🎃'; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 32px; animation: float 6s ease-in-out infinite; opacity: 0.1; display: flex; justify-content: space-around; align-items: center; }
+body.theme-halloween { --primary: #ea580c; --accent: #f97316; --primary-dim: rgba(234,88,12,0.12); --blue: #a855f7; --blue-dim: rgba(168,85,247,0.12); background: radial-gradient(circle at top left, #160a00, #02020a) fixed; }
+body.theme-halloween::after { content: '👻 🎃'; position: fixed; top: 10%; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; font-size: 36px; animation: float 6s ease-in-out infinite; opacity: 0.08; display: flex; justify-content: space-around; }
 
-body.theme-ocean { --red: #0ea5e9; --accent: #38bdf8; --red-dim: rgba(14,165,233,0.12); --blue: #0ea5e9; background: radial-gradient(circle at bottom right, #0a1a2e, #050508) fixed; }
-body.theme-blood { --red: #991b1b; --accent: #ef4444; --red-dim: rgba(153,27,27,0.15); --blue: #7f1d1d; background: radial-gradient(circle at center, #1a0505, #050508) fixed; }
+body.theme-ocean { --primary: #0284c7; --accent: #0ea5e9; --primary-dim: rgba(2,132,199,0.12); --blue: #0ea5e9; --blue-dim: rgba(14,165,233,0.12); background: radial-gradient(circle at bottom right, #000e1a, #02020a) fixed; }
+body.theme-blood { --primary: #b91c1c; --accent: #dc2626; --primary-dim: rgba(185,28,28,0.12); --blue: #7f1d1d; --blue-dim: rgba(127,29,29,0.12); background: radial-gradient(circle at center, #160000, #02020a) fixed; }
 
-@keyframes snow { from { transform: translateY(0); } to { transform: translateY(100vh); } }
-@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } }
+@keyframes snow { from { transform: translateY(0); } to { transform: translateY(110vh); } }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-40px) rotate(8deg); } }
 
-/* Apply Theme to Components */
-body[class^="theme-"] .logo-dot { background: var(--red) !important; }
-body[class^="theme-"] .nav-item.active { background: var(--red-dim); color: var(--red); }
-body[class^="theme-"] .btn-primary { background: var(--red); color: white !important; }
-body[class^="theme-"] .badge-red { background: var(--red-dim); color: var(--red); }
-body[class^="theme-"] .plan-badge.pro, body[class^="theme-"] .plan-badge.business { background: var(--red); color: white !important; }
+/* Apply Themes to Components */
+body[class^="theme-"] .logo-icon { background: linear-gradient(135deg, var(--primary), var(--accent)) !important; }
+body[class^="theme-"] .nav-item.active { background: var(--primary-dim); color: var(--primary); }
+body[class^="theme-"] .btn-primary { background: var(--primary) !important; color: #fff !important; }
+body[class^="theme-"] .badge-blue { background: var(--primary-dim); color: var(--primary); }
+body[class^="theme-"] .plan-badge { background: var(--primary-dim); color: var(--primary); }
+body[class^="theme-"] .toggle input:checked + .toggle-slider { background: var(--primary); border-color: var(--primary); }
 </style>
 </head>
 <body>
 <nav class="sidebar">
-  <div class="logo"><div class="logo-dot" style="background:var(--red); border-radius: 2px;"></div><span class="logo-text">Shadow<span style="color:var(--red)">Auth</span></span></div>
+  <div class="logo">
+    <div class="logo-icon">N</div>
+    <span class="logo-text">Nyx<span>Auth</span></span>
+  </div>
   <div class="nav-group">
     <div class="nav-label">Platform</div>
     <button class="nav-item active" onclick="nav('overview')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Overview</button>
@@ -1619,6 +1627,12 @@ if (urlParams.get('state') === 'link_discord' && urlParams.get('code')) {
     else { alert('Discord account linked!'); nav('account'); }
   });
 }
+
+// Apply global theme
+fetch(API + '/api/public/config').then(r => r.json()).then(d => {
+  const c = (d && d.config) || {};
+  if (c.theme && c.theme !== 'dark') document.body.className = 'theme-' + c.theme;
+}).catch(() => {});
 
 loadOverview();
 </script>
